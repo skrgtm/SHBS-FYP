@@ -1,24 +1,24 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Sportsmitra</title>
 
-  <!-- Bootstrap CSS -->
-  <link href="../static/css/animate.css" rel="stylesheet">
-  <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
-</head>
-<body>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="../static/css/animate.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
+    <title>Employee Login</title>
+  </head>
+  <body>
   <!-- <div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg"> -->
     <nav class="navbar navbar-expand-md navbar-dark">
       <div class="container"> 
         <!-- Brand --> 
-        <a class="navbar-brand mr-auto" href="/"><img src="../static/images/logo-no-background.png" alt="Spartan Sanctuary" class = "logo"/></a> 
+        <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png" alt="Sportsmitra" class = "logo"/></a> 
         
         <!-- Toggler/collapsibe Button -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"> <span class="navbar-toggler-icon"></span> </button>
@@ -43,23 +43,17 @@
         </div>
       </div>
     </nav>
-    <!-- </div> -->
     <br>
     <br>
     <br>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-          {% for message in messages %}
-               <p>{{ message }}</p>
-          {% endfor %}
-    {% endif %}
- {% endwith %}
+
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg">
           <form class="form-signin" method="POST" name="signin">
             {{ form.hidden_tag() }}
             <div class="mb-4">
+              <h1 class="h3 mb-3 font-weight-normal">Employee Login</h1>
               <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
               <label class="block text-gray-700 font-bold mb-2" for="username">
                 Username
@@ -72,24 +66,7 @@
               </label>
               {{form.userPassword(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="password", type="password", placeholder="Password")}}
             </div>
-            <div class="checkbox mb-3">
-              <label>
-                <p>Remember Me{{form.remember(class_="remember-me")}}</p>
-              </label>
-            </div>
-            
-            <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Log In</button><br>
-            <div class="mt-4 text-center">
-              <p>Do Not Have An Account? <a href="/create_account" class="text-blue-600">Register Now</a></p><br>
-              <p>Forgot Password? <a href="/reset" class="text-blue-600">Click Here</a></p>
-              <p>Login with Phone <a href="/2FA" class="text-blue-600">Click Here</a></p>
-              <div class="mx-auto" align="center">
-                <button class="bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded-full flex items-center justify-center border border-gray-300 mt-4">
-                  <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo" class="mr-2">
-                  <span>Sign in with Google</span>
-                </button>
-              </div>
-            </div>
+            <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Sign In</button><br>
           </form>
         </div>
       </div>
@@ -98,15 +75,16 @@
     <br>
     <br>
 
+
     <footer class="container-fluid">
       <div class="container">
         <div class="row">
           <div class="col-md-3 footer1 d-flex wow bounceInLeft" data-wow-delay=".25s">
-            <div class="d-flex flex-wrap align-content-center"> <a href="#"><img src="../static/images/logo-no-background.png" alt="logo" class = "logo"></a>
+            <div class="d-flex flex-wrap align-content-center"> <a href="#"><br><br><img src="../static/images/nb.png" alt="logo" class = "logo1"></a>
               <p>Empowering athletes, nurturing talent, fostering 
                 teamwork, celebrating <br>
                 achievements.</p>
-              <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+              <p>&copy; 2023 Sports. <br>All rights reserved.<br> </p>
             </div>
           </div>
           <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
@@ -121,7 +99,7 @@
             <a href = "/lookup_venue">Sessions</a><br>
             <a href = "/my_bookings">My Bookings</a><br>
             <a href = "/">FAQs</a><br>
-            <a href = "/">Refunds</a><br>
+            
           </div>
           <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
             <br>
@@ -156,13 +134,11 @@
           </div>
         </div>
       </div>
-    </footer>     
+    </footer>
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
     <script src="../static/javascript/parallax.js"></script>
     <script src="../static/javascript/wow.js"></script>
     <script src="../static/javascript/main.js"></script>
-  </body>
-  </html>
-  
-  
+  </body>  
+</html>
