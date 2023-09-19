@@ -1,8 +1,8 @@
-"""make migration
+"""Initial
 
-Revision ID: a2d2f283bea8
+Revision ID: c1934b4b93c4
 Revises: 
-Create Date: 2023-08-30 13:49:20.744928
+Create Date: 2023-09-19 13:03:17.048805
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a2d2f283bea8'
+revision = 'c1934b4b93c4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -39,12 +39,10 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('verification_token')
     )
-    with op.batch_alter_table('UserAccount', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_UserAccount_Email'), ['Email'], unique=True)
-        batch_op.create_index(batch_op.f('ix_UserAccount_Mobile'), ['Mobile'], unique=False)
-        batch_op.create_index(batch_op.f('ix_UserAccount_Password'), ['Password'], unique=False)
-        batch_op.create_index(batch_op.f('ix_UserAccount_User'), ['User'], unique=False)
-
+    op.create_index(op.f('ix_UserAccount_Email'), 'UserAccount', ['Email'], unique=True)
+    op.create_index(op.f('ix_UserAccount_Mobile'), 'UserAccount', ['Mobile'], unique=False)
+    op.create_index(op.f('ix_UserAccount_Password'), 'UserAccount', ['Password'], unique=False)
+    op.create_index(op.f('ix_UserAccount_User'), 'UserAccount', ['User'], unique=False)
     op.create_table('facility',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('Name', sa.String(length=500), nullable=True),
@@ -53,12 +51,10 @@ def upgrade():
     sa.Column('End_Facility', sa.String(length=500), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('facility', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_facility_Capacity'), ['Capacity'], unique=False)
-        batch_op.create_index(batch_op.f('ix_facility_End_Facility'), ['End_Facility'], unique=False)
-        batch_op.create_index(batch_op.f('ix_facility_Name'), ['Name'], unique=False)
-        batch_op.create_index(batch_op.f('ix_facility_Start_Facility'), ['Start_Facility'], unique=False)
-
+    op.create_index(op.f('ix_facility_Capacity'), 'facility', ['Capacity'], unique=False)
+    op.create_index(op.f('ix_facility_End_Facility'), 'facility', ['End_Facility'], unique=False)
+    op.create_index(op.f('ix_facility_Name'), 'facility', ['Name'], unique=False)
+    op.create_index(op.f('ix_facility_Start_Facility'), 'facility', ['Start_Facility'], unique=False)
     op.create_table('Sessions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('Date', sa.Date(), nullable=True),
@@ -69,12 +65,10 @@ def upgrade():
     sa.ForeignKeyConstraint(['facility_id'], ['facility.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('Sessions', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_Sessions_Date'), ['Date'], unique=False)
-        batch_op.create_index(batch_op.f('ix_Sessions_End_time'), ['End_time'], unique=False)
-        batch_op.create_index(batch_op.f('ix_Sessions_Remaining_Cap'), ['Remaining_Cap'], unique=False)
-        batch_op.create_index(batch_op.f('ix_Sessions_Start_time'), ['Start_time'], unique=False)
-
+    op.create_index(op.f('ix_Sessions_Date'), 'Sessions', ['Date'], unique=False)
+    op.create_index(op.f('ix_Sessions_End_time'), 'Sessions', ['End_time'], unique=False)
+    op.create_index(op.f('ix_Sessions_Remaining_Cap'), 'Sessions', ['Remaining_Cap'], unique=False)
+    op.create_index(op.f('ix_Sessions_Start_time'), 'Sessions', ['Start_time'], unique=False)
     op.create_table('activity',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('facility_id', sa.Integer(), nullable=True),
@@ -83,10 +77,8 @@ def upgrade():
     sa.ForeignKeyConstraint(['facility_id'], ['facility.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('activity', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_activity_Activity_Name'), ['Activity_Name'], unique=False)
-        batch_op.create_index(batch_op.f('ix_activity_Amount'), ['Amount'], unique=False)
-
+    op.create_index(op.f('ix_activity_Activity_Name'), 'activity', ['Activity_Name'], unique=False)
+    op.create_index(op.f('ix_activity_Amount'), 'activity', ['Amount'], unique=False)
     op.create_table('receipt',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
@@ -95,9 +87,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['UserAccount.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('receipt', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_receipt_Amount'), ['Amount'], unique=False)
-
+    op.create_index(op.f('ix_receipt_Amount'), 'receipt', ['Amount'], unique=False)
     op.create_table('user_role',
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
@@ -120,12 +110,10 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['UserAccount.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('Booking', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_Booking_Amount'), ['Amount'], unique=False)
-        batch_op.create_index(batch_op.f('ix_Booking_Book_Time'), ['Book_Time'], unique=False)
-        batch_op.create_index(batch_op.f('ix_Booking_Size'), ['Size'], unique=False)
-        batch_op.create_index(batch_op.f('ix_Booking_Status'), ['Status'], unique=False)
-
+    op.create_index(op.f('ix_Booking_Amount'), 'Booking', ['Amount'], unique=False)
+    op.create_index(op.f('ix_Booking_Book_Time'), 'Booking', ['Book_Time'], unique=False)
+    op.create_index(op.f('ix_Booking_Size'), 'Booking', ['Size'], unique=False)
+    op.create_index(op.f('ix_Booking_Status'), 'Booking', ['Status'], unique=False)
     op.create_table('session_activity',
     sa.Column('session_id', sa.Integer(), nullable=True),
     sa.Column('activity_id', sa.Integer(), nullable=True),
@@ -139,43 +127,31 @@ def upgrade():
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('session_activity')
-    with op.batch_alter_table('Booking', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_Booking_Status'))
-        batch_op.drop_index(batch_op.f('ix_Booking_Size'))
-        batch_op.drop_index(batch_op.f('ix_Booking_Book_Time'))
-        batch_op.drop_index(batch_op.f('ix_Booking_Amount'))
-
+    op.drop_index(op.f('ix_Booking_Status'), table_name='Booking')
+    op.drop_index(op.f('ix_Booking_Size'), table_name='Booking')
+    op.drop_index(op.f('ix_Booking_Book_Time'), table_name='Booking')
+    op.drop_index(op.f('ix_Booking_Amount'), table_name='Booking')
     op.drop_table('Booking')
     op.drop_table('user_role')
-    with op.batch_alter_table('receipt', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_receipt_Amount'))
-
+    op.drop_index(op.f('ix_receipt_Amount'), table_name='receipt')
     op.drop_table('receipt')
-    with op.batch_alter_table('activity', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_activity_Amount'))
-        batch_op.drop_index(batch_op.f('ix_activity_Activity_Name'))
-
+    op.drop_index(op.f('ix_activity_Amount'), table_name='activity')
+    op.drop_index(op.f('ix_activity_Activity_Name'), table_name='activity')
     op.drop_table('activity')
-    with op.batch_alter_table('Sessions', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_Sessions_Start_time'))
-        batch_op.drop_index(batch_op.f('ix_Sessions_Remaining_Cap'))
-        batch_op.drop_index(batch_op.f('ix_Sessions_End_time'))
-        batch_op.drop_index(batch_op.f('ix_Sessions_Date'))
-
+    op.drop_index(op.f('ix_Sessions_Start_time'), table_name='Sessions')
+    op.drop_index(op.f('ix_Sessions_Remaining_Cap'), table_name='Sessions')
+    op.drop_index(op.f('ix_Sessions_End_time'), table_name='Sessions')
+    op.drop_index(op.f('ix_Sessions_Date'), table_name='Sessions')
     op.drop_table('Sessions')
-    with op.batch_alter_table('facility', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_facility_Start_Facility'))
-        batch_op.drop_index(batch_op.f('ix_facility_Name'))
-        batch_op.drop_index(batch_op.f('ix_facility_End_Facility'))
-        batch_op.drop_index(batch_op.f('ix_facility_Capacity'))
-
+    op.drop_index(op.f('ix_facility_Start_Facility'), table_name='facility')
+    op.drop_index(op.f('ix_facility_Name'), table_name='facility')
+    op.drop_index(op.f('ix_facility_End_Facility'), table_name='facility')
+    op.drop_index(op.f('ix_facility_Capacity'), table_name='facility')
     op.drop_table('facility')
-    with op.batch_alter_table('UserAccount', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_UserAccount_User'))
-        batch_op.drop_index(batch_op.f('ix_UserAccount_Password'))
-        batch_op.drop_index(batch_op.f('ix_UserAccount_Mobile'))
-        batch_op.drop_index(batch_op.f('ix_UserAccount_Email'))
-
+    op.drop_index(op.f('ix_UserAccount_User'), table_name='UserAccount')
+    op.drop_index(op.f('ix_UserAccount_Password'), table_name='UserAccount')
+    op.drop_index(op.f('ix_UserAccount_Mobile'), table_name='UserAccount')
+    op.drop_index(op.f('ix_UserAccount_Email'), table_name='UserAccount')
     op.drop_table('UserAccount')
     op.drop_table('Role')
     # ### end Alembic commands ###

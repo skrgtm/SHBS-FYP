@@ -117,7 +117,7 @@ class Sessions(db.Model):
 
 # Keep the Facility and Activity models as they are
 
-#Facitlity model to store information of the facility
+#Facitlity model to store information of the facility swimming
 class Facility(db.Model):
     # __tablename__ = "Facilities"
     id = db.Column(db.Integer, primary_key=True)
@@ -132,7 +132,7 @@ class Facility(db.Model):
         self.Start_Facility = Start_Facility
         self.End_Facility = End_Facility
 
-#Activity model to store information of the activity.
+#Activity model to store information of the activity. lane swimming 
 class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     facility_id = db.Column(db.Integer, db.ForeignKey('facility.id'))
