@@ -15,25 +15,25 @@ def create_roles():
     db.session.commit()
 
 #Method used to create test users of each role type
-# def create_user():
-#     user = UserAccount(User="test",Email ="htootayzaaung.01@gmail.com", Password = "123",Mobile = "+447760110194" )
-#     user.verified=True
-#     role = Role.query.filter_by(name = "User").first()
-#     user.roles.append(role)
-#     admin = UserAccount(User="Admin",Email ="arjun.krishnan.001@gmail.com", Password = "1234",Mobile = "+4454234242" )
-#     employee = UserAccount(User="Employee",Email ="arjun.krishnan.0032@gmail.com", Password = "1234",Mobile = "+4454234242" )
-#     emp_role = Role.query.filter_by(name = "Employee").first()
-#     employee.roles.append(emp_role)
-#     employee.verified = True
-#     admin_role = Role.query.filter_by(name = "Manager").first()
-#     admin.roles.append(admin_role)
-#     admin.verified=True
-#     db.session.add(user)
-#     db.session.add(employee)
-#     db.session.add(admin)
-#     db.session.commit()
+def create_user():
+    user = UserAccount(User="test",Email ="test.01@gmail.com", Password = "123",Mobile = "9818255262" )
+    user.verified=True
+    role = Role.query.filter_by(name = "User").first()
+    user.roles.append(role)
+    admin = UserAccount(User="Admin",Email ="skrgtm2059@gmail.com", Password = "1234",Mobile = "9863031152" )
+    employee = UserAccount(User="Employee",Email ="sakar.gautam557@gmail.com", Password = "1234",Mobile = "9865365096" )
+    emp_role = Role.query.filter_by(name = "Employee").first()
+    employee.roles.append(emp_role)
+    employee.verified = True
+    admin_role = Role.query.filter_by(name = "Manager").first()
+    admin.roles.append(admin_role)
+    admin.verified=True
+    db.session.add(user)
+    db.session.add(employee)
+    db.session.add(admin)
+    db.session.commit()
 
 if __name__ == '__main__':
     with app.app_context():
         create_roles()
-        # create_user()
+        create_user()

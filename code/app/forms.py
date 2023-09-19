@@ -69,3 +69,4 @@ class ContactUsForm(FlaskForm):
   address = StringField("Address",validators = [DataRequired()])
   message = TextAreaField("Message",validators = [DataRequired()])
   submit = SubmitField("Send")
+

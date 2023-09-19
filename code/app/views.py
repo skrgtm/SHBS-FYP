@@ -3,7 +3,7 @@ from flask import Flask, render_template, flash, redirect, request,make_response
 from app import app , models,db,admin,login_manager,mail
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm
+from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm,ResetPassword
 # from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,FacilityActivityForm,CreateFacilityForm,CreateActivityForm,UpdateActivityForm,UpdateFacilityForm,ResetPassword,ViewBookings,EditBookingForm, UpdateUserForm,UserMember,CreateBookings,BookingDetailsForm,RefundForm
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions,Activity, session_activity_association
 from functools import wraps
@@ -86,7 +86,7 @@ admin.add_view(ModelView(Receipt, db.session))
 @login_manager.user_loader
 def load_user(user_id):
     # Replace this with your actual user loading logic
-    user = User.query.get(int(user_id))  # Example assuming you have a User model
+    user = UserAccount.query.get(int(user_id))  # Example assuming you have a User model
     return user
 #**************************** HomePage *************************************************
 
@@ -396,3 +396,95 @@ def callback():
         print("Failed!")
         flash('Invalid Credentials')
         return redirect("/login")
+
+@app.route("/protected_area")
+@login_required
+def protected_area():
+    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+
+
+
+#************** End of User Login, Creat Account: Reset, 2FA, Google Login, Logout *******************
+
+
+
+# #Manager Homepage
+# @app.route('/mgr_homepage')
+# @login_required
+# @require_role(role="Manager")
+# def MgrHomepage():
+#     #redirects user to landing page
+#     return render_template('yt.html',
+#                            title='Home',User = current_user)
+
+#********************************* Route to Redirect User After they Login ************************
+
+#User homepage
+@app.route('/user', methods=['GET','POST'])
+@login_required
+@require_role(role="User")
+def user():
+    return render_template('user.html',title= 'User', User = current_user)
+
+#Flask defualt logout handler.
+@app.route("/logout")
+@login_required
+def logout():
+    for key in list(session.keys()):
+        session.pop(key)
+    logout_user()
+    return redirect('/')
+
+#************** End of User Login, Creat Account: Reset, 2FA, Google Login, Logout *******************
+
+
+#**************************************** Manager Role **********************************************
+
+#route for Employee & Manager login
+#Redirects the user to Employee/Manager Homepage depending on the role of the account.
+#PRecents login if account does not exist, Password is incorrect or if the account type is User.
+@app.route('/emp_login', methods=['GET','POST'])
+def employee_login():
+    form = EmpLoginForm()
+    usr = form.userName.data
+    if form.validate_on_submit():
+        user = UserAccount.query.filter_by(User=usr).first()
+        if user is None or not user.check_password(form.userPassword.data):
+            flash('Invalid Login')
+            app.logger.warning('Invalid Login')
+            return redirect('/emp_login')
+        if not user.has_role("Employee") and not user.has_role("Manager"):
+            app.logger.warning('Not an Employee')
+            return redirect('/emp_login')
+        if user.has_role("Employee"):
+            login_user(user)
+            return redirect("/emp_homepage")
+        if user.has_role("Manager"):
+            login_user(user)
+            return redirect("/mgr_homepage")
+    return render_template('emplogin_page.html',
+                        title='Login',form = form)
+
+#Manager Homepage
+@app.route('/mgr_homepage')
+@login_required
+@require_role(role="Manager")
+def MgrHomepage():
+    #redirects user to landing page
+    return render_template('yt.html',
+                           title='Home',User = current_user)
+
+
+#****************************************** End of Manager Roles *****************************************
+
+#************************************ Employee Roles ********************************************
+
+#Route for employee homepage
+@app.route('/emp_homepage')
+@require_role(role="Employee")
+@login_required
+def EmpHomepage():
+    #redirects user to landing page
+    return render_template('employeefp.html', title='Home',User = current_user)
+
+# **********************************************************************************************
