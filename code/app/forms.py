@@ -70,3 +70,11 @@ class ContactUsForm(FlaskForm):
   message = TextAreaField("Message",validators = [DataRequired()])
   submit = SubmitField("Send")
 
+  #Form used to create a new facility. Also asks amount information to set a value for a default activity.
+class CreateFacilityForm(FlaskForm):
+    Name = StringField('Venue Name', validators=[DataRequired()])
+    Capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
+    Start_time = StringField('Start Time', validators=[DataRequired()])
+    End_time = StringField('End Time', validators=[DataRequired()])
+    Amount = IntegerField('Cost', validators=[DataRequired()])
+

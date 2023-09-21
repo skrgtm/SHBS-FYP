@@ -3,8 +3,8 @@ from flask import Flask, render_template, flash, redirect, request,make_response
 from app import app , models,db,admin,login_manager,mail
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm,ResetPassword
-# from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,FacilityActivityForm,CreateFacilityForm,CreateActivityForm,UpdateActivityForm,UpdateFacilityForm,ResetPassword,ViewBookings,EditBookingForm, UpdateUserForm,UserMember,CreateBookings,BookingDetailsForm,RefundForm
+from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm,ResetPassword, CreateFacilityForm
+
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions,Activity, session_activity_association
 from functools import wraps
 from flask_login import LoginManager,login_required,logout_user,login_user,current_user
@@ -24,7 +24,7 @@ import os
 import pathlib
 from datetime import datetime, time, timedelta
 from dateutil.relativedelta import relativedelta
-# from add_dynamic import dynamic_sessions,append_to_session
+from add_dynamic import dynamic_sessions,append_to_session
 from datetime import datetime
 import stripe
 from collections import defaultdict
@@ -473,6 +473,65 @@ def MgrHomepage():
     #redirects user to landing page
     return render_template('yt.html',
                            title='Home',User = current_user)
+
+#Route to handle Employee Creation.
+#Employee/Manager accounts can be created.
+#Route accessible by managers only as per spec
+#Checks if the Email and username are existing, preventing account creation if so
+#Else account is created, Bypassing verification process.
+@app.route('/create_emp',methods=['GET','POST'])
+@require_role(role="Manager")
+@login_required
+def newemp():
+    form = EmpSignupForm()
+    usr = form.userName.data
+    email = form.userEmail.data
+    paswrd = form.userPassword.data
+    if form.validate_on_submit():
+        usern = UserAccount.query.filter_by(User=usr).first()
+        emailn = UserAccount.query.filter_by(Email=email).first()
+        if usern is not None:
+            flash('User already exists')
+            app.logger.warning('Invalid Account Creation')
+            return redirect('/create_emp')
+        if emailn is not None:
+            app.logger.warning('Invalid Account Creation')
+            flash('email ID already exists')
+            return redirect('/create_emp')
+        userData = UserAccount(User=usr, Email=email, Password=form.userPassword.data,Mobile = form.CountryCode.data+form.Mobile.data)
+        db.session.add(userData)
+        role = Role.query.filter_by(name=form.role.data).first()
+        userData.verified=True
+        userData.roles.append(role)
+        db.session.commit()
+        return redirect('/mgr_homepage')
+    #redirects user to landing page
+    return render_template('newemp.html',title='Home',form = form)
+
+#Route to handle Facility Creation.
+#Facility with a default activity 'General Usr' is created
+#Route accessible by managers only as per spec
+#Checks if the Facility exists, preventing Facility creation if so
+#If checks are passed, 2 Weeks worth of sessions is generated using the dynamic sessions script.
+@app.route('/create_facility',methods=['GET','POST'])
+@require_role(role="Manager")
+@login_required
+def new_facility():
+    form = CreateFacilityForm()
+    if form.validate_on_submit():
+        checkfacility =Facility.query.filter_by(Name = form.Name.data).first()
+        if checkfacility is not None:
+            flash('Facility already exists')
+            return redirect('/create_facility')
+        facility = Facility(Name=form.Name.data, Capacity=form.Capacity.data, Start_Facility=form.Start_time.data, End_Facility=form.End_time.data)
+        activity = Activity(Activity_Name="General use", Amount=form.Amount.data)
+        db.session.add(activity)
+        facility.activities.append(activity)
+        db.session.add(facility)
+        db.session.commit()
+        dynamic_sessions(facility.id, form.Start_time.data, form.End_time.data, form.Capacity.data,activity.id)
+        return redirect('/mgr_homepage')
+    return render_template('createfacility.html',form=form)
 
 
 #****************************************** End of Manager Roles *****************************************
