@@ -3,7 +3,7 @@ from flask import Flask, render_template, flash, redirect, request,make_response
 from app import app , models,db,admin,login_manager,mail
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm,ResetPassword, CreateFacilityForm
+from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm,ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm
 
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions,Activity, session_activity_association
 from functools import wraps
@@ -532,6 +532,89 @@ def new_facility():
         dynamic_sessions(facility.id, form.Start_time.data, form.End_time.data, form.Capacity.data,activity.id)
         return redirect('/mgr_homepage')
     return render_template('createfacility.html',form=form)
+
+
+#Route to handle Activity Creation.
+#Activity with entered information is created
+#Route accessible by managers only as per spec
+#Checks if the Activity exists, preventing Activity creation if so
+#If checks are passed, Activity is added to all existing sessions that have the same facility as this activity.
+@app.route('/create_activity',methods=['GET','POST'])
+@require_role(role="Manager")
+@login_required
+def new_activity():
+    facilities = Facility.query.all()
+    facility_choices = [(f.id, f.Name) for f in facilities]
+    form = CreateActivityForm()
+    form.Facility_Name.choices = facility_choices
+
+    if form.validate_on_submit():
+        facility = Facility.query.filter_by(id = form.Facility_Name.data).first()
+        check_activity = Activity.query.filter_by(Activity_Name = form.Activity_Name.data , facility_id = form.Facility_Name.data).first()
+        activity = Activity(Activity_Name=form.Activity_Name.data, Amount=form.Amount.data)
+        if check_activity in facility.activities:
+            flash('Activity already exists')
+            return redirect('/create_activity')
+        facility.activities.append(activity)
+        db.session.add(activity)
+        db.session.commit()
+        append_to_session(facility.id,activity.id)
+        return redirect('/mgr_homepage')
+    return render_template('createactivity.html',form=form)
+
+#Route to update facility information
+#Route accessible to managers only as per spec
+#Allows user to select the facility from the dropdown.
+#The activity Facilty is then updated if form is valid.
+@app.route('/update_facility',methods=['GET','POST'])
+@require_role(role="Manager")
+@login_required
+def update_facility():
+    form = UpdateFacilityForm()
+    facilities = Facility.query.all()
+    facility_choices = [(f.id, f.Name) for f in facilities]
+    form = UpdateFacilityForm()
+    form.Facility_Namez.choices = facility_choices
+    
+    if request.method == "POST" and form.validate_on_submit():
+        
+        facility = Facility.query.filter_by(id=int(form.Facility_Namez.data)).first()
+        facility.Name = form.Name.data 
+        facility.Capacity = form.Capacity.data
+        facility.Start_Facility = form.Start_time.data
+        facility.End_Facility = form.End_time.data
+        db.session.commit()
+        return redirect('/mgr_homepage')
+    if not form.validate_on_submit():
+        print(form.errors)
+    return render_template('updatefacility.html',form=form)
+
+#Route to update activity information
+#Route accessible to managers only as per spec
+#Allows user to select the facility, then displays all activites linked to the facility in a select dropdown
+#The activity information is then updated.
+@app.route('/update_Activity',methods=['GET','POST'])
+@require_role(role="Manager")
+@login_required
+def update_activity():
+    facilities = Facility.query.all()
+    facility_choices = [(f.id, f.Name) for f in facilities]
+
+    activities = Activity.query.all()
+    activity_choices = [(a.id, a.Activity_Name) for a in activities]
+
+    form = UpdateActivityForm()
+    form.New_Facility_Name.choices = facility_choices
+    form.Activity_Selector.choices = activity_choices
+    if request.method == "POST" and form.validate_on_submit():
+        activity = Activity.query.filter_by(id=int(form.Activity_Selector.data)).first()
+        activity.Activity_Name = form.New_Activity_Name.data
+        activity.Amount = form.New_Amount.data
+        # facilityz = Facility.query.filter_by(id = int(form.New_Facility_Name.data)).first()
+        # activity.facility_id = facilityz.id
+        db.session.commit()
+        return redirect('/mgr_homepage')
+    return render_template('updateactivity.html',form=form)
 
 
 #****************************************** End of Manager Roles *****************************************

@@ -70,7 +70,7 @@ class ContactUsForm(FlaskForm):
   message = TextAreaField("Message",validators = [DataRequired()])
   submit = SubmitField("Send")
 
-  #Form used to create a new facility. Also asks amount information to set a value for a default activity.
+#Form used to create a new facility. Also asks amount information to set a value for a default activity.
 class CreateFacilityForm(FlaskForm):
     Name = StringField('Venue Name', validators=[DataRequired()])
     Capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
@@ -78,3 +78,24 @@ class CreateFacilityForm(FlaskForm):
     End_time = StringField('End Time', validators=[DataRequired()])
     Amount = IntegerField('Cost', validators=[DataRequired()])
 
+
+#Form to create new activity.
+class CreateActivityForm(FlaskForm):
+    Activity_Name = StringField('Acivity Name', validators=[DataRequired()])
+    Amount = IntegerField('Cost', validators=[DataRequired()])
+    Facility_Name = SelectField('Facility Name', validators=[DataRequired()],choices=[])
+
+#Form that takes in the new facility information to update the facility. 
+class UpdateFacilityForm(FlaskForm):
+    Facility_Namez = SelectField('Facility Name', validators=[DataRequired()],choices=["Name","Name"])
+    Name = StringField('Venue Name', validators=[DataRequired()])
+    Capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
+    Start_time = StringField('Start Time', validators=[DataRequired()])
+    End_time = StringField('End Time', validators=[DataRequired()])
+
+#Form that takes in the new activity information to update the activity. 
+class UpdateActivityForm(FlaskForm):
+    New_Facility_Name = SelectField('Facility Name', validators=[DataRequired()],choices=[])
+    Activity_Selector = SelectField('Activity Name', validators=[DataRequired()])
+    New_Activity_Name = StringField('Acivity Name', validators=[DataRequired()])
+    New_Amount = IntegerField('Cost', validators=[DataRequired()])
