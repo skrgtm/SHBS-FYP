@@ -616,6 +616,15 @@ def update_activity():
         return redirect('/mgr_homepage')
     return render_template('updateactivity.html',form=form)
 
+#Page that lists all Facility Activity Prices
+#This was impelemented to allow info to be viewed and updated
+@app.route('/pricing', methods =["GET","POST"])
+@require_role(role="Manager")
+@login_required
+def pricing():
+    activity = Activity.query.all()
+    return render_template('pricing.html', activity = activity)
+
 
 #****************************************** End of Manager Roles *****************************************
 
