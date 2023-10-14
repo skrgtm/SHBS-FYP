@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Sportsmitra</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../static/css/animate.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark">
+    <div class="container"> 
+        <!-- Brand --> 
+        <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png" alt="Sportsmitra" class = "logo"/></a> 
+        
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"> <span class="navbar-toggler-icon"></span> </button>
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"> <a class="nav-link" href="/emp_homepage">Home</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/lookup_bookings">View Booking</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/create_bookings">Book Session</a> </li>
+            
+            <li class="nav-item"> <a class="nav-link" href="/logout">Logout</a> </li>
+        </ul>
+        </div>
+    </div>
+</nav>
+<body>
+    <br>
+    <br>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    <div class="row">
+
+        <div class="col-md-4 my-col">
+            <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
+              <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">USER CURRENT BOOKING</h1>
+                    <div class="card-body">
+                <p><strong>Activity:</strong> {{ booking.activity.Activity_Name }}</p>
+                <p><strong>Facility:</strong> {{ booking.session.facility.Name }}</p>
+                <p><strong>Date:</strong> {{ booking.session.Date.strftime('%Y-%m-%d') }}</p>
+                <p><strong>Start Time:</strong> {{ booking.session.Start_time.strftime('%H:%M') }}
+                <p><strong>End Time:</strong> {{ booking.session.End_time.strftime('%H:%M') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="w-full flex items-center justify-center px-4">
+                <div class="max-w-md w-full">
+                  <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
+                    <form class="venue" method="POST" name="signin">
+                      <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">EDIT USER BOOKING</h1>
+                        {{ form.hidden_tag() }}
+                        <label class="block text-gray-700 font-bold mb-2">Date</label>
+                        {{ form.date(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", placeholder="YYYY-MM-DD") }}
+                        <label class="block text-gray-700 font-bold mb-2" >Start Time</label>
+                        {{ form.start_time(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                        <label class="block text-gray-700 font-bold mb-2">End Time</label>
+                        {{ form.end_time(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                        <button type="submit" name="save" value="save" class="btn btn-primary">SAVE</button>
+                        <button type="submit" name="cancel" value="cancel" class="btn btn-danger">DELETE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <br>
+  <br>
+  <footer class="container-fluid">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 footer1 d-flex wow bounceInLeft" data-wow-delay=".25s">
+          <div class="d-flex flex-wrap align-content-center"> <a href="#"><img src="../static/images/fnb.png" alt="logo" class = "logo"></a>
+            <p>Empowering athletes, nurturing talent, fostering 
+              teamwork, celebrating <br>
+              achievements.</p>
+              <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+          </div>
+        </div>
+        <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
+          <br>
+          <br> 
+          <br> 
+          <br>
+          <br> 
+          <br> 
+          <br>
+          <h5>QUICK LINKS</h5>
+          <a href = "/lookup_bookings"> View Sessions</a><br>
+          <a href = "/create_bookings">Book Session</a><br>
+         
+        </div>
+        <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
+          <br>
+          <br> 
+          <br> 
+          <br>
+          <br> 
+          <br> 
+          <br>
+          <h5>SPONSORS</h5>
+          <a href="https://www.nike.com">
+            NIKE
+          </a><br>
+          <a href="https://www.jdsports.com">
+            JD SPORTS
+          </a><br>
+          <a href = "https://www.sportsdirect.com">
+            SPORTS DIRECT
+          </a><br>
+          <a href = "https://www.adidas.co.uk">
+            ADIDAS
+          </a><br>
+        </div>
+        <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
+          <h5>ADDRESS</h5>
+          <p>koteshwor Kathmandu</p>
+          <h5>PHONE</h5>
+          <p>9818255262</p>
+          <h5>EMAIL</h5>
+          <p>sportsmitra@gmail.com</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+           
+  <script src="../static/javascript/jquery.min.js"></script>
+  <script src="../static/javascript/bootstrap.min.js"></script>
+  <script src="../static/javascript/parallax.js"></script>
+  <script src="../static/javascript/wow.js"></script>
+  <script src="../static/javascript/main.js"></script>
+    </body>
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Sportsmitra</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../static/css/animate.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
+</head>
+<body>
+  <!-- <div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg"> -->
+    <nav class="navbar navbar-expand-md navbar-dark">
+      <div class="container"> 
+        <!-- Brand --> 
+        <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png" alt="Sportsmitra" class = "logo"/></a> 
+        
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"> <span class="navbar-toggler-icon"></span> </button>
+        
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item"> <a class="nav-link" href="/mgr_homepage">HOME</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/create_emp">EMPLOYEE ACCOUNT</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/create_facility">ADD FACILITY</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/create_activity">ADD ACTIVITY</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/update_facility">EDIT FACILITY</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/update_Activity">EDIT ACTIVITY</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/pricing">PRICING</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/analytics">ANALYTICS</a> </li>
+          <li class="nav-item"> <a class="nav-link" href="/logout">LOGOUT</a> </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- </div> -->
+    <br>
+    <br>
+    <br>
+        {% with messages = get_flashed_messages() %}
+    {% if messages %}
+          {% for message in messages %}
+               
+          {% endfor %}
+    {% endif %}
+ {% endwith %} 
+ {% if activity %}
+      <div class="w-full flex items-center justify-center px-4">
+      <div class="max-w-screen-xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+          <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">PRICING</h1>
+          <div class="table-responsive"></div>
+            <table class="table table-hover w-full">
+              <thead>
+                <tr>
+                  <th>Facility Name</th>
+                  <th>Activity Name</th>
+                  <th>Prices</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for item in activity %}
+                  <tr>
+                      <td>{{ item.facility.Name }}</td>
+                      <td>{{ item.Activity_Name }}</td>
+                      <td> Rs {{ item.Amount }}</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+            </div>
+            </div>
+            </div>
+            <br>
+            <br>
+            <footer class="container-fluid">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-3 footer1 d-flex wow bounceInLeft" data-wow-delay=".25s">
+                    <div class="d-flex flex-wrap align-content-center"> <a href="#"><img src="../static/images/fnb.png" alt="logo" class = "logo"></a>
+                      <p>Empowering athletes, nurturing talent, fostering 
+                        teamwork, celebrating <br>
+                        achievements.</p>
+                        <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+                    </div>
+                  </div>
+                  <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
+                    <br>
+                    <br> 
+                    <br> 
+                    <br>
+                    <br> 
+                    <br> 
+                    <br>
+                    <h5>QUICK LINKS</h5>
+                    <a href = "/lookup_bookings"> View Sessions</a><br>
+                    <a href = "/create_bookings">Book Session</a><br>
+                    
+                  </div>
+                  <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
+                    <br>
+                    <br> 
+                    <br> 
+                    <br>
+                    <br> 
+                    <br> 
+                    <br>
+                    <h5>SPONSORS</h5>
+                    <a href="https://www.nike.com">
+                      NIKE
+                    </a><br>
+                    <a href="https://www.jdsports.com">
+                      JD SPORTS
+                    </a><br>
+                    <a href = "https://www.sportsdirect.com">
+                      SPORTS DIRECT
+                    </a><br>
+                    <a href = "https://www.adidas.co.uk">
+                      ADIDAS
+                    </a><br>
+                  </div>
+                  <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
+                    <h5>ADDRESS</h5>
+                    <p>koteshwor Kathmandu</p>
+                    <h5>PHONE</h5>
+                    <p>9818255262</p>
+                    <h5>EMAIL</h5>
+                    <p>sportsmitra@gmail.com</p>
+                  </div>
+                </div>
+              </div>
+            </footer>
+                     
+            <script src="../static/javascript/jquery.min.js"></script>
+            <script src="../static/javascript/bootstrap.min.js"></script>
+            <script src="../static/javascript/parallax.js"></script>
+            <script src="../static/javascript/wow.js"></script>
+            <script src="../static/javascript/main.js"></script>
+            
+          </body>
+          </html>
