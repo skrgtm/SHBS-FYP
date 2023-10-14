@@ -93,23 +93,76 @@ def load_user(user_id):
 #Route for the homepage
 #Also handles the Contact us Info by sending users verification emails on submission.
 @app.route('/', methods=['GET','POST'])
+# def Homepage():
+#     form = ContactUsForm()
+#     if request.method == 'POST':
+#         if form.validate() == False:
+#             flash('All fields are required.')
+#             return render_template('homepage.html', form=form)
+#         else:
+#         #     # Send email to recipient
+#         #     msg = Message(subject,
+#         #                   sender='your_email@example.com',
+#         #                   recipients=['recipient_email@example.com'])  # Replace with the recipient's email address
+#         #     msg.body = f'Name: {form.name.data}\nEmail: {form.email.data}\nMessage: {form.message.data}'
+#         #     mail.send(msg)
+#             subject = 'Message Recieved'
+
+            
+
+#             body = render_template('contact_us_email.html', user_email = form.email.data)
+#             message = Message(subject, recipients=[form.email.data], html=body,sender = 'skrgtm2059@gmail.com')
+
+#             mail.send(message)
+#             return redirect('/')
+#     elif request.method == 'GET':
+#         return render_template('homepage.html', title='HomePage',form = form)
+    
+
+# #Route that handles the contact requests
+# #Sends the acknowledgement to the user via email if the data entered is valid.
+# @app.route('/contact_us', methods=['GET', 'POST'])
+# def contact_us():
+#   form = ContactUsForm()
+#   if request.method == 'POST':
+#     if form.validate() == False:
+#       flash('All fields are required.')
+#       return render_template('contact_us.html', form=form)
+#     else:
+#         subject = 'Message Recieved'
+
+#         body = render_template('contact_us_email.html', user_email = form.email.data)
+#         message = Message(subject, recipients=[form.email.data], html=body,sender = 'skrgtm2059@gmail.com')
+
+#         mail.send(message)
+#         return redirect('/')
+#   elif request.method == 'GET':
+#     return render_template('contact_us.html', form=form)
+
 def Homepage():
     form = ContactUsForm()
     if request.method == 'POST':
-        if form.validate() == False:
+        if not form.validate():
             flash('All fields are required.')
             return render_template('homepage.html', form=form)
         else:
-            subject = 'Message Recieved'
+            # Send email to the website owner (recipient)
+            recipient_email = 'skrgtm2059@gmail.com'  # Replace with the recipient's email address
+            subject = 'New Contact Form Submission'
+            body = f'Name: {form.name.data}\nEmail: {form.email.data}\nMessage: {form.message.data}'
+            message = Message(subject, recipients=[recipient_email], body=body, sender='skrgtm2059@gmail.com')
 
-            body = render_template('contact_us_email.html', user_email = form.email.data)
-            message = Message(subject, recipients=[form.email.data], html=body,sender = 'skrgtm2059@gmail.com')
+            # Send confirmation email to the user
+            user_subject = 'Message Received'
+            user_body = render_template('contact_us_email.html', user_email=form.email.data)
+            user_message = Message(user_subject, recipients=[form.email.data], html=user_body, sender='skrgtm2059@gmail.com')
 
             mail.send(message)
+            mail.send(user_message)
+
             return redirect('/')
     elif request.method == 'GET':
-        return render_template('homepage.html', title='HomePage',form = form)
-
+         return render_template('homepage.html', title='HomePage',form = form)
 
 #Getter to get the information of upcoming activites using facility id.
 @app.route('/facility/<int:facility_id>/activities')
@@ -286,8 +339,8 @@ def verify_email(token):
         db.session.commit()
         # Return a message to the user
         flash('Your email has been verified.')
-        msg = Message('Account Created', sender = 'arjun.krishnan0033@gmail.com', recipients = [user.Email])
-        msg.html = render_template('mail.html', User=user.User)     #
+        msg = Message('Account Created', sender = 'skrgtm2059@gmail.com', recipients = [user.Email])
+        msg.html = render_template('mail.html', User=user.User)     
         mail.send(msg)
     else:
         # Return a message to the user
@@ -318,7 +371,7 @@ def reset():
             subject = 'Password reset request'
 
             body = render_template('password_reset_email.html', reset_url=reset_url, user_email = user_email)
-            message = Message(subject, recipients=[user_email], html=body,sender = 'arjun.krishnan0033@gmail.com')
+            message = Message(subject, recipients=[user_email], html=body,sender = 'skrgtm2059@gmail.com')
 
             mail.send(message)
 
@@ -915,8 +968,266 @@ def view_venue():
     else:
         print("Form errors:", form.errors)
 
+    
     return render_template('search_results.html', title='Search Venue', form=form, sessions=available_sessions, activities=activities_dict)
 
+
+#page that displays all sessions that the user can book
+#takes all the data previously filled by the user such as activity, facility ,date and group size to display all sessions in a tabular form
+
+@app.route('/view_sessions', methods=['POST', 'GET'])
+@login_required
+@require_role(role="User")
+def view_sessions():
+    available_sessions = session.get('available_session_ids', [])
+    selected_activity_name = session.get('selected_activity_name', None)
+    group_size = request.args.get('group_size')
+    activity_price = request.args.get('activity_price')
+    print(activity_price)
+    sessions_with_data = []
+
+    for s in Sessions.query.filter(Sessions.id.in_(available_sessions)).all():
+        for activity in s.facility.activities:
+            if activity.Activity_Name == selected_activity_name:
+                sessions_with_data.append({'session': s, 'activity_name': activity.Activity_Name,'activity_id':activity.id})
+
+    return render_template('sessions.html', sessions=sessions_with_data,group_size=group_size,activity_price=activity_price)
+
+
+@app.route('/book_session', methods=['POST'])
+@login_required
+# @require_role(role="User")
+def book_session():
+    session_id = request.form.get('session_id')
+    activity_id = request.form.get('activity_id')
+    user_id = current_user.id
+    group_size = int(request.args.get('group_size'))
+    activity_price = int(request.args.get('activity_price'))
+    booking_Price = int(group_size * activity_price)
+    # Get the session object
+    session = Sessions.query.get(session_id)
+
+    # Check if there's enough remaining capacity for the booking
+    if session.Remaining_Cap >= group_size:
+        booking = Booking(
+            user_id=user_id,
+            session_id=session_id,
+            activity_id=activity_id,
+            Book_Time = session.Date,
+            Status="Saved",  
+            Size=group_size,
+            Amount = booking_Price
+        )
+
+        # Reduce the session's remaining capacity by the group size
+        session.Remaining_Cap -= group_size
+
+        db.session.add(booking)
+        db.session.commit()
+
+        # Add a message to notify the user that the booking was successful.
+        flash('Booking successful!')
+    else:
+        flash('Not enough remaining capacity for the booking.')
+
+    return redirect(url_for('checkout_page'))
+
+#route that displays booking info in the cart
+#Cart can be modified dynamically using ajax
+#Discount amount of 15% is also passed in if the number of bookings is more that 3
+@app.route('/checkout_page', methods=['POST', 'GET'])
+@login_required
+@require_role(role="User")
+def checkout_page():
+    data = Booking.query.filter_by(user_id=current_user.id,Status="Saved").all()
+    total_amount = sum([item.Size * item.activity.Amount for item in data])
+    grouped_data = defaultdict(list)
+    
+    for item in data:
+        grouped_data[item.session_id].append(item)
+
+    aggregated_data = []
+    for session_id, items in grouped_data.items():
+        total_size = sum(item.Size for item in items)
+        aggregated_data.append({
+            'item': items[0],
+            'quantity': len(items),
+            'total_size': total_size
+        })
+    discount = 0
+    if len(aggregated_data) >= 3:
+        discount = int(total_amount * 0.15)
+    if current_user.Member == True:
+        total_amount = 0
+    
+
+    return render_template('checkout_page.html', data=aggregated_data, total_amount=total_amount, discount=discount)
+
+
+#Removes all expired bookings
+@app.route('/delete_expired_booking', methods=['GET','POST'])
+@login_required
+@require_role(role="User")
+def delete_expired_booking():
+    print("Deleting expired bookings on the server...")
+    user_bookings = Booking.query.filter_by(user_id=current_user.id, Status="Saved").all()
+
+    for booking in user_bookings:
+        session = Sessions.query.get(booking.session_id)
+        session.Remaining_Cap += booking.Size
+        db.session.delete(booking)
+
+    db.session.commit()
+    print("Deleted!")
+    return {'status': 'success'}
+
+#Route that deletes user booking
+#Requires booking id
+#Does not allow users to cancel bookings thaat were not made by them, Returning a 403 status code if the user tries to do so
+#Else the booking is cancelled, The session remaining capacity is updated accordingly and success message is displayed
+@app.route('/delete_booking/<int:booking_id>', methods=['GET', 'POST'])
+@login_required
+@require_role(role="User")
+def delete_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        abort(403)
+
+    session_id = booking.session_id
+    bookings_to_delete = Booking.query.filter_by(session_id=session_id, user_id=current_user.id).all()
+
+    total_size = 0
+    for b in bookings_to_delete:
+        total_size += b.Size
+        db.session.delete(b)
+
+    session = Sessions.query.get(session_id)
+    session.Remaining_Cap += total_size
+    db.session.commit()
+
+    flash('Booking has been deleted!', 'success')
+    return redirect(url_for('checkout_page'))
+
+
+#increase the booking size
+#only bookings made by the user can be amended, else the 403 status code is returned
+#If the booking was made by the user, Booking size increases and session capacity decreases
+#If there are no more spaces left in the facility an appropriate error message is returned
+#response is sent as JSON
+@app.route('/increase_quantity/<int:booking_id>', methods=['POST'])
+@login_required
+@require_role(role="User")
+def increase_quantity(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        abort(403)
+
+    session = Sessions.query.get(booking.session_id)
+    if session.Remaining_Cap > 0:
+        booking.Size += 1
+        booking.Amount = booking.Size * booking.activity.Amount
+        session.Remaining_Cap -= 1
+        db.session.commit()
+
+        response = {
+            'total_size': booking.Size,
+            'amount': booking.Size * booking.activity.Amount,
+            'status': 'success'
+        }
+    else:
+        response = {
+            'status': 'error',
+            'message': 'No more available spots'
+        }
+
+    return jsonify(response)
+
+#decrease the booking size
+#only bookings made by the user can be amended, else the 403 status code is returned
+#If the booking was made by the user, Booking size decreases and session capacity increases
+#If there are no more spaces left in the facility an appropriate error message is returned
+#response is sent as JSON
+@app.route('/decrease_quantity/<int:booking_id>', methods=[ 'POST'])
+@login_required
+@require_role(role="User")
+def decrease_quantity(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        abort(403)
+
+    if booking.Size > 1:
+        session = Sessions.query.get(booking.session_id)
+        booking.Size -= 1
+        booking.Amount = booking.Size * booking.activity.Amount
+        session.Remaining_Cap += 1
+        db.session.commit()
+
+        response = {
+            'total_size': booking.Size,
+            'amount': booking.Size * booking.activity.Amount,
+            'status': 'success'
+        }
+    else:
+        response = {
+            'status': 'error',
+            'message': 'No more available spots'
+        }
+
+    return jsonify(response)
+
+#route to see all user bookings That are Booked
+@app.route('/my_bookings')
+@login_required
+@require_role(role="User")
+def my_bookings():
+    bookings = Booking.query.filter_by(user_id=current_user.id, Status = "Booked").all()
+    current_time = datetime.now().date()
+    return render_template('my_bookings.html', bookings=bookings, current_time = current_time)
+
+
+#Route that cancels the user booking
+#Does not allow users to cancel bookings not made by them , returning status code 403 if the user tries to
+#IF the booking was made by the user, the booking is cancelled and the remaining capacity of the session is updated
+@app.route('/cancel_booking/<int:booking_id>')
+@login_required
+@require_role(role="User")
+def cancel_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        abort(403)
+    session = Sessions.query.get(booking.session_id)
+    session.Remaining_Cap += booking.Size
+    booking.Status = "Cancelled"
+    db.session.commit()
+    flash("Booking has been cancelled successfully", "success")
+    return redirect(url_for('my_bookings'))
+
+
+@app.route('/get_activities/<int:facility_id>')
+def get_activities(facility_id):
+    facility = Facility.query.get(facility_id)
+    activities = Activity.query.filter_by(facility_id=facility_id).all()
+    activities_dict = [activity.activity_to_dict() for activity in activities]
+    return jsonify(activities_dict)
+
+@app.route('/get_activity_id/<activity_name>')
+def get_activity_id(activity_name):
+    activity = Activity.query.filter_by(Activity_Name=activity_name).first()
+    if activity:
+        return jsonify(activity.id)
+    else:
+        return jsonify(None)
+
+@app.route('/facilities')
+def facilities():
+    facilities = Facility.query.all()
+    return render_template('upcoming_sessions.html', facilities=facilities)
+
+@app.route('/facility/<int:facility_id>/activity/<int:activity_id>/sessions')
+def get_sessions_for_activity(facility_id, activity_id):
+    sessions = Sessions.query.filter_by(facility_id=facility_id).join(session_activity_association).filter_by(activity_id=activity_id).all()
+    session_dicts = [session.to_dict() for session in sessions]
+    return jsonify(session_dicts)
 
 #************************************ Update User Information ********************************************
 #Route that allows the user to update their personal information

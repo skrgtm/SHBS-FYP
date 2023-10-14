@@ -30,7 +30,6 @@
             <li class="nav-item"> <a class="nav-link" href="/lookup_venue">Book Sessions</a> </li>
             <li class="nav-item"> <a class="nav-link" href="/my_bookings">Your Bookings</a> </li>
             
-            
             <li class="nav-item"> <a class="nav-link" href="/checkout_page">Checkout</a> </li>
             <li class="nav-item"> <a class="nav-link" href="/update_user">Account</a> </li>
             
@@ -50,82 +49,54 @@
           {% endfor %}
     {% endif %}
  {% endwith %} 
+      {% if sessions %}
+      <div class="w-full flex items-center justify-center px-4">
+      <div class="max-w-screen-xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+          <b><h1 class="h3 mb-3 font-weight-normal">AVAILABLE SESSIONS</h1></b>
+          <div class="table-responsive"></div>
+            <table class="table table-hover w-full">
+              <thead>
+                <tr>
+                  <th>Facility Name</th>
+                  <th>Activity Name</th>
+                  <th>Date</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Remaining Capacity</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for item in sessions %}
+                  <tr>
+                      <td>{{ item.session.facility.Name }}</td>
+                      <td>{{ item.activity_name }}</td>
+                      <td>{{ item.session.Date }}</td>
+                      <td>{{ item.session.Start_time }}</td>
+                      <td>{{ item.session.End_time }}</td>
+                      <td>{{ item.session.Remaining_Cap }}</td>
+                      <td>
+                        <form action="{{ url_for('book_session', group_size=group_size , activity_price = activity_price) }}" method="post">
+                          <input type="hidden" name="session_id" value="{{ item.session.id }}">
+                          <input type="hidden" name="activity_id" value="{{ item.activity_id }}">
 
- <div class="w-full flex items-center justify-center px-4">
-  <div class="max-w-md w-full">
-    <div class="bg-white p-8 rounded-lg shadow-lg">
-      <form class="form-signin" method="POST" name="signin">
-        {{ form.hidden_tag() }}
-        <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">BOOK SESSIONS</h1>
-        <div class="mb-4">
-          <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
-          <label class="block text-gray-700 font-bold mb-2" for="Facility Name">
-            Facility Name
-          </label>
-          {{form.facility_name(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline form-control", id="facility_name", type="text", placeholder="Username") }}
+                          <button type="submit" class=" btn btn-custom">Book Now</button>
+                          </form>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <b><h1 align = "center" class = "custom-text">We Could Not Find Session You Requested.</h1></b><br>
+            <b><h1 align = "center" class = "custom-text">Try Later OR Book A Different Session</h1></b>
+            {% endif %}
+          </div>
         </div>
-        <div class="mb-6">
-          <div class="form-group">
-            <!-- {{ form.activity_name.label(class="form-control-label shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }} -->
-            <label class="block text-gray-700 font-bold mb-2" for="Facility Name">
-              Activity Name
-            </label>
-            <select class="form-control" id="activity_name" name="activity_name">
-                <option value="">Select an activity</option>
-            </select>
-          </div> 
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-2" for="Date">
-            Date
-          </label>
-          {{form.date(class_="form-control")}}        
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-2" for="Group Size">
-            Group Size
-          </label>
-          {{form.size(class_="form-control")}}
-        {{ form.activity_id(class_="form-control", id="activity_id") }}
-        </div>
-
-        <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Submit</button><br>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            const facilitySelect = $('#facility_name');
-            const activitySelect = $('#activity_name');
-
-            function loadActivities(facilityId) {
-                $.getJSON('/get_activities/' + facilityId, function(activities) {
-                    activitySelect.empty();
-                    $.each(activities, function(index, activity) {
-                        activitySelect.append($('<option></option>').attr('value', activity.id).text(activity.Activity_Name));
-                    });
-                });
-            }
-
-            facilitySelect.change(function() {
-                loadActivities(facilitySelect.val());
-            });
-
-            // Load activities for the initially selected facility
-            loadActivities(facilitySelect.val());
-        //     document.getElementById("booknow").addEventListener("click", function() {
-        //     window.location.href = document.getElementById("booknow").getAttribute("href");
-        // });
-
-            
-        });
-      </script>
-      <br>
+    <br>
       <br>
       <footer class="container-fluid">
         <div class="container">
@@ -175,7 +146,8 @@
             </div>
             <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
               <h5>ADDRESS</h5>
-              <p>koteshwor Kathmandu</p>
+              <p>koteshwor
+                Kathmandu</p>
               <h5>PHONE</h5>
               <p>9818255262</p>
               <h5>EMAIL</h5>
@@ -190,15 +162,6 @@
       <script src="../static/javascript/parallax.js"></script>
       <script src="../static/javascript/wow.js"></script>
       <script src="../static/javascript/main.js"></script>
-  </body>
-</html>
 
-      
-      
-  
-    
-    
-    
-  
-  
-  
+    </body>
+</html>
