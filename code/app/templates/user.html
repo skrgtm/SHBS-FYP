@@ -57,7 +57,13 @@
               <li class="nav-item">
                 <a class="nav-link" href="/my_bookings">Your Bookings</a>
               </li>
-              
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="{{ url_for('order_subscription', username=current_user.User) }}"
+                  >Membership</a
+                >
+              </li>
 
               <li class="nav-item">
                 <a class="nav-link" href="/checkout_page">Checkout</a>

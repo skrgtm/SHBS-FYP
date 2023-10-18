@@ -29,6 +29,7 @@
             <li class="nav-item"> <a class="nav-link" href="/user">Home</a> </li>
             <li class="nav-item"> <a class="nav-link" href="/lookup_venue">Book Sessions</a> </li>
             <li class="nav-item"> <a class="nav-link" href="/my_bookings">Your Bookings</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="{{ url_for('order_subscription', username=current_user.User) }}">Membership</a></li>
             
             
             <li class="nav-item"> <a class="nav-link" href="/checkout_page">Checkout</a> </li>
@@ -84,7 +85,7 @@
                             <a href="{{ url_for('delete_booking', booking_id=item_info.item.id) }}" class="text-danger" title="Delete">
                               &#x1F5D1;
                             </a> 
-                            <span class = "amount" id ="amount">&#163; {{ item_info.total_size * item_info.item.activity.Amount }}</span>
+                            <span class = "amount" id ="amount">Rs  {{ item_info.total_size * item_info.item.activity.Amount }}</span>
                             {% endfor %}
                         </li>
                         {%if current_user.Member == False%}
@@ -92,18 +93,18 @@
                               <li class="list-group-item d-flex justify-content-between">
                                 <span>Original Amount</span>
                                 <div id = "original_amount">
-                                <strong>&#163; {{ total_amount }}</strong></div>
+                                <strong>Rs {{ total_amount }}</strong></div>
                               </li>
                               <li class="list-group-item d-flex justify-content-between">
                                 <span>Discount (15%)</span>
                                 <div id = "discount">
-                                <strong>&#163; {{ discount }}</strong></div>
+                                <strong>Rs {{ discount }}</strong></div>
                               </li>
                             {% endif %}
                               <li class="list-group-item d-flex justify-content-between">
                                 <span>Total Amount</span>
                                 <div id = "total_amount">
-                                <strong>&#163; {{ total_amount - discount }}</strong>
+                                <strong>Rs {{ total_amount - discount }}</strong>
                               </div>
                               </li>
                               <li class="list-group-item d-flex justify-content-between">
