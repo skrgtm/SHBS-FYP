@@ -50,7 +50,19 @@ from reportlab.platypus import Image
 #     redirect_uri="http://127.0.0.1:5000/callback"
 # )
 
-
+# Loads the required Role
+#Redirects user to homepage if they access restricted content.
+def require_role(role):
+    """make sure user has this role"""
+    def decorator(func):
+        @wraps(func)
+        def wrapped_function(*args, **kwargs):
+            if not current_user.has_role(role):
+                return redirect("/")
+            else:
+                return func(*args, **kwargs)
+        return wrapped_function
+    return decorator
 
 #method to validate phone numbers. Helps reduce Twilio Errors.
 # def is_valid_phone_number(number):
