@@ -490,6 +490,120 @@ def logout():
 
 #************** End of User Login, Creat Account: Reset, 2FA, Google Login, Logout *******************
 
+#******************************* When User Purchases Membership ************************
+
+#Membership Prices For Monthly and annual memberships.
+plans = {
+    'monthly': {
+        'name': 'Monthly Membership',
+        'price_id': 'price_1MmhrZBqkMuCWI2NYyG9Ye7N',
+        'interval': 'month',
+        'currency': 'Rs'
+    },
+    'yearly': {
+        'name': 'Yearly Membership',
+        'price_id': 'price_1MmhqtBqkMuCWI2NEADoQBHn',
+        'interval': 'year',
+        'currency': 'Rs'
+    }
+}
+
+#Route to handle the user orders.
+#Users can cancel their orders redirecting them to cancel page.
+#Else to the success url which activates user membership.
+@app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
+def order_subscription(username):
+    user = UserAccount.query.filter_by(User=username).first()
+
+    if user is None:
+        abort(404, f"No user found with username: {username}")
+
+    if request.method == 'POST':
+        plan_id = request.form.get('plan_id')
+
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price": plans[plan_id]['price_id'],
+                    "quantity": 1,
+                },
+            ],
+            mode="subscription",
+            # success_url=request.host_url + f'success?payment_type=subscription&username={username}&plan_id={plan_id}',
+            # cancel_url=request.host_url + "cancel",
+        )
+
+        # Redirect the user to the Checkout page for the subscription
+        return redirect(checkout_session.url)
+
+    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
+
+#Route to allow users to cancel their membership
+#Cchecks if the user account exists and if the user is a member before cancelling.
+#If user is not member the user is redirected to homepage
+#If user is a member the membership is revoked and memebrship information is erased.
+@app.route('/cancel_usermembership/<int:user_id>', methods=['POST'])
+@require_role(role="User")
+@login_required
+def cancel_usermembership(user_id):
+    user = UserAccount.query.filter_by(id = user_id).first()
+    print(user)
+    if user:
+        user.Member = False
+        user.Membership_Type = None
+        user.start_date = None
+        user.end_date = None
+        db.session.commit()
+        flash('Membership canceled successfully')
+        return redirect(url_for('user'))
+    else:
+        flash('User not found')
+        return redirect(url_for('user'))
+
+#******************************* When User Purchases Membership ************************ 
+
+@login_required
+#route to handle the successful payment 
+#Makes the user a member and sets info based on the length of the subscription.
+@app.route('/success')
+def success():
+    payment_type = request.args.get('payment_type')
+
+    if payment_type == 'booking':
+        booking_id = request.args.get('booking_id')
+        booking = Booking.query.get(booking_id)
+        if booking:
+            booking.Status = "Paid"
+            db.session.commit()
+
+    elif payment_type == 'subscription':
+        username = request.args.get('username')
+        user = UserAccount.query.filter_by(User=username).first()
+        if user:
+            plan_id = request.args.get('plan_id')
+            plan = plans.get(plan_id)
+
+            if plan:
+                # Set membership start and end dates based on the subscription plan
+                start_date = datetime.utcnow().date()
+                if plan['interval'] == 'month':
+                    end_date = start_date + relativedelta(months=1)
+                elif plan['interval'] == 'year':
+                    end_date = start_date + relativedelta(years=1)
+                else: 
+                    end_date = None
+
+                # Update the user's membership information in the database
+                user.Member = True
+                user.start_date = start_date
+                user.end_date = end_date
+                user.Membership_Type = plan['name']
+                db.session.commit()
+
+    return redirect(url_for('user'))
+
+
 
 #**************************************** Manager Role **********************************************
 
