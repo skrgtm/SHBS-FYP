@@ -537,7 +537,7 @@ def order_subscription(username):
         # Redirect the user to the Checkout page for the subscription
         return redirect(checkout_session.url)
 
-    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
+    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user) 
 
 #Route to allow users to cancel their membership
 #Cchecks if the user account exists and if the user is a member before cancelling.
