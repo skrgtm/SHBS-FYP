@@ -83,7 +83,7 @@
                         <td>{{ item.User }}</td>
                         <td>{{ item.Email }}</td>
                         <!-- <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('edit_booking', booking_id=item.id) }}">Edit</a></td> -->
-                        <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('booking_details', user_id = item.id) }}">Create Booking</a></td>
+                        <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('booking.details_view', user_id = item.id) }}">Create Booking</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

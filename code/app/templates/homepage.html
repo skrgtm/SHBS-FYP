@@ -1,220 +1,394 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Sportsmitra</title>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Sportsmitra</title>
 
-  <!-- Bootstrap CSS -->
-  <link href="../static/css/animate.css" rel="stylesheet">
-  <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
-</head>
-<body>
-<div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg">
-  <nav class="navbar navbar-expand-md navbar-dark">
-    <div class="container"> 
-      <!-- Brand --> 
-      <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png"  class = "logo"/></a> 
-      
-      <!-- Toggler/collapsibe Button -->
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"> <span class="navbar-toggler-icon"></span> </button>
-      
-      <!-- Navbar links -->
-      <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item"> <a class="nav-link" href="#">Home</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="#about-us">About</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="#">Courses</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="#contact">Contact</a> </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Login
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/login">User Login</a>
-              <a class="dropdown-item" href="/emp_login">Employee Login</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <div class="container">
-    <div class="fh5co-banner-text-box">
-      <div class="quote-box pl-5 pr-5 wow bounceInRight">
-        <h2> STRONGER <br><span>EVERYDAY</span> </h2>
-      </div>
-      <a href="/login" class="btn text-uppercase btn-outline-danger btn-lg mr-3 mb-3 wow bounceInUp"> What's new</a> <a href="/login" class="btn text-uppercase btn-outline-danger btn-lg mb-3 wow bounceInDown"> Courses</a> </div>
-  </div>
-</div>
-<div class="container-fluid fh5co-network">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <h4 class="wow bounceInUp">MITRAMOVERS CLUB</h4>
-        <h2 class="wow bounceInRight">MEMBERS</h2>
-        <hr />
-        <h5 class="wow bounceInLeft">SPORTSMITRA 2023</h5>
-        <p class="wow bounceInDown">Welcome to Sportsmitra! We nurture individual development through sports, with a strong focus on teamwork and dedication. Our inclusive atmosphere embraces individuals of all ages and proficiency levels, while our skilled coaches lead members towards unlocking their maximum capabilities. Become a part of our community and experience the life-changing influence of sports firsthand!</p>
-      </div>
-      <div class="col-md-6">
-        <figure class="wow bounceInDown"> <img src="../static/images/about-imgg.jpg" alt="gym" class="img-fluid" /> </figure>
-      </div>
-    </div>
-  </div>
-</div>
-<div id="about-us" class="container-fluid fh5co-about-us pl-0 pr-0 parallax-window" data-parallax="scroll" data-image-src="../static/images/about-us-bg.jpg">
-  <div class="container">
-    <div class="col-sm-6 offset-sm-6">
-      <h2 class="wow bounceInLeft" data-wow-delay=".25s">ABOUT US</h2>
-      <hr/>
-      <p class="wow bounceInRight" data-wow-delay=".25s">At Sportsmitra, We bring together individuals passionate about sports to encourage personal growth and foster wholesome lifestyles. Our team of seasoned professionals and coaches establish an all-embracing setting, cultivating the distinctive skills of every participant. Uncover a community propelled by enthusiasm, collaboration, and the delight of engaging in physical pursuits. Enroll with us and become a valued member of our sports-oriented family! </p>
-      <a class="btn btn-lg btn-outline-danger d-inline-block text-center mx-auto wow bounceInDown" href="/login">Learn More</a> </div>
-  </div>
-</div>
-<div class="container-fluid fh5co-content-box">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-5 pr-0"><img src="../static/images/rode-gym.jpg" alt="gym" class="img-fluid wow bounceInLeft" /> </div>
-      <div class="col-md-7 pl-0">
-        <div class="wow bounceInRight" data-wow-delay=".25s">
-          <div class="card-img-overlay">
-            <p>Fantastic weekend, had the opportunity to connect with numerous fascinating individuals and gained valuable insights. Gratitude for the enriching experience goes out to you and your expert team, who made everything seamlessly possible.</p>
+    <!-- Bootstrap CSS -->
+    <link href="../static/css/animate.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="../static/css/bootstrap.min.css"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:300,400,700"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+  </head>
+  <body>
+    <div
+      class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2"
+      data-parallax="scroll"
+      data-image-src="../static/images/banner2.jpg"
+    >
+      <nav class="navbar navbar-expand-md navbar-dark">
+        <div class="container">
+          <!-- Brand -->
+          <a class="navbar-brand mr-auto" href="/"
+            ><img src="../static/images/nb.png" class="logo"
+          /></a>
+
+          <!-- Toggler/collapsibe Button -->
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#collapsibleNavbar"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <!-- Navbar links -->
+          <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#about-us">About</a>
+              </li>
+              <li class="nav-item"><a class="nav-link" href="#">Courses</a></li>
+              <li class="nav-item">
+                <a class="nav-link" href="#contact">Contact</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Login
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="/login">User Login</a>
+                  <a class="dropdown-item" href="/emp_login">Employee Login</a>
+                </div>
+              </li>
+            </ul>
           </div>
-          <img src="../static/images/gym-girls.jpg" alt="girls in gym" class="img-fluid" /> </div>
-      </div>
-    </div>
-    <div class="row trainers pl-0 pr-0">
-      <div class="col-12 bg-50">
-        <div class="quote-box2 wow bounceInDown" data-wow-delay=".25s">
-          <h2> MITRA GURUS </h2>
+        </div>
+      </nav>
+      <div class="container">
+        <div class="fh5co-banner-text-box">
+          <div class="quote-box pl-5 pr-5 wow bounceInRight">
+            <h2>STRONGER <br /><span>EVERYDAY</span></h2>
+          </div>
+          <a
+            href="/login"
+            class="btn text-uppercase btn-outline-danger btn-lg mr-3 mb-3 wow bounceInUp"
+          >
+            What's new</a
+          >
+          <a
+            href="/login"
+            class="btn text-uppercase btn-outline-danger btn-lg mb-3 wow bounceInDown"
+          >
+            Courses</a
+          >
         </div>
       </div>
-      <div class="col-md-6 pr-5 pl-5">
-        <div class="card text-center wow bounceInLeft" data-wow-delay=".25s"> <img class="card-img-top rounded-circle img-fluid" src="../static/images/trainers1.jpg" alt="Card image">
-          <div class="card-body mb-5">
-            <h4 class="card-title">JENIFERR</h4>
-            <p class="card-text">Introducing JENIFERR, a committed and seasoned instructor renowned for her skill in inspiring members to reach their objectives. Her enthusiasm and vitality are infectious, infusing every session with both enjoyment and a sense of challenge.
-
+    </div>
+    <div class="container-fluid fh5co-network">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="wow bounceInUp">MITRAMOVERS CLUB</h4>
+            <h2 class="wow bounceInRight">MEMBERS</h2>
+            <hr />
+            <h5 class="wow bounceInLeft">SPORTSMITRA 2023</h5>
+            <p class="wow bounceInDown">
+              Welcome to Sportsmitra! We nurture individual development through
+              sports, with a strong focus on teamwork and dedication. Our
+              inclusive atmosphere embraces individuals of all ages and
+              proficiency levels, while our skilled coaches lead members towards
+              unlocking their maximum capabilities. Become a part of our
+              community and experience the life-changing influence of sports
+              firsthand!
             </p>
           </div>
-        </div>
-      </div>
-      <div class="col-md-6 pl-5 pr-5">
-        <div class="card text-center wow bounceInRight" data-wow-delay=".25s"> <img class="card-img-top rounded-circle img-fluid" src="../static/images/trainers2.jpg" alt="Card image">
-          <div class="card-body mb-5">
-            <h4 class="card-title">JHON</h4>
-            <p class="card-text">Meet JHON, a sports performance specialist who brings unmatched expertise to our club. Possessing a sharp focus on technique, he assists members in realizing their complete athletic capabilities, enabling them to thrive in their selected sport.</p>
+          <div class="col-md-6">
+            <figure class="wow bounceInDown">
+              <img
+                src="../static/images/about-imgg.jpg"
+                alt="gym"
+                class="img-fluid"
+              />
+            </figure>
           </div>
         </div>
       </div>
     </div>
-    <div class="row gallery">
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body mb-4 wow bounceInLeft" data-wow-delay=".25s">
-            <h4 class="card-title">FILEX</h4>
-            <p class="card-text">Our advanced FILEX facilities elevate the training experience by offering members state-of-the-art resources to amplify their sports performance. </p>
-          </div>
-          <img class="card-img-top img-fluid wow bounceInRight" data-wow-delay=".25s" src="../static/images/g1.jpg" alt="Card image"> </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card"> <img class="card-img-top img-fluid wow bounceInUp" data-wow-delay=".25s" src="../static/images/g2.jpg" alt="Card image">
-          <div class="card-body mt-4 wow bounceInDown" data-wow-delay=".25s">
-            <h4 class="card-title">PASSION</h4>
-            <p class="card-text">Embodying the essence of our club, PASSION propels our community to strive for excellence and collectively commemorate athletic accomplishments.</p>
-          </div>
+    <div
+      id="about-us"
+      class="container-fluid fh5co-about-us pl-0 pr-0 parallax-window"
+      data-parallax="scroll"
+      data-image-src="../static/images/about-us-bg.jpg"
+    >
+      <div class="container">
+        <div class="col-sm-6 offset-sm-6">
+          <h2 class="wow bounceInLeft" data-wow-delay=".25s">ABOUT US</h2>
+          <hr />
+          <p class="wow bounceInRight" data-wow-delay=".25s">
+            At Sportsmitra, We bring together individuals passionate about
+            sports to encourage personal growth and foster wholesome lifestyles.
+            Our team of seasoned professionals and coaches establish an
+            all-embracing setting, cultivating the distinctive skills of every
+            participant. Uncover a community propelled by enthusiasm,
+            collaboration, and the delight of engaging in physical pursuits.
+            Enroll with us and become a valued member of our sports-oriented
+            family!
+          </p>
+          <a
+            class="btn btn-lg btn-outline-danger d-inline-block text-center mx-auto wow bounceInDown"
+            href="/login"
+            >Learn More</a
+          >
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body mb-4 wow bounceInRight" data-wow-delay=".25s">
-            <h4 class="card-title">IGNITING</h4>
-            <p class="card-text">IGNITING serves as a catalyst for individual development and unleashing potential, creating a dynamic environment where members are encouraged to push their limits and excel.</p>
-          </div>
-          <img class="card-img-top img-fluid wow bounceInLeft" data-wow-delay=".25s" src="../static/images/g3.jpg" alt="Card image"> </div>
       </div>
     </div>
-  </div>
-</div>
-<footer class="container-fluid">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-3 footer1 d-flex wow bounceInLeft"  data-wow-delay=".25s">
-        <div class="d-flex flex-wrap align-content-center"> <a href="/"><img src="../static/images/fnb.png" alt="logo" class = "logo1"></a>
-            <p>Empowering athletes, nurturing talent, fostering 
-                teamwork, celebrating <br>
-                achievements.</p>
-              <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+    <div class="container-fluid fh5co-content-box">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-5 pr-0">
+            <img
+              src="../static/images/rode-gym.jpg"
+              alt="gym"
+              class="img-fluid wow bounceInLeft"
+            />
+          </div>
+          <div class="col-md-7 pl-0">
+            <div class="wow bounceInRight" data-wow-delay=".25s">
+              <div class="card-img-overlay">
+                <p>
+                  Fantastic weekend, had the opportunity to connect with
+                  numerous fascinating individuals and gained valuable insights.
+                  Gratitude for the enriching experience goes out to you and
+                  your expert team, who made everything seamlessly possible.
+                </p>
+              </div>
+              <img
+                src="../static/images/gym-girls.jpg"
+                alt="girls in gym"
+                class="img-fluid"
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="col-md-6 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
-        <div class="form-box">
-          <h4>CONTACT US</h4>
-          <form action="{{ url_for('Homepage') }}" method=post>
-            {{ form.hidden_tag() }}
-          <table class="table table-responsive d-table">
-            <tr>
-              <td>
-                {{ form.name.label(class_="form-control pl-0",placeholder="NAME") }}
-                {{ form.name }}
-              </td>
-              <td>
-                {{ form.email.label(class_="form-control pl-0",placeholder="EMAIL") }}
-                {{ form.email }}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2"></td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                {{ form.address.label(class_="form-control pl-0",placeholder="EMAIL") }}
-                {{ form.address }}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2"></td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                {{ form.message.label(class_="form-control pl-0",placeholder="EMAIL") }}
-                {{ form.message }}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2"></td>
-            </tr>
-            <tr>
-              <td colspan="2" class="text-center pl-0"><button type="submit" class="btn btn-dark">SEND</button></td>
-            </tr>
-          </table>
+        <div class="row trainers pl-0 pr-0">
+          <div class="col-12 bg-50">
+            <div class="quote-box2 wow bounceInDown" data-wow-delay=".25s">
+              <h2>MITRA GURUS</h2>
+            </div>
+          </div>
+          <div class="col-md-6 pr-5 pl-5">
+            <div
+              class="card text-center wow bounceInLeft"
+              data-wow-delay=".25s"
+            >
+              <img
+                class="card-img-top rounded-circle img-fluid"
+                src="../static/images/trainers1.jpg"
+                alt="Card image"
+              />
+              <div class="card-body mb-5">
+                <h4 class="card-title">JENIFERR</h4>
+                <p class="card-text">
+                  Introducing JENIFERR, a committed and seasoned instructor
+                  renowned for her skill in inspiring members to reach their
+                  objectives. Her enthusiasm and vitality are infectious,
+                  infusing every session with both enjoyment and a sense of
+                  challenge.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 pl-5 pr-5">
+            <div
+              class="card text-center wow bounceInRight"
+              data-wow-delay=".25s"
+            >
+              <img
+                class="card-img-top rounded-circle img-fluid"
+                src="../static/images/trainers2.jpg"
+                alt="Card image"
+              />
+              <div class="card-body mb-5">
+                <h4 class="card-title">JHON</h4>
+                <p class="card-text">
+                  Meet JHON, a sports performance specialist who brings
+                  unmatched expertise to our club. Possessing a sharp focus on
+                  technique, he assists members in realizing their complete
+                  athletic capabilities, enabling them to thrive in their
+                  selected sport.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
-        <h5>ADDRESS</h5>
-        <p>koteshwor
-          Kathmandu</p>
-        <h5>PHONE</h5>
-        <p>9818255262</p>
-        <h5>EMAIL</h5>
-        <p>sportsmitra@gmail.com</p>
+        <div class="row gallery">
+          <div class="col-md-4">
+            <div class="card">
+              <div
+                class="card-body mb-4 wow bounceInLeft"
+                data-wow-delay=".25s"
+              >
+                <h4 class="card-title">FILEX</h4>
+                <p class="card-text">
+                  Our advanced FILEX facilities elevate the training experience
+                  by offering members state-of-the-art resources to amplify
+                  their sports performance.
+                </p>
+              </div>
+              <img
+                class="card-img-top img-fluid wow bounceInRight"
+                data-wow-delay=".25s"
+                src="../static/images/g1.jpg"
+                alt="Card image"
+              />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <img
+                class="card-img-top img-fluid wow bounceInUp"
+                data-wow-delay=".25s"
+                src="../static/images/g2.jpg"
+                alt="Card image"
+              />
+              <div
+                class="card-body mt-4 wow bounceInDown"
+                data-wow-delay=".25s"
+              >
+                <h4 class="card-title">PASSION</h4>
+                <p class="card-text">
+                  Embodying the essence of our club, PASSION propels our
+                  community to strive for excellence and collectively
+                  commemorate athletic accomplishments.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div
+                class="card-body mb-4 wow bounceInRight"
+                data-wow-delay=".25s"
+              >
+                <h4 class="card-title">IGNITING</h4>
+                <p class="card-text">
+                  IGNITING serves as a catalyst for individual development and
+                  unleashing potential, creating a dynamic environment where
+                  members are encouraged to push their limits and excel.
+                </p>
+              </div>
+              <img
+                class="card-img-top img-fluid wow bounceInLeft"
+                data-wow-delay=".25s"
+                src="../static/images/g3.jpg"
+                alt="Card image"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</footer>
+    <footer class="container-fluid">
+      <div class="container">
+        <div class="row">
+          <div
+            class="col-md-3 footer1 d-flex wow bounceInLeft"
+            data-wow-delay=".25s"
+          >
+            <div class="d-flex flex-wrap align-content-center">
+              <a href="/"
+                ><img src="../static/images/fnb.png" alt="logo" class="logo1"
+              /></a>
+              <p>
+                Empowering athletes, nurturing talent, fostering teamwork,
+                celebrating <br />
+                achievements.
+              </p>
+              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+            </div>
+          </div>
+          <div
+            class="col-md-6 footer2 wow bounceInUp"
+            data-wow-delay=".25s"
+            id="contact"
+          >
+            <div class="form-box">
+              <h4>CONTACT US</h4>
+              <form action="{{ url_for('Homepage') }}" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon"
+                      ><i class="fa fa-user"></i
+                    ></span>
+                    {{ form.name(class="form-control", placeholder="Name") }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon"
+                      ><i class="fa fa-envelope"></i
+                    ></span>
+                    {{ form.email(class="form-control", placeholder="Email") }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon"
+                      ><i class="fa fa-map-marker"></i
+                    ></span>
+                    {{ form.address(class="form-control", placeholder="Address")
+                    }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon"
+                      ><i class="fa fa-comment"></i
+                    ></span>
+                    {{ form.message(class="form-control", placeholder="Message",
+                    rows="4") }}
+                  </div>
+                </div>
+                <div class="form-group text-center">
+                  <button type="submit" class="btn btn-dark">SEND</button>
+                </div>
+              </form>
+            </div>
+          </div>
 
-<!-- Optional JavaScript --> 
-<!-- jQuery first, then Bootstrap JS, ... -->
+          <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
+            <h5>ADDRESS</h5>
+            <p>koteshwor Kathmandu</p>
+            <h5>PHONE</h5>
+            <p>9818255262</p>
+            <h5>EMAIL</h5>
+            <p>sportsmitra@gmail.com</p>
+          </div>
+        </div>
+      </div>
+    </footer>
 
-<script src="../static/javascript/jquery.min.js"></script>
-<script src="../static/javascript/bootstrap.min.js"></script>
-<script src="../static/javascript/parallax.js"></script>
-<script src="../static/javascript/wow.js"></script>
-<script src="../static/javascript/main.js"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Bootstrap JS, ... -->
 
-</body>
+    <script src="../static/javascript/jquery.min.js"></script>
+    <script src="../static/javascript/bootstrap.min.js"></script>
+    <script src="../static/javascript/parallax.js"></script>
+    <script src="../static/javascript/wow.js"></script>
+    <script src="../static/javascript/main.js"></script>
+  </body>
 </html>
