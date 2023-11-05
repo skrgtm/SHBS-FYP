@@ -1372,3 +1372,48 @@ def user_information():
 
 
 #************************************ End of User Information ********************************************
+
+
+# ***************************************** Stripe Payment ************************************
+
+
+@app.route('/all_products')
+def all_products():
+    return render_template('all_products.html', products=products)
+
+#Stripe checkout session for memberships/bookings created by user.
+#Displays price in GBP
+#Currently Stripe is set to Test Mode but can be easily switched to Accomadate Real Payments.
+@app.route('/order_products', methods=['GET','POST'])
+@login_required
+def order_products():
+    total_amount = float(request.args.get('total_amount'))
+
+    total_amount_cents = int(total_amount * 100)
+
+    checkout_session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[
+            {
+                "price_data": {
+                    "currency": "gbp",
+                    "product_data": {
+                        "name": "Total Booking Amount",
+                    },
+                    "unit_amount": total_amount_cents,
+                },
+                "quantity": 1,
+            },
+        ],
+        mode="payment",
+        success_url=request.host_url + 'payment_success',
+        cancel_url=request.host_url + "Homepage",
+    )
+
+    return redirect(checkout_session.url)
+
+
+
+
+
+
