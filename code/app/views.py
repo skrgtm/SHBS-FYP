@@ -12,7 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
 from twilio.rest import Client,TwilioException
 from twilio.base.exceptions import TwilioRestException, TwilioException
-
+import json
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import URLSafeTimedSerializer
 from google.oauth2 import id_token
@@ -489,6 +489,43 @@ def logout():
     return redirect('/')
 
 #************** End of User Login, Creat Account: Reset, 2FA, Google Login, Logout *******************
+
+
+
+
+#khalti payment gateway
+@app.route('/order_products', methods=['POST'])
+def order_products():
+    total_amount = request.form.get('total_amount') or request.json.get('total_amount')
+    total_amount_paisa = int(float(total_amount) * 100)
+
+    payload = json.dumps({
+        "return_url": "http://localhost:5000/payment_success",  # This will be the URL Khalti redirects to after payment
+        "website_url": "http://localhost:5000",  # Your website's URL
+        "amount": total_amount_paisa,  # The amount in paisa
+        "purchase_order_id": "Order01",  # Unique ID for the order
+        "purchase_order_name": "test",  # Name or description of the order
+        # Add other fields from the sample payload as needed
+    })
+    headers = {
+        'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',  # Ensure the 'Key' prefix is included
+        'Content-Type': 'application/json',
+    }
+
+    # Send the request to Khalti's API
+    response = requests.post("https://a.khalti.com/api/v2/epayment/initiate/", headers=headers, data=payload)
+    print(response.text)
+    if response.status_code == 200:
+        # If the response is successful, get the payment URL and redirect the user to it
+        response_data = response.json()
+        return redirect(response_data['payment_url'])
+    else:
+        # If there was an error, log it and return a JSON response with the error
+        app.logger.error(f"Failed to initiate payment: {response.text}")
+        return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
+    
+
+
 
 #******************************* When User Purchases Membership ************************
 
@@ -1374,43 +1411,6 @@ def user_information():
 #************************************ End of User Information ********************************************
 
 
-# ***************************************** Stripe Payment ************************************
-
-
-@app.route('/all_products')
-def all_products():
-    return render_template('all_products.html', products=products)
-
-#Stripe checkout session for memberships/bookings created by user.
-#Displays price in GBP
-#Currently Stripe is set to Test Mode but can be easily switched to Accomadate Real Payments.
-@app.route('/order_products', methods=['GET','POST'])
-@login_required
-def order_products():
-    total_amount = float(request.args.get('total_amount'))
-
-    total_amount_cents = int(total_amount * 100)
-
-    checkout_session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        line_items=[
-            {
-                "price_data": {
-                    "currency": "gbp",
-                    "product_data": {
-                        "name": "Total Booking Amount",
-                    },
-                    "unit_amount": total_amount_cents,
-                },
-                "quantity": 1,
-            },
-        ],
-        mode="payment",
-        success_url=request.host_url + 'payment_success',
-        cancel_url=request.host_url + "Homepage",
-    )
-
-    return redirect(checkout_session.url)
 
 
 

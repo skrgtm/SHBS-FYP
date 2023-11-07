@@ -109,8 +109,11 @@
                               </li>
                               <li class="list-group-item d-flex justify-content-between">
                                 <span> </span>
-                                <button class="btn btn-custom" >
-                                <a href="/order_products?total_amount={{total_amount-discount}}" id="pay_now_link">Pay Now</a></button>
+                                
+                                  <form action="/order_products" method="post">
+                                    <input type="hidden" name="total_amount" value="{{ total_amount - discount }}">
+                                    <button type="submit" class="btn btn-custom">Pay with Khalti</button>
+                                </form>
                               </li>
                         {% elif current_user.Member == True %}
                           <li class="list-group-item d-flex justify-content-between">
