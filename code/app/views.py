@@ -4,7 +4,8 @@ from app import app , models,db,admin,login_manager,mail
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
 from .forms import LoginForm,SignupForm,Auth2FaForm,Verify2FA,EmpLoginForm,EmpSignupForm,ForgetPassword,ContactUsForm,ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm
-
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions,Activity, session_activity_association
 from functools import wraps
 from flask_login import LoginManager,login_required,logout_user,login_user,current_user
@@ -20,6 +21,14 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 import requests
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
+from datetime import datetime
+from reportlab.lib.pagesizes import letter
+from PIL import Image as PILImage
+from io import BytesIO
+from reportlab.lib.utils import ImageReader
+
 import os
 import pathlib
 from datetime import datetime, time, timedelta
@@ -524,6 +533,149 @@ def order_products():
         app.logger.error(f"Failed to initiate payment: {response.text}")
         return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
     
+
+#khalti payment success
+#Handles success for user bookings.
+#Sets the booking status form 'Saved' to 'Paid'.
+#Recipt is now generated and a pdf version is sent to the users Email.
+@app.route('/payment_success', methods=['GET'], strict_slashes=False)
+@login_required
+def payment_success():
+    user_bookings = Booking.query.filter_by(user_id=current_user.id, Status="Saved").all()
+
+    if not user_bookings:
+        flash('No bookings found with the "Saved" status. Please try again.')
+        return redirect(url_for('my_bookings'))
+
+    total_amount = sum([booking.Size * booking.activity.Amount for booking in user_bookings])
+
+    new_receipt = Receipt(
+        user_id=current_user.id,
+        Amount=total_amount
+    )
+
+    db.session.add(new_receipt)
+    db.session.commit()
+    receipt_id = new_receipt.id
+
+    for booking in user_bookings:
+        booking.Status = 'Booked'
+        booking.receipt_id = receipt_id
+
+    db.session.commit()
+    flash('Payment successful! Your booking statuses have been updated to "Booked".')
+
+    # static_folder = os.path.join(app.root_path, 'static')
+    # image_path = os.path.join(static_folder, 'images', 'fnb.png')
+    # buffer = BytesIO()
+    # p = canvas.Canvas(buffer)
+    # x = 200
+    # y = 610
+
+    # img = Image(image_path)
+    # img.drawOn(p, x, y)
+
+    # p.drawCentredString(300, 600, "-------Booking Receipt-------")
+    # p.drawCentredString(300, 550, f"Name: {current_user.User}")
+    # p.drawCentredString(300, 500, f"Date: {datetime.now().date()}")
+    # p.drawCentredString(300, 450, f"Time: {datetime.now().time()}")
+    # p.drawCentredString(300, 400, f"Amount: {total_amount}")
+    # # y -= 50
+    # # p.drawCentredString(300, y, "Booked Sessions:")
+    # #bookings = Booking.query.filter_by(user_id=current_user.id).all()
+    # receipt_bookings = Booking.query.filter_by(receipt_id=new_receipt.id).all()
+    # y = 400
+    # for booking in receipt_bookings:
+    #     y -= 50
+    #     facility_name = booking.session.facility.Name
+    #     activity_name = booking.activity.Activity_Name
+    #     session_start_time = booking.session.Start_time
+    #     session_end_time = booking.session.End_time
+    #     p.drawCentredString(300, y,f"Booking ID {booking.id}:Facility {facility_name},: Activity {activity_name}, Session start {session_start_time}, Session end {session_end_time}")
+
+
+    #     y -= 20
+    #     activites = Activity.query.filter_by(activity_id=bookings.activity_id).all()
+    #     p.drawCentredString(300, y, activites.Activity_Name)
+
+    
+    # p.save()
+    # buffer.seek(0)
+    # msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com', recipients=[current_user.Email])
+    # msg.attach('receipt.pdf', 'application/pdf', buffer.read())
+    # mail.send(msg)
+
+    # return redirect(url_for('my_bookings'))
+
+    static_folder = os.path.join(app.root_path, 'static')
+    image_path = os.path.join(static_folder, 'images', 'fnb.png')
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+
+    # Center and resize the image
+    with PILImage.open(image_path) as pil_image:
+        img_width, img_height = pil_image.size
+
+    x = (letter[0] - img_width) / 2
+    y = 610
+
+    # Calculate the scaling factor to fit the image within the desired dimensions
+    max_image_width = 150
+    max_image_height = 150
+    scale_x = max_image_width / img_width
+    scale_y = max_image_height / img_height
+
+    img = ImageReader(image_path)
+    p.drawImage(img, x, y, width=img_width * scale_x, height=img_height * scale_y)
+
+    # Formatting for the header
+    p.setFont("Helvetica-Bold", 18)
+    p.drawCentredString(300, 580, "------- Booking Receipt -------")
+
+    # Formatting for user information
+    p.setFont("Helvetica", 12)
+    p.drawCentredString(300, 540, f"Name: {current_user.User}")
+    p.drawCentredString(300, 520, f"Date: {datetime.now().date()}")
+    p.drawCentredString(300, 500, f"Time: {datetime.now().time()}")
+    p.drawCentredString(300, 480, f"Amount: {total_amount}")
+
+    # Retrieve and format booking details
+    receipt_bookings = Booking.query.filter_by(receipt_id=new_receipt.id).all()
+    y = 460
+
+    for booking in receipt_bookings:
+        p.setFont("Helvetica-Bold", 14)
+        p.drawCentredString(300, y, "Booking Details")
+        y -= 20
+        facility_name = booking.session.facility.Name
+        activity_name = booking.activity.Activity_Name
+        session_start_time = booking.session.Start_time
+        session_end_time = booking.session.End_time
+        p.drawCentredString(300, y, f"Booking ID {booking.id}")
+        y -= 20
+        p.drawCentredString(300, y, f"Facility: {facility_name}")
+        y -= 20
+        p.drawCentredString(300, y, f"Activity: {activity_name}")
+        y -= 20
+        p.drawCentredString(300, y, f"Session start: {session_start_time}")
+        y -= 20
+        p.drawCentredString(300, y, f"Session end: {session_end_time}")
+        y -= 30  # Space between bookings
+
+    # Save and send the receipt
+    p.save()
+    buffer.seek(0)
+
+    msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com', recipients=[current_user.Email])
+    msg.attach('receipt.pdf', 'application/pdf', buffer.read())
+    mail.send(msg)
+
+    return redirect(url_for('my_bookings'))
+
+
+    
+
+
 
 
 
