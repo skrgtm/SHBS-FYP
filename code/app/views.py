@@ -91,7 +91,7 @@ admin.add_view(ModelView(Activity, db.session))
 admin.add_view(ModelView(Sessions, db.session))
 admin.add_view(ModelView(Booking, db.session))
 admin.add_view(ModelView(Receipt, db.session))
-
+#*******************************************************************************
 @login_manager.user_loader
 def load_user(user_id):
     # Replace this with your actual user loading logic
