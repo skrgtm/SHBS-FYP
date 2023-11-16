@@ -210,35 +210,52 @@ def login():
 #Checks if the username and email already exists, preventing duplicate information from being used.
 #On success the user account is created and user activiation process begins
 #Else page is reloaded.
-@app.route('/create_account', methods=['GET','POST'])
+@app.route('/create_account', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
     user_name = form.userName.data
     user_email = form.userEmail.data
     user_password = form.userPassword.data
-    user_Role = Role.query.filter_by(name="User").first() 
+    user_confirm_password = form.userVerifyPassword.data
+    user_Role = Role.query.filter_by(name="User").first()
     user_number = form.Mobile.data
 
     if form.validate_on_submit():
+        # Check if the username already exists
         user_n = UserAccount.query.filter_by(User=user_name).first()
-        user_e = UserAccount.query.filter_by(Email=user_email).first()
         if user_n is not None:
             flash('User already exists')
             app.logger.error('Error: Create Account Failed')
             return redirect('/create_account')
+
+        # Check if the email already exists
+        user_e = UserAccount.query.filter_by(Email=user_email).first()
         if user_e is not None:
-            flash('email ID already exists')
+            flash('Email ID already exists')
             app.logger.error('Error: Create Account Failed')
             return redirect('/create_account')
-        userData = UserAccount(User=user_name, Email=user_email, Password=form.userPassword.data,Mobile = form.CountryCode.data+form.Mobile.data)
+
+        # Check if passwords match
+        if user_password != user_confirm_password:
+            flash('Passwords do not match')
+            app.logger.error('Error: Passwords do not match')
+            return redirect('/create_account')
+
+        # If all checks pass, create the user account
+        userData = UserAccount(User=user_name, Email=user_email, Password=user_password, Mobile=form.CountryCode.data + user_number)
         userData.roles.append(user_Role)
         verification_token = generate_verification_token(user_email)
-        userData.verification_token = verification_token 
+        userData.verification_token = verification_token
         db.session.add(userData)
         db.session.commit()
 
         return redirect(url_for('send_verification_email', user_email=user_email, verification_token=verification_token))
-    return render_template('signup.html', title='signup', form=form)
+
+    # If the form didn't validate, or it's a GET request, render the form again
+    return render_template('signup.html', title='Signup', form=form)
+
+
+
 
 #******************* Route for Login with Phone ****************************************
 
@@ -328,7 +345,7 @@ def send_verification_email():
     subject = 'Verify Your Email'
 
     body = render_template('send_verify_email.html', verification_url=verification_url)
-    message = Message(subject, recipients=[user_email], html=body,sender = 'arjun.krishnan0033@gmail.com')
+    message = Message(subject, recipients=[user_email], html=body,sender = 'skrgtm2059@gmail.com')
 
     mail.send(message)
 
@@ -806,7 +823,7 @@ def employee_login():
     if form.validate_on_submit():
         user = UserAccount.query.filter_by(User=usr).first()
         if user is None or not user.check_password(form.userPassword.data):
-            flash('Invalid Login')
+            flash('Invalid username or password for employees!', 'error')
             app.logger.warning('Invalid Login')
             return redirect('/emp_login')
         if not user.has_role("Employee") and not user.has_role("Manager"):
@@ -820,6 +837,7 @@ def employee_login():
             return redirect("/mgr_homepage")
     return render_template('emplogin_page.html',
                         title='Login',form = form)
+
 
 #Manager Homepage
 @app.route('/mgr_homepage')

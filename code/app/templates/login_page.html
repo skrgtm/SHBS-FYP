@@ -78,13 +78,13 @@
       </div>
     </nav>
     <!-- </div> -->
-    <br />
-    <br />
-    <br />
-    {% with messages = get_flashed_messages() %} {% if messages %} {% for
+    <!-- <br /> -->
+    <!-- <br /> -->
+    <!-- <br /> -->
+    <!-- {% with messages = get_flashed_messages() %} {% if messages %} {% for
     message in messages %}
     <p>{{ message }}</p>
-    {% endfor %} {% endif %} {% endwith %}
+    {% endfor %} {% endif %} {% endwith %} -->
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg">
@@ -112,6 +112,11 @@
               focus:shadow-outline", id="password", type="password",
               placeholder="Password")}}
             </div>
+            {% with messages = get_flashed_messages() %} {% if messages %} {%
+            for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %} {% endif %} {% endwith %}
+            <br />
             <div class="checkbox mb-3">
               <label>
                 <p>Remember Me{{form.remember(class_="remember-me")}}</p>
@@ -134,10 +139,10 @@
                 Forgot Password?
                 <a href="/reset" class="text-blue-600">Click Here</a>
               </p>
-              <p>
+              <!-- <p>
                 Login with Phone
                 <a href="/2FA" class="text-blue-600">Click Here</a>
-              </p>
+              </p> -->
               <div class="mx-auto" align="center">
                 <button
                   class="bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded-full flex items-center justify-center border border-gray-300 mt-4"
@@ -150,6 +155,7 @@
                   <span>Sign in with Google</span>
                 </button>
               </div>
+              
             </div>
           </form>
         </div>
@@ -195,8 +201,6 @@
             <h5>QUICK LINKS</h5>
             <a href="/lookup_venue">Sessions</a><br />
             <a href="/my_bookings">My Bookings</a><br />
-            <a href="/">FAQs</a><br />
-            <a href="/">Refunds</a><br />
           </div>
           <div
             class="col-md-3 footer2 wow bounceInUp"
@@ -210,7 +214,7 @@
             <br />
             <br />
             <br />
-            <h5>SPONSORS</h5>
+            <h5>EXPLORE MORE</h5>
             <a href="https://www.nike.com"> NIKE </a><br />
             <a href="https://www.jdsports.com"> JD SPORTS </a><br />
             <a href="https://www.sportsdirect.com"> SPORTS DIRECT </a><br />

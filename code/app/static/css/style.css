@@ -457,3 +457,7 @@ footer::before {
 .iti {
   width: 100%;
 }
+
+.flash-messages p {
+  color: black
+}
