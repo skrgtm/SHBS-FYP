@@ -86,7 +86,9 @@
           <form class="form-signin" method="POST" name="signin">
             {{ form.hidden_tag() }}
             <div class="mb-4">
-              <h1 class="h3 mb-3 font-weight-normal">Employee Login</h1>
+              <h1 class="h3 mb-3" style="text-align: center; font-weight: bold">
+                EMPLOYEE LOGIN
+              </h1>
               <img
                 src="../static/images/logo-black.png"
                 style="transform: scale(0.75); display: block; margin: 0"
@@ -108,6 +110,15 @@
               focus:shadow-outline", id="password", type="password",
               placeholder="Password")}}
             </div>
+            {% with messages = get_flashed_messages(with_categories=true) %} {%
+            if messages %} {% for category, message in messages %} {% if
+            category == 'error' %}
+            <div class="flash-error">
+              <p style="color: red">{{ message }}</p>
+            </div>
+            {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+            <br />
             <button
               class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
               type="submit"
@@ -159,7 +170,6 @@
             <h5>QUICK LINKS</h5>
             <a href="/lookup_venue">Sessions</a><br />
             <a href="/my_bookings">My Bookings</a><br />
-            <a href="/">FAQs</a><br />
           </div>
           <div
             class="col-md-3 footer2 wow bounceInUp"
@@ -173,7 +183,7 @@
             <br />
             <br />
             <br />
-            <h5>SPONSORS</h5>
+            <h5>EXPLORE MORE</h5>
             <a href="https://www.nike.com"> NIKE </a><br />
             <a href="https://www.jdsports.com"> JD SPORTS </a><br />
             <a href="https://www.sportsdirect.com"> SPORTS DIRECT </a><br />
