@@ -112,14 +112,15 @@
               focus:shadow-outline", id="password", type="password",
               placeholder="Password")}}
             </div>
+
             {% with messages = get_flashed_messages() %} {% if messages %} {%
             for message in messages %}
-            <p>{{ message }}</p>
+            <p style="color: red">{{ message }}</p>
             {% endfor %} {% endif %} {% endwith %}
             <br />
             <div class="checkbox mb-3">
               <label>
-                <p>Remember Me{{form.remember(class_="remember-me")}}</p>
+                <p>Remember Me {{form.remember(class_="remember-me")}}</p>
               </label>
             </div>
 
@@ -136,8 +137,7 @@
               </p>
               <br />
               <p>
-                Forgot Password?
-                <a href="/reset" class="text-blue-600">Click Here</a>
+                <a href="/reset" class="text-blue-600">Forgot Password?</a>
               </p>
               <!-- <p>
                 Login with Phone
@@ -155,7 +155,6 @@
                   <span>Sign in with Google</span>
                 </button>
               </div>
-              
             </div>
           </form>
         </div>
@@ -181,9 +180,7 @@
                 celebrating <br />
                 achievements.
               </p>
-              <p>
-                &copy; 2023 Spartan Sanctuary. <br />All rights reserved.<br />
-              </p>
+              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
             </div>
           </div>
           <div

@@ -114,7 +114,7 @@
             if messages %} {% for category, message in messages %} {% if
             category == 'error' %}
             <div class="flash-error">
-              <p>{{ message }}</p>
+              <p style="color: red">{{ message }}</p>
             </div>
             {% endif %} {% endfor %} {% endif %} {% endwith %}
 

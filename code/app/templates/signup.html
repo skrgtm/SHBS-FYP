@@ -83,8 +83,31 @@
       </div>
     </nav>
     <!-- </div> -->
+
     
   </div>
+  <div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'user_exists' %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                {% elif category == 'email_exists' %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                {% elif category == 'password_mismatch' %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
 
     <br />
     <br />
@@ -151,7 +174,8 @@
               rounded text-gray-700 w-full leading-tight focus:outline-none
               focus:shadow-outline input-custom-width", inputmode="tel") }}
             </p>
-
+            
+            
             <button
               id="submitbtn"
               class="btn btn-custom"
@@ -162,12 +186,11 @@
             </button>
 
             <br />
-            <p>Have An Account? <a href="/login">Login</a></p>
+            <p >Have An Account? <a href="/login" style="color: blue;">Login</a></p>
             <br />
           </form>
           
-
-      
+          
         </div>
       </div>
     </div>
