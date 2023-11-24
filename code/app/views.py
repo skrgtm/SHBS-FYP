@@ -3,7 +3,7 @@ from flask import Flask, render_template, flash, redirect, request, make_respons
 from app import app, models, db, admin, login_manager, mail
 from flask_admin.contrib.sqla import ModelView
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm
+from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions, Activity, session_activity_association
@@ -1225,7 +1225,129 @@ def create_booking():
 
     return render_template('create_bookings.html', bookings=bookings, form=form, form_submitted=form_submitted)
 
+
+# Route to handle the booking information
+# Taking in facility and activity information, Date and party size to get the number of sessions that match the criteria.
+@app.route('/booking_details', methods=['GET', 'POST'])
+@login_required
+@require_role(role="Employee")
+def booking_details():
+    form = BookingDetailsForm()
+    sessions = None
+    data = None  # Initialize selected_activity_id here
+    user_id = request.args.get('user_id')
+    print(user_id)
+    form.facility.choices = [(facility.id, facility.Name)
+                             for facility in Facility.query.all()]
+    form.activity.choices = [(activity.id, activity.Activity_Name)
+                             for activity in Activity.query.all()]
+
+    group_size = None
+    activity_price = None
+    activity_id = None
+
+    if request.method == 'POST':
+        activity_id1 = form.activity.data
+        print(activity_id1)
+        data_price = Activity.query.filter_by(id=activity_id1).first()
+        activity_price = int(data_price.Amount)
+        group_size = int(form.capacity.data)
+        print(activity_price)
+        print(group_size)
+        print("Form submitted")
+
+        if form.validate_on_submit():
+            facility_id = form.facility.data
+            activity_id = form.activity.data
+            date = form.date.data
+            capacity = form.capacity.data
+
+            data = Activity.query.filter_by(id=activity_id).first()
+            venue = Facility.query.get(facility_id)
+
+            if form.date.data == datetime.now().date():
+                current_time = datetime.now().time()
+                sessions = Sessions.query.filter(
+                    Sessions.facility_id == facility_id,
+                    Sessions.activities.any(id=activity_id),
+                    Sessions.Date == form.date.data,
+                    Sessions.Start_time >= current_time,
+                    Sessions.Remaining_Cap >= capacity
+                ).all()
+            else:
+                sessions = Sessions.query.filter(
+                    Sessions.facility_id == facility_id,
+                    Sessions.activities.any(id=activity_id),
+                    Sessions.Date == form.date.data,
+                    Sessions.Start_time >= venue.Start_Facility,
+                    Sessions.Remaining_Cap >= capacity
+                ).all()
+        else:
+            print("Form validation failed")
+            print(form.errors)
+
+    return render_template('booking_details.html', form=form, sessions=sessions, data=data, group_size=group_size, activity_price=activity_price, activity_id=activity_id, user_id=user_id)
+
 # **********************************************************************************************
+
+# Gets all the information from the route above and displays all the possible sessions.
+
+
+@app.route('/book_session_emp', methods=['POST'])
+@login_required
+# @require_role(role="User")
+def book_session_emp():
+    session_id = request.form.get('session_id')
+    activity_id = int(request.args.get('activity_id'))
+    user_id = int(request.form.get('user_id'))
+    group_size = int(request.args.get('group_size'))
+    activity_price = int(request.args.get('activity_price'))
+    booking_Price = int(group_size * activity_price)
+    session = Sessions.query.get(session_id)
+    # Check if there's enough remaining capacity for the booking
+    if session.Remaining_Cap >= group_size:
+        booking = Booking(
+            user_id=user_id,
+            session_id=session_id,
+            activity_id=activity_id,
+            Book_Time=session.Date,
+            Status="Saved",
+            Size=group_size,
+            Amount=booking_Price
+        )
+        booking.user_id = 1
+
+        # Reduce the session's remaining capacity by the group size
+        session.Remaining_Cap -= group_size
+
+        db.session.add(booking)
+        db.session.commit()
+
+        # Add a message to notify the user that the booking was successful.
+        flash('Booking successful!')
+    else:
+        flash('Not enough remaining capacity for the booking.')
+
+    return redirect(url_for('booking_details'))
+
+
+# Getter that displays activity id and activity name for a given facility
+# requires facility id as a parameter
+@app.route('/get_activities/<facility_id>', methods=['GET'])
+@login_required
+@require_role(role="Employee")
+def get_activities_createBooking(facility_id):
+    facility = Facility.query.get(facility_id)
+    activities = [{'id': activity.id, 'Name': activity.Name}
+                  for activity in facility.activities]
+    return jsonify(activities)
+
+# ****************************************** End of Employee ******************************************************
+
+
+@login_manager.user_loader
+def load_user(id):
+    return UserAccount.query.get(int(id))
 
 
 # ****************************************** User: After Login ******************************************************
