@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import IntegerField, StringField, DateTimeField, TextAreaField, SubmitField, PasswordField, BooleanField, RadioField, DateField, SelectField, HiddenField,TelField
+from wtforms import IntegerField, StringField, DateTimeField, TextAreaField, SubmitField, PasswordField, BooleanField, RadioField, DateField, SelectField, HiddenField, TelField
 from wtforms_components import TimeField
 from wtforms.validators import DataRequired, EqualTo, NumberRange, ValidationError, Length, Email
 from app import db, models, app
@@ -8,69 +8,86 @@ import datetime
 from datetime import date
 
 
-#Form to handle user account login process in flask
+# Form to handle user account login process in flask
 class LoginForm(FlaskForm):
     userName = StringField('User Name', validators=[DataRequired()])
     userPassword = PasswordField('passwords', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
 
-#FOrm to handle user account signups in flask
+# FOrm to handle user account signups in flask
+
+
 class SignupForm(FlaskForm):
     userName = StringField('User Name', validators=[DataRequired()])
     userEmail = StringField('User Email', validators=[DataRequired()])
     userPassword = PasswordField('passwords', validators=[DataRequired()])
     userVerifyPassword = PasswordField('confirm password', validators=[DataRequired(),
-                        EqualTo('userPassword')])
+                                                                       EqualTo('userPassword')])
     CountryCode = HiddenField('Country Code', validators=[DataRequired()])
     Mobile = StringField('Mobile Number', validators=[DataRequired()])
 
-#Form that submits mobile number information to twilio for Two-Factor Authentication
+# Form that submits mobile number information to twilio for Two-Factor Authentication
+
+
 class Auth2FaForm(FlaskForm):
     email = StringField('User Email', validators=[DataRequired()])
     CountryCode = HiddenField('Country Code', validators=[DataRequired()])
     pno = StringField('User Mobile', validators=[DataRequired()])
 
-#Form that accepts Two-Factor Token To complete login process
+# Form that accepts Two-Factor Token To complete login process
+
+
 class Verify2FA(FlaskForm):
     token = email = StringField('Token')
-  
-#Form that takes in user account info to help reset password
+
+# Form that takes in user account info to help reset password
+
+
 class ForgetPassword(FlaskForm):
     userEmail = StringField('User Email', validators=[DataRequired()])
 
-#Form that accepts new password for user account.
+# Form that accepts new password for user account.
+
+
 class ResetPassword(FlaskForm):
     userPassword = PasswordField('passwords', validators=[DataRequired()])
     userVerifyPassword = PasswordField('confirm password', validators=[DataRequired(),
-                        EqualTo('userPassword')])
+                                                                       EqualTo('userPassword')])
 
-#Form to facilitate employee login.
+# Form to facilitate employee login.
+
+
 class EmpLoginForm(FlaskForm):
     userName = StringField('Employee Username', validators=[DataRequired()])
     userPassword = PasswordField('passwords', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
 
 
-#Form that takes employee details which is used by the manager to create employee accounts
+# Form that takes employee details which is used by the manager to create employee accounts
 class EmpSignupForm(FlaskForm):
     userName = StringField('User Name', validators=[DataRequired()])
     userEmail = StringField('User Email', validators=[DataRequired()])
     userPassword = PasswordField('passwords', validators=[DataRequired()])
     userVerifyPassword = PasswordField('confirm password', validators=[DataRequired(),
-                        EqualTo('userPassword')])
+                                                                       EqualTo('userPassword')])
     CountryCode = HiddenField('Country Code', validators=[DataRequired()])
     Mobile = StringField('Mobile Number', validators=[DataRequired()])
-    role = SelectField('Role', choices=[('Employee', 'Employee'), ('Manager', 'Manager')], validators=[DataRequired()])
+    role = SelectField('Role', choices=[
+                       ('Employee', 'Employee'), ('Manager', 'Manager')], validators=[DataRequired()])
 
-#Form to handle contact us feature
+# Form to handle contact us feature
+
+
 class ContactUsForm(FlaskForm):
-  name = StringField("Name",  validators=[DataRequired()])
-  email = StringField("Email",validators = [DataRequired()])
-  address = StringField("Address",validators = [DataRequired()])
-  message = TextAreaField("Message",validators = [DataRequired()])
-  submit = SubmitField("Send")
+    name = StringField("Name",  validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    address = StringField("Address", validators=[DataRequired()])
+    message = TextAreaField("Message", validators=[DataRequired()])
+    submit = SubmitField("Send")
 
-#Form used to create a new facility. Also asks amount information to set a value for a default activity.
+# Form used to create a new facility. Also asks amount information to set a value for a default activity.
+
+
 class CreateFacilityForm(FlaskForm):
     Name = StringField('Venue Name', validators=[DataRequired()])
     Capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
@@ -79,78 +96,121 @@ class CreateFacilityForm(FlaskForm):
     Amount = IntegerField('Cost', validators=[DataRequired()])
 
 
-#Form to create new activity.
+# Form to create new activity.
 class CreateActivityForm(FlaskForm):
     Activity_Name = StringField('Acivity Name', validators=[DataRequired()])
     Amount = IntegerField('Cost', validators=[DataRequired()])
-    Facility_Name = SelectField('Facility Name', validators=[DataRequired()],choices=[])
+    Facility_Name = SelectField('Facility Name', validators=[
+                                DataRequired()], choices=[])
 
-#Form that takes in the new facility information to update the facility. 
+# Form that takes in the new facility information to update the facility.
+
+
 class UpdateFacilityForm(FlaskForm):
-    Facility_Namez = SelectField('Facility Name', validators=[DataRequired()],choices=["Name","Name"])
+    Facility_Namez = SelectField('Facility Name', validators=[
+                                 DataRequired()], choices=["Name", "Name"])
     Name = StringField('Venue Name', validators=[DataRequired()])
     Capacity = IntegerField('Maximum Capacity', validators=[DataRequired()])
     Start_time = StringField('Start Time', validators=[DataRequired()])
     End_time = StringField('End Time', validators=[DataRequired()])
 
-#Form that takes in the new activity information to update the activity. 
+# Form that takes in the new activity information to update the activity.
+
+
 class UpdateActivityForm(FlaskForm):
-    New_Facility_Name = SelectField('Facility Name', validators=[DataRequired()],choices=[])
-    Activity_Selector = SelectField('Activity Name', validators=[DataRequired()])
-    New_Activity_Name = StringField('Acivity Name', validators=[DataRequired()])
+    New_Facility_Name = SelectField('Facility Name', validators=[
+                                    DataRequired()], choices=[])
+    Activity_Selector = SelectField(
+        'Activity Name', validators=[DataRequired()])
+    New_Activity_Name = StringField(
+        'Acivity Name', validators=[DataRequired()])
     New_Amount = IntegerField('Cost', validators=[DataRequired()])
 
 
-#form that takes users email data to find bookings linked to the account
+# form that takes users email data to find bookings linked to the account
 class ViewBookings(FlaskForm):
     userEmail = StringField('User Email', validators=[DataRequired()])
 
 
-#Form to edit booking information.
+def empty_activity_choices():
+    return [("", "Select an activity")]
+
+# method to validate date.
+
+
+def validate_date(form, field):
+    if field.data < date.today():
+        raise ValidationError(
+            "Please select a date that has not already occurred.")
+
+# Form that takes booking information to return available sessions.
+
+
+class BookingDetailsForm(FlaskForm):
+    facility = SelectField('Facility', choices=[], validators=[DataRequired()])
+    activity = SelectField('Activity', choices=[], validators=[DataRequired()])
+    date = DateField('Date', validators=[DataRequired(
+    ), validate_date], format='%Y-%m-%d', render_kw={"min": date.today().isoformat(), "id": "date"})
+    capacity = IntegerField('Capacity', validators=[DataRequired()])
+    submit = SubmitField('Get Sessions')
+
+
+# Form to edit booking information.
 class EditBookingForm(FlaskForm):
-    date = DateField('Date', validators=[DataRequired()], format='%Y-%m-%d',render_kw={"min": date.today().isoformat(), "id": "date"})
+    date = DateField('Date', validators=[DataRequired(
+    )], format='%Y-%m-%d', render_kw={"min": date.today().isoformat(), "id": "date"})
     start_time = TimeField('Start Time', validators=[DataRequired()])
     end_time = TimeField('End Time', validators=[DataRequired()])
     save = SubmitField('Save')
     cancel = SubmitField('Cancel')
 
-#method to handle empty choices for activity. used to initialize it before it gets populated with list of activities    
-def empty_activity_choices():
-    return [("", "Select an activity")]
-
-#method to validate date.
-def validate_date(form, field):
-    if field.data < date.today():
-        raise ValidationError("Please select a date that has not already occurred.")
+# method to handle empty choices for activity. used to initialize it before it gets populated with list of activities
 
 
-#Form  That adds Facilitu and default activity
+# Form  That adds Facilitu and default activity
 class FacilityActivityForm(FlaskForm):
-    facility_name = SelectField('Facility Name', validators=[DataRequired()], choices=[])
+    facility_name = SelectField('Facility Name', validators=[
+                                DataRequired()], choices=[])
     activity_id = HiddenField()
-    activity_name = SelectField('Activity Name', validators=[DataRequired()], choices=[])
-    date = DateField('Date', validators=[DataRequired(), validate_date], format='%Y-%m-%d', render_kw={"min": date.today().isoformat(), "id": "date"})
-    size = IntegerField('size',validators=[DataRequired()])
+    activity_name = SelectField('Activity Name', validators=[
+                                DataRequired()], choices=[])
+    date = DateField('Date', validators=[DataRequired(
+    ), validate_date], format='%Y-%m-%d', render_kw={"min": date.today().isoformat(), "id": "date"})
+    size = IntegerField('size', validators=[DataRequired()])
     submit = SubmitField('Add Facility and Activity')
 
-#From that takes user email data to check if the user is a member.    
+# From that takes user email data to check if the user is a member.
+
+
 class UserMember(FlaskForm):
     userEmail = StringField('User Email', validators=[DataRequired()])
 
-#From that takes user email data to create bookings on the users behalf.
+
+#Form to handle Bookings.
+class BookingForm(FlaskForm):
+    num_people = IntegerField('Number of People', validators=[DataRequired(), NumberRange(min=1, max=10)])
+    submit = SubmitField('Book Now')
+
+# From that takes user email data to create bookings on the users behalf.
+
+
 class CreateBookings(FlaskForm):
     userEmail = StringField('User Email', validators=[DataRequired()])
 
 
-#***************************    Update User Form        *******************************
+# ***************************    Update User Form        *******************************
 class UpdateUserForm(FlaskForm):
-    User = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    User = StringField('Username', validators=[
+                       DataRequired(), Length(min=2, max=20)])
+    password = PasswordField('Password', validators=[
+                             DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm Password', validators=[
+                                     DataRequired(), EqualTo('password')])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    mobile = StringField('Mobile', validators=[DataRequired(), Length(min=10, max=15)])
+    mobile = StringField('Mobile', validators=[
+                         DataRequired(), Length(min=10, max=15)])
     submit = SubmitField('Update')
+
 
 def get_id(self):
     return self.userName
-

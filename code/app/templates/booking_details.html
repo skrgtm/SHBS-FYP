@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Sportsmitra</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="../static/css/animate.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark">
+    <div class="container"> 
+        <!-- Brand --> 
+        <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png" alt="Sportsmitra" class = "logo"/></a> 
+        
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"> <span class="navbar-toggler-icon"></span> </button>
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"> <a class="nav-link" href="/emp_homepage">Home</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/lookup_bookings">View Booking</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/create_bookings">Book Session</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/create_bookings">MEMBERSHIP</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/logout">Logout</a> </li>
+        </ul>
+        </div>
+    </div>
+</nav>
+<body>
+    
+<br>
+<br>
+<div class="w-full flex items-center justify-center px-4">
+  <div class="max-w-md w-full">
+    <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
+      <form class="form-signin" method="POST" name="signin">
+        <div class = "filter-data">
+            <div align = "center">
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  {% for message in messages %}
+                {% endfor %}
+              {% endif %}
+              {% endwith %}
+              <div class="booking-details">
+                  <form method="POST">
+                      {{ form.hidden_tag() }}
+                      <h1 class="h3 mb-3 font-weight-normal">BOOK A SESSION</h1>
+                      <div class="form-group">
+                          <label class="block text-gray-700 font-bold mb-2">Facility</label>
+                          {{ form.facility (class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")}}
+                      </div>
+                      <div class="form-group">
+                        <label class="block text-gray-700 font-bold mb-2">Activity</label>
+                            {{ form.activity (class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")}}
+                      </div> 
+                      <label class="block text-gray-700 font-bold mb-2">Date</label>
+                        {{form.date(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")}}
+                      <label class="block text-gray-700 font-bold mb-2">Group Size</label>
+                      {{ form.capacity(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                    <button class="btn btn-custom" type="submit" >Submit</button>
+                  </form>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<br>
+<br>
+<br>
+
+<div class="w-full flex items-center justify-center px-4">
+  <div class="max-w-screen-xl">
+    
+      <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 5px solid #df6700;">
+        {% if sessions %}
+        <b><h1 class="h3 mb-3 font-weight-normal">AVAILABLE SESSIONS</h1></b>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Facility Name</th>
+                  <th>Activity Name</th>
+                  <th>Date</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Remaining Capacity</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for item in sessions %}
+                  <tr>
+                      <td>{{ item.facility.Name }}</td>
+                      <td>{{data.Activity_Name}}</td>                                             
+                      <td>{{ item.Date }}</td>
+                      <td>{{ item.Start_time }}</td>
+                      <td>{{ item.End_time }}</td>
+                      <td>{{ item.Remaining_Cap }}</td>
+                      <td> 
+                          <form action="{{ url_for('book_session_emp', group_size=group_size , activity_price = activity_price, user_id = user_id, activity_id = activity_id) }}" method="post">
+                              <input type="hidden" name="session_id" value="{{ item.id }}">
+                              <input type="hidden" name="user_id" value="{{ user_id }}">
+                              <button type="submit" class="btn btn-custom">Book Now</button>
+                              </form>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <b><h1 align = "center" class = "custom-text">We Could Not Find Session You Requested.</h1></b><br>
+            <b><h1 align = "center" class = "custom-text">Try Later OR Book A Different Session</h1></b>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const facilitySelect = $('#facility');
+            const activitySelect = $('#activity');
+
+            function loadActivities(facilityId) {
+                $.getJSON('/get_activities/' + facilityId, function(activities) {
+                    activitySelect.empty();
+                    $.each(activities, function(index, activity) {
+                        activitySelect.append($('<option></option>').attr('value', activity.id).text(activity.Activity_Name));
+                    });
+                });
+            }
+
+            facilitySelect.change(function() {
+                loadActivities(facilitySelect.val());
+            });
+
+            // Load activities for the initially selected facility
+            loadActivities(facilitySelect.val());
+        //     document.getElementById("booknow").addEventListener("click", function() {
+        //     window.location.href = document.getElementById("booknow").getAttribute("href");
+        // });
+
+            
+        });
+
+    </script>
+    <br>
+    <br>
+    <footer class="container-fluid">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3 footer1 d-flex wow bounceInLeft" data-wow-delay=".25s">
+            <div class="d-flex flex-wrap align-content-center"> <a href="#"><img src="../static/images/fnb.png" alt="logo" class = "logo"></a>
+              <p>Empowering athletes, nurturing talent, fostering 
+                teamwork, celebrating <br>
+                achievements.</p>
+                <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+            </div>
+          </div>
+          <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
+            <br>
+            <br> 
+            <br> 
+            <br>
+            <br> 
+            <br> 
+            <br>
+            <h5>QUICK LINKS</h5>
+            <a href = "/lookup_bookings"> View Sessions</a><br>
+            <a href = "/create_bookings">Book Session</a><br>
+            
+          </div>
+          <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
+            <br>
+            <br> 
+            <br> 
+            <br>
+            <br> 
+            <br> 
+            <br>
+            <h5>SPONSORS</h5>
+            <a href="https://www.nike.com">
+              NIKE
+            </a><br>
+            <a href="https://www.jdsports.com">
+              JD SPORTS
+            </a><br>
+            <a href = "https://www.sportsdirect.com">
+              SPORTS DIRECT
+            </a><br>
+            <a href = "https://www.adidas.co.uk">
+              ADIDAS
+            </a><br>
+          </div>
+          <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
+            <h5>ADDRESS</h5>
+            <p>koteshwor Kathmandu</p>
+            <h5>PHONE</h5>
+            <p>9818255262</p>
+            <h5>EMAIL</h5>
+            <p>sportsmitra@gmail.com</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+             
+    <script src="../static/javascript/jquery.min.js"></script>
+    <script src="../static/javascript/bootstrap.min.js"></script>
+    <script src="../static/javascript/parallax.js"></script>
+    <script src="../static/javascript/wow.js"></script>
+    <script src="../static/javascript/main.js"></script>
+    </body>
+</html>

@@ -34,12 +34,7 @@
     </div>
 </nav>
 <body>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+    
 <br>
 <br>
 <br>
@@ -56,6 +51,14 @@
               </label>
                 {{form.userEmail(class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="username", type="text", placeholder="User Email")}}
               <br>
+              {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+              <br>
+              
                 <button class="btn btn-custom" type="submit">Submit</button>
           </form>
         </div>
@@ -65,9 +68,12 @@
 <br>
 <br>
 {% if bookings %}
+
 <div class="w-full flex items-center justify-center px-4">
     <div class="max-w-screen-xl">
+      
       <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 5px solid #df6700;">
+        
         <b><h1 class="h3 mb-3 font-weight-normal">AVAILABLE SESSIONS</h1></b>
             <div class="table-responsive"></div>
                 <table class="table table-hover">
