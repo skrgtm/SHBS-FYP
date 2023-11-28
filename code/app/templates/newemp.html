@@ -13,13 +13,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     </head>
     <body class=" text-center">
-     {% with messages = get_flashed_messages() %}
-     {% if messages %}
-           {% for message in messages %}
-                <p>{{ message }}</p>
-           {% endfor %}
-     {% endif %}
-  {% endwith %}
+     
 
 <!-- <div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg"> -->
   <nav class="navbar navbar-expand-md navbar-dark">
@@ -47,6 +41,7 @@
       </div>
     </div>
   </nav>
+  
   <br>
   <br>
   <br>
@@ -76,6 +71,7 @@
             </label>
             {{ form.userPassword(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
           </div>
+          
           <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2 text-left" for="verify_password">
               Confirm Password
@@ -95,6 +91,15 @@
             </label>
             {{ form.role(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
           </div>
+          {% with messages = get_flashed_messages() %}
+     {% if messages %}
+           {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+  {% endwith %}
+          <br>
+  
           <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Create New Employee</button>
         </form>
       </div>
@@ -123,8 +128,11 @@
           <br> 
           <br>
           <h5>QUICK LINKS</h5>
-          <a href = "/lookup_venue">Sessions</a><br>
-          <a href = "/my_bookings">My Bookings</a><br>
+          <a href = "/create_facility">Add Facility</a><br>
+          <a href = "/create_activity">Add Activity</a><br>
+          <a href = "/update_facility">Edit Facility</a><br>
+          <a href = "/update_Activity">Edit Activity</a><br>
+          
           
         </div>
         <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">

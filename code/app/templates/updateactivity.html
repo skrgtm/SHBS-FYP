@@ -43,13 +43,7 @@
   <br>
   <br>
 
-     {% with messages = get_flashed_messages() %}
-     {% if messages %}
-           {% for message in messages %}
-                <p>{{ message }}</p>
-           {% endfor %}
-     {% endif %}
-  {% endwith %}
+     
 
   <div class="w-full flex items-center justify-center px-4">
     <div class="max-w-md w-full">
@@ -86,6 +80,14 @@
               <button type="button" class="bg-gray-300 text-gray-700 rounded-lg px-3 py-2 ml-2" onclick="changeAmount(1)">+</button>
             </div>
           </div>
+          {% with messages = get_flashed_messages() %}
+     {% if messages %}
+           {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+  {% endwith %}
+          <br>
           <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Update Activity</button>
         </form>
       </div>
@@ -114,9 +116,10 @@
         <br> 
         <br>
         <h5>QUICK LINKS</h5>
-        <a href = "/lookup_venue">Sessions</a><br>
-        <a href = "/my_bookings">My Bookings</a><br>
-       
+          <a href = "/create_facility">Add Facility</a><br>
+          <a href = "/create_activity">Add Activity</a><br>
+          <a href = "/update_facility">Edit Facility</a><br>
+          <a href = "/update_Activity">Edit Activity</a><br>
       </div>
       <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
         <br>
