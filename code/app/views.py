@@ -353,7 +353,7 @@ def send_verification_email():
     # Generate the verification URL using Flask-URL-Generator
     verification_url = url_for(
         'verify_email', token=verification_token, _external=True)
-    flash('The verification link is sent to your email address.')
+    flash('The verification link is sent to your email address.Make sure you have entered the valid email address.')
     # Create the email message
     subject = 'Verify Your Email'
 

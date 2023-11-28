@@ -186,9 +186,10 @@ class UserMember(FlaskForm):
     userEmail = StringField('User Email', validators=[DataRequired()])
 
 
-#Form to handle Bookings.
+# Form to handle Bookings.
 class BookingForm(FlaskForm):
-    num_people = IntegerField('Number of People', validators=[DataRequired(), NumberRange(min=1, max=10)])
+    num_people = IntegerField('Number of People', validators=[
+                              DataRequired(), NumberRange(min=1, max=10)])
     submit = SubmitField('Book Now')
 
 # From that takes user email data to create bookings on the users behalf.
