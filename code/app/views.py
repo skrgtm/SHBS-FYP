@@ -109,7 +109,7 @@ def load_user(user_id):
 # Also handles the Contact us Info by sending users verification emails on submission.
 
 
-@app.route('/', methods=['GET', 'POST'])
+# @app.route('/', methods=['GET', 'POST'])
 # def Homepage():
 #     form = ContactUsForm()
 #     if request.method == 'POST':
@@ -147,6 +147,7 @@ def load_user(user_id):
 #         return redirect('/')
 #   elif request.method == 'GET':
 #     return render_template('contact_us.html', form=form)
+@app.route('/', methods=['GET', 'POST'])
 def Homepage():
     form = ContactUsForm()
     if request.method == 'POST':
@@ -1690,6 +1691,8 @@ def get_sessions_for_activity(facility_id, activity_id):
         session_activity_association).filter_by(activity_id=activity_id).all()
     session_dicts = [session.to_dict() for session in sessions]
     return jsonify(session_dicts)
+
+#*********************************** End of User: After Login *****************************************
 
 # ************************************ Update User Information ********************************************
 # Route that allows the user to update their personal information
