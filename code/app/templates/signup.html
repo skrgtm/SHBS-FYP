@@ -86,26 +86,7 @@
 
     
   </div>
-  <div class="flash-messages">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if category == 'user_exists' %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ message }}
-                    </div>
-                {% elif category == 'email_exists' %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ message }}
-                    </div>
-                {% elif category == 'password_mismatch' %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ message }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+  
 </div>
 
 
@@ -116,6 +97,7 @@
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg">
+          
           <h1 class="h3 mb-3" style="text-align: center; font-weight: bold">
             CREATE ACCOUNT
           </h1>
@@ -123,6 +105,7 @@
             src="../static/images/logo-black.png"
             style="transform: scale(0.75); display: block; margin: 0"
           /><br />
+          
 
           <form
             method="post"
@@ -174,7 +157,11 @@
               rounded text-gray-700 w-full leading-tight focus:outline-none
               focus:shadow-outline input-custom-width", inputmode="tel") }}
             </p>
-            
+            <br>
+            {% with messages = get_flashed_messages() %} {% if messages %} {%
+              for message in messages %}
+              <p style="color: red">{{ message }}</p>
+              {% endfor %} {% endif %} {% endwith %}
             
             <button
               id="submitbtn"
@@ -282,6 +269,7 @@
         </div>
       </div>
     </footer>
+    
 
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
