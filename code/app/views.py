@@ -636,8 +636,6 @@ def payment_success():
         # Other content for the receipt
         print("\n")
 
-    #  ****************************************************************
-
     p.drawCentredString(300, 600, "-------Booking Receipt-------")
     p.drawCentredString(300, 550, f"Name: {current_user.User}")
     p.drawCentredString(300, 500, f"Date: {datetime.now().date()}")
@@ -654,7 +652,6 @@ def payment_success():
         session_end_time = booking.session.End_time
         p.drawCentredString(
             300, y, f"Booking ID {booking.id}:Facility {facility_name},: Activity {activity_name}, Session start {session_start_time}, Session end {session_end_time}")
-    #  ******************************************************
 
     p.save()
     buffer.seek(0)
@@ -688,6 +685,8 @@ plans = {
 # Users can cancel their orders redirecting them to cancel page.
 # Else to the success url which activates user membership.
 
+# Khalti payment gateway for subscription
+
 
 @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
 def order_subscription(username):
@@ -699,24 +698,72 @@ def order_subscription(username):
     if request.method == 'POST':
         plan_id = request.form.get('plan_id')
 
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[
-                {
-                    "price": plans[plan_id]['price_id'],
-                    "quantity": 1,
-                },
-            ],
-            mode="subscription",
-            # success_url=request.host_url + f'success?payment_type=subscription&username={username}&plan_id={plan_id}',
-            # cancel_url=request.host_url + "cancel",
-        )
+        selected_plan = plans.get(plan_id)
 
-        # Redirect the user to the Checkout page for the subscription
-        return redirect(checkout_session.url)
+        if selected_plan:
+            # Get the amount for the selected plan
+            amount = selected_plan.get('price_id')
+
+            # Convert amount to paisa if necessary
+            amount_paisa = int(amount * 100)
+
+            payload = {
+                "amount": amount_paisa,
+                "token": "your_khalti_secret_key",  # Replace with your Khalti secret key
+                "product_identity": f"{plan_id}_Order01",
+                "product_name": selected_plan['name'],
+                "checkout_method": "PAYMENT_INTEGRATION"
+            }
+
+            headers = {
+                'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
+                'Content-Type': 'application/json',
+            }
+
+            # Send the request to Khalti's API for payment initiation
+            response = requests.post(
+                "https://khalti.com/api/v2/payment/confirm/", headers=headers, json=payload)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                return redirect(response_data['payment_url'])
+            else:
+                app.logger.error(
+                    f"Failed to initiate payment: {response.text}")
+                return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
 
     return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
 
+
+# **********************************************************************************
+# @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
+# def order_subscription(username):
+#     user = UserAccount.query.filter_by(User=username).first()
+
+#     if user is None:
+#         abort(404, f"No user found with username: {username}")
+
+#     if request.method == 'POST':
+#         plan_id = request.form.get('plan_id')
+
+#         checkout_session = stripe.checkout.Session.create(
+#             payment_method_types=["card"],
+#             line_items=[
+#                 {
+#                     "price": plans[plan_id]['price_id'],
+#                     "quantity": 1,
+#                 },
+#             ],
+#             mode="subscription",
+#             # success_url=request.host_url + f'success?payment_type=subscription&username={username}&plan_id={plan_id}',
+#             # cancel_url=request.host_url + "cancel",
+#         )
+
+#         # Redirect the user to the Checkout page for the subscription
+#         return redirect(checkout_session.url)
+
+#     return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
+# *************************************************************************************************************
 # Route to allow users to cancel their membership
 # Cchecks if the user account exists and if the user is a member before cancelling.
 # If user is not member the user is redirected to homepage
