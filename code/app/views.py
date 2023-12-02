@@ -669,13 +669,13 @@ def payment_success():
 plans = {
     'monthly': {
         'name': 'Monthly Membership',
-        'price_id': 'price_1MmhrZBqkMuCWI2NYyG9Ye7N',
+        'price_id': 2500,
         'interval': 'month',
         'currency': 'Rs'
     },
     'yearly': {
         'name': 'Yearly Membership',
-        'price_id': 'price_1MmhqtBqkMuCWI2NEADoQBHn',
+        'price_id': 25000,
         'interval': 'year',
         'currency': 'Rs'
     }
@@ -688,6 +688,37 @@ plans = {
 # Khalti payment gateway for subscription
 
 
+@app.route('/subscription_success', methods=['GET'], strict_slashes=False)
+@login_required
+def subscription_success():
+    user_id = current_user.id
+    user_subscription = UserAccount.query.filter_by(id=user_id).first()
+
+    if not user_subscription:
+        return redirect(url_for('user'))
+
+    # Extract membership_type from the query parameters
+    membership_type = request.args.get('membership_type')
+
+    if membership_type:
+        user_subscription.Member = True
+        user_subscription.Membership_Type = membership_type.split(
+            '?')[0]  # Splitting and taking the first part
+        user_subscription.start_date = datetime.now().date()
+
+        if membership_type.startswith('yearly'):
+            user_subscription.end_date = user_subscription.start_date + \
+                timedelta(days=365)
+        elif membership_type.startswith('monthly'):
+            user_subscription.end_date = user_subscription.start_date + \
+                timedelta(days=30)
+
+        db.session.commit()
+        return redirect(url_for('user'))
+
+    return 'Membership type not specified', 400
+
+
 @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
 def order_subscription(username):
     user = UserAccount.query.filter_by(User=username).first()
@@ -697,32 +728,33 @@ def order_subscription(username):
 
     if request.method == 'POST':
         plan_id = request.form.get('plan_id')
-
         selected_plan = plans.get(plan_id)
 
         if selected_plan:
-            # Get the amount for the selected plan
             amount = selected_plan.get('price_id')
-
-            # Convert amount to paisa if necessary
             amount_paisa = int(amount * 100)
 
-            payload = {
+            # Modify the return_url to include the membership_type as a query parameter
+            return_url = url_for('subscription_success',
+                                 _external=True) + f"?membership_type={plan_id}"
+
+            payload = json.dumps({
+                "return_url": return_url,
+                "website_url": "http://localhost:5000",
                 "amount": amount_paisa,
-                "token": "your_khalti_secret_key",  # Replace with your Khalti secret key
-                "product_identity": f"{plan_id}_Order01",
-                "product_name": selected_plan['name'],
-                "checkout_method": "PAYMENT_INTEGRATION"
-            }
+                "purchase_order_id": "Order01",
+                "purchase_order_name": selected_plan['name']
+                # Add other fields as needed
+            })
 
             headers = {
+                # Replace with your actual key
                 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
                 'Content-Type': 'application/json',
             }
 
-            # Send the request to Khalti's API for payment initiation
             response = requests.post(
-                "https://khalti.com/api/v2/payment/confirm/", headers=headers, json=payload)
+                "https://a.khalti.com/api/v2/epayment/initiate/", headers=headers, data=payload)
 
             if response.status_code == 200:
                 response_data = response.json()
