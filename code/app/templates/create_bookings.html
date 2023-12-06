@@ -41,7 +41,7 @@
     <div class="max-w-md w-full">
       <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
         <form class="form-signin" method="POST" name="signin">
-          <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">CREATE USER BOOKING</h1>
+          <h1 class="h3 mb-3 font-weight-normal"> CREATE USER BOOKING </h1>
           {{ form.hidden_tag() }}
           <div class="mb-4">
             <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
@@ -51,7 +51,6 @@
               {{form.userEmail(class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="username", type="text", placeholder="User Email")}}
             <br>
             <br>
-            
               <button class="btn btn-custom" type="submit">Submit</button>
               <br>
               {% with messages = get_flashed_messages() %}
@@ -60,7 +59,9 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
+              
         </form>
+        
       </div>
     </div>
   </div>
@@ -71,7 +72,7 @@
 <div class="w-full flex items-center justify-center px-4">
     <div class="max-w-screen-xl">
         <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 5px solid #df6700;">
-        <b><h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">USER INFORMATION</h1></b>
+        <b><h1 class="h3 mb-3 font-weight-normal">USER INFROMATION</h1></b>
             <div class="table-responsive"></div>
             <table class="table table-hover">
                 <thead>
@@ -87,7 +88,7 @@
                         <td>{{ item.User }}</td>
                         <td>{{ item.Email }}</td>
                         <!-- <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('edit_booking', booking_id=item.id) }}">Edit</a></td> -->
-                        <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('booking.details_view', user_id = item.id) }}">Create Booking</a></td>
+                        <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('booking_details', user_id = item.id) }}">Create Booking</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -109,7 +110,7 @@
             <p>Empowering athletes, nurturing talent, fostering 
               teamwork, celebrating <br>
               achievements.</p>
-              <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
           </div>
         </div>
         <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
@@ -133,7 +134,7 @@
           <br> 
           <br> 
           <br>
-          <h5>EXPLORE MORE</h5>
+          <h5>SPONSORS</h5>
           <a href="https://www.nike.com">
             NIKE
           </a><br>
@@ -154,6 +155,7 @@
           <p>9818255262</p>
           <h5>EMAIL</h5>
           <p>sportsmitra@gmail.com</p>
+             
         </div>
       </div>
     </div>
