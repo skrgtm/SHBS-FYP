@@ -2,6 +2,17 @@
 from flask import Flask, render_template, flash, redirect, request, make_response, url_for, current_app, abort, session, jsonify
 from app import app, models, db, admin, login_manager, mail
 from flask_admin.contrib.sqla import ModelView
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib.units import inch
+import os
+from io import BytesIO
+from PIL import Image as PILImage
+from reportlab.lib.utils import ImageReader
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm
 from reportlab.lib.pagesizes import letter
@@ -588,7 +599,6 @@ def order_products():
 @app.route('/payment_success', methods=['GET'], strict_slashes=False)
 @login_required
 def payment_success():
-    
 
     user_bookings = Booking.query.filter_by(
         user_id=current_user.id, Status="Saved").all()
@@ -616,17 +626,52 @@ def payment_success():
     db.session.commit()
     flash('Payment successful! Your booking statuses have been updated to "Booked".')
 
-    # Fetch receipt bookings after committing changes
-    receipt_bookings = Booking.query.filter_by(receipt_id=new_receipt.id).all()
+    static_folder = os.path.join(app.root_path, 'static')
+    image_path = os.path.join(static_folder, 'images', 'nb.png')
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
 
-    # Render the HTML template for the email content
-    receipt_html = render_template('bookings_receipt.html', user=current_user, bookings=receipt_bookings, total_amount=total_amount,current_time=datetime.now())
+    x = 5
+    y = 610
 
-    # Send email with the rendered HTML as the body
-    msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com', recipients=[current_user.Email])
-    msg.body = 'Your booking receipt is attached.'
-    msg.html = receipt_html  # Set the HTML content for the email
+    with PILImage.open(image_path) as pil_image:
+        # Resize the image
+        max_image_width = 800  # Adjust the desired width
+        max_image_height = 300  # Adjust the desired height
+        pil_image.thumbnail((max_image_width, max_image_height))
 
+        # Convert the image to ReportLab's ImageReader format
+        img = ImageReader(pil_image)
+        img_width, img_height = pil_image.size
+
+        p.drawImage(img, x, y, width=img_width, height=img_height)
+
+        # Other content for the receipt
+        print("\n")
+
+    p.drawCentredString(300, 600, "-------Booking Receipt-------")
+    p.drawCentredString(300, 550, f"Name: {current_user.User}")
+    p.drawCentredString(300, 500, f"Date: {datetime.now().date()}")
+    p.drawCentredString(300, 450, f"Time: {datetime.now().time()}")
+    p.drawCentredString(300, 400, f"Amount: {total_amount}")
+    receipt_bookings = Booking.query.filter_by(
+        receipt_id=new_receipt.id).all()
+    y = 400
+    for booking in receipt_bookings:
+        y -= 50
+        facility_name = booking.session.facility.Name
+        activity_name = booking.activity.Activity_Name
+        session_start_time = booking.session.Start_time
+        session_end_time = booking.session.End_time
+        p.drawCentredString(
+            300, y, f"Booking ID {booking.id}:Facility {facility_name},: Activity {activity_name}, Session start {session_start_time}, Session end {session_end_time}")
+
+    p.save()
+    buffer.seek(0)
+
+    msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com',
+                  recipients=[current_user.Email])
+    msg.attach('receipt.pdf', 'application/pdf', buffer.read())
     mail.send(msg)
 
     return redirect(url_for('my_bookings'))
@@ -1093,6 +1138,22 @@ def extractactivites(facility_id):
 def pricing():
     activity = Activity.query.all()
     return render_template('pricing.html', activity=activity)
+
+
+# page that shows the analytics
+@app.route('/analytics', methods=['GET'])
+@login_required
+def analytics():
+
+    return render_template('analytics.html')
+
+
+# page where manager can add/edit type of membership
+@app.route('/mgr_membership', methods=['GET'])
+@login_required
+def membership():
+
+    return render_template('add_membership.html')
 
 
 # ****************************************** End of Manager Roles *****************************************
