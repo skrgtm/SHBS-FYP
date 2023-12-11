@@ -2,6 +2,17 @@
 from flask import Flask, render_template, flash, redirect, request, make_response, url_for, current_app, abort, session, jsonify
 from app import app, models, db, admin, login_manager, mail
 from flask_admin.contrib.sqla import ModelView
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.colors import HexColor
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib.units import inch
+import os
+from io import BytesIO
+from PIL import Image as PILImage
+from reportlab.lib.utils import ImageReader
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm
 from reportlab.lib.pagesizes import letter
@@ -546,6 +557,7 @@ def logout():
 
 # khalti payment gateway
 @app.route('/order_products', methods=['POST'])
+@login_required
 def order_products():
     total_amount = request.form.get(
         'total_amount') or request.json.get('total_amount')
@@ -587,6 +599,7 @@ def order_products():
 @app.route('/payment_success', methods=['GET'], strict_slashes=False)
 @login_required
 def payment_success():
+
     user_bookings = Booking.query.filter_by(
         user_id=current_user.id, Status="Saved").all()
 
@@ -1125,6 +1138,22 @@ def extractactivites(facility_id):
 def pricing():
     activity = Activity.query.all()
     return render_template('pricing.html', activity=activity)
+
+
+# page that shows the analytics
+@app.route('/analytics', methods=['GET'])
+@login_required
+def analytics():
+
+    return render_template('analytics.html')
+
+
+# page where manager can add/edit type of membership
+@app.route('/mgr_membership', methods=['GET'])
+@login_required
+def membership():
+
+    return render_template('add_membership.html')
 
 
 # ****************************************** End of Manager Roles *****************************************
