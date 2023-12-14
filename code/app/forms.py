@@ -215,3 +215,12 @@ class UpdateUserForm(FlaskForm):
 
 def get_id(self):
     return self.userName
+
+
+# add membership form
+class AddMembershipForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    price = IntegerField('Price', validators=[DataRequired(), NumberRange(min=0)])
+    interval = StringField('Interval', validators=[DataRequired()])
+    currency = StringField('Currency', validators=[DataRequired()])
+    submit = SubmitField('Submit')

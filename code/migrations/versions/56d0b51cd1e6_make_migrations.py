@@ -1,8 +1,8 @@
 """make migrations
 
-Revision ID: 070c4d57be02
+Revision ID: 56d0b51cd1e6
 Revises: 
-Create Date: 2023-11-30 14:58:31.200707
+Create Date: 2023-12-14 16:38:59.527074
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '070c4d57be02'
+revision = '56d0b51cd1e6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,7 +35,7 @@ def upgrade():
     sa.Column('start_date', sa.Date(), nullable=True),
     sa.Column('end_date', sa.Date(), nullable=True),
     sa.Column('Member', sa.Boolean(), nullable=True),
-    sa.Column('Membership_Type', sa.String(length=50), nullable=True),
+    sa.Column('member_type', sa.String(length=50), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('verification_token')
     )
@@ -55,6 +55,15 @@ def upgrade():
     op.create_index(op.f('ix_facility_End_Facility'), 'facility', ['End_Facility'], unique=False)
     op.create_index(op.f('ix_facility_Name'), 'facility', ['Name'], unique=False)
     op.create_index(op.f('ix_facility_Start_Facility'), 'facility', ['Start_Facility'], unique=False)
+    op.create_table('membership',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=500), nullable=True),
+    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('interval', sa.String(length=50), nullable=True),
+    sa.Column('currency', sa.String(length=50), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_membership_name'), 'membership', ['name'], unique=False)
     op.create_table('Sessions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('Date', sa.Date(), nullable=True),
@@ -143,6 +152,8 @@ def downgrade():
     op.drop_index(op.f('ix_Sessions_End_time'), table_name='Sessions')
     op.drop_index(op.f('ix_Sessions_Date'), table_name='Sessions')
     op.drop_table('Sessions')
+    op.drop_index(op.f('ix_membership_name'), table_name='membership')
+    op.drop_table('membership')
     op.drop_index(op.f('ix_facility_Start_Facility'), table_name='facility')
     op.drop_index(op.f('ix_facility_Name'), table_name='facility')
     op.drop_index(op.f('ix_facility_End_Facility'), table_name='facility')

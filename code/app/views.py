@@ -1,4 +1,9 @@
 # Relevant modules for the project.
+from .models import Membership  # Import the Membership model
+# Import your AddMembershipForm from forms.py
+from .forms import AddMembershipForm
+from app import app, db  # Update with your Flask app instance and db object
+from flask import render_template, redirect, url_for, flash
 from flask import Flask, render_template, flash, redirect, request, make_response, url_for, current_app, abort, session, jsonify
 from app import app, models, db, admin, login_manager, mail
 from flask_admin.contrib.sqla import ModelView
@@ -14,7 +19,7 @@ from PIL import Image as PILImage
 from reportlab.lib.utils import ImageReader
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm
+from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions, Activity, session_activity_association
@@ -105,6 +110,7 @@ admin.add_view(ModelView(Activity, db.session))
 admin.add_view(ModelView(Sessions, db.session))
 admin.add_view(ModelView(Booking, db.session))
 admin.add_view(ModelView(Receipt, db.session))
+admin.add_view(ModelView(Membership, db.session))
 # *******************************************************************************
 
 
@@ -1148,12 +1154,61 @@ def analytics():
     return render_template('analytics.html')
 
 
-# page where manager can add/edit type of membership
-@app.route('/mgr_membership', methods=['GET'])
-@login_required
-def membership():
+# Your route for manager membership addition
 
-    return render_template('add_membership.html')
+# Route to add a new membership type
+
+@app.route('/mgr_membership', methods=['GET', 'POST'])
+def add_membership():
+    form = AddMembershipForm()
+    if form.validate_on_submit():
+        new_membership = Membership(
+            name=form.name.data,
+            price=form.price.data,
+            interval=form.interval.data,
+            currency=form.currency.data
+        )
+
+        db.session.add(new_membership)
+        db.session.commit()
+
+        flash('New membership type added successfully!', 'success')
+        # Update with your manager dashboard route
+        return redirect(url_for('manager_dashboard'))
+
+    return render_template('add_membership.html', form=form)
+
+# # Route to view all membership types
+# @app.route('/view_memberships')
+# def view_memberships():
+#     memberships = Membership.query.all()
+#     return render_template('view_memberships.html', memberships=memberships)
+
+# # Route to delete a membership type
+# @app.route('/delete_membership/<int:membership_id>', methods=['POST'])
+# def delete_membership(membership_id):
+#     membership = Membership.query.get_or_404(membership_id)
+#     db.session.delete(membership)
+#     db.session.commit()
+#     flash('Membership type deleted successfully!', 'success')
+#     return redirect(url_for('view_memberships'))  # Redirect to view memberships page
+
+# # Route to update a membership type (optional)
+# @app.route('/edit_membership/<int:membership_id>', methods=['GET', 'POST'])
+# def edit_membership(membership_id):
+#     membership = Membership.query.get_or_404(membership_id)
+#     form = AddMembershipForm(obj=membership)
+#     if form.validate_on_submit():
+#         membership.name = form.name.data
+#         membership.price = form.price.data
+#         membership.interval = form.interval.data
+#         membership.currency = form.currency.data
+
+#         db.session.commit()
+#         flash('Membership type updated successfully!', 'success')
+#         return redirect(url_for('view_memberships'))  # Redirect to view memberships page
+
+#     return render_template('edit_membership.html', form=form)
 
 
 # ****************************************** End of Manager Roles *****************************************

@@ -27,15 +27,62 @@
         <ul class="navbar-nav ml-auto">
           <li class="nav-item"> <a class="nav-link" href="/mgr_homepage">HOME</a> </li>
           <li class="nav-item"> <a class="nav-link" href="/create_emp">EMPLOYEE ACCOUNT</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/create_facility">ADD FACILITY</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/create_activity">ADD ACTIVITY</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/update_facility">EDIT FACILITY</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/update_Activity">EDIT ACTIVITY</a> </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              FACILITY
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/create_facility">ADD FACILITY</a>
+              <a class="dropdown-item" href="/update_facility">EDIT FACILITY</a>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              ACTIVITY
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/create_activity">ADD ACTIVITY</a>
+              <a class="dropdown-item" href="/update_Activity">EDIT ACTIVITY</a>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              MEMBERSHIP
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/mgr_membership">Add membership</a>
+              <a class="dropdown-item" href="/mgr_edit_membership">Edit membership</a>
+            </div>
+          </li>
           <li class="nav-item"> <a class="nav-link" href="/pricing">PRICING</a> </li>
           <li class="nav-item"> <a class="nav-link" href="/analytics">ANALYTICS</a> </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/mgr_membership">Membership</a>
-          </li>
+          
           <li class="nav-item"> <a class="nav-link" href="/logout">LOGOUT</a> </li>
           </li>
         </ul>
