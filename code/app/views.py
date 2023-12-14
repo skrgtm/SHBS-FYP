@@ -1174,15 +1174,38 @@ def add_membership():
 
         flash('New membership type added successfully!', 'success')
         # Update with your manager dashboard route
-        return redirect(url_for('manager_dashboard'))
+        return redirect(url_for('add_membership'))
 
     return render_template('add_membership.html', form=form)
 
-# # Route to view all membership types
-# @app.route('/view_memberships')
-# def view_memberships():
-#     memberships = Membership.query.all()
-#     return render_template('view_memberships.html', memberships=memberships)
+
+# Route to view all membership types
+@app.route('/mgr_edit_membership')
+def view_memberships():
+    memberships = Membership.query.all()
+    return render_template('view_memtype.html', memberships=memberships)
+
+
+# Route to delete a membership
+@app.route('/delete_membership/<int:membership_id>', methods=['GET', 'POST'])
+def delete_membership(membership_id):
+    # Find the membership by its ID
+    membership = Membership.query.get_or_404(membership_id)
+
+    # Delete the membership
+    db.session.delete(membership)
+    db.session.commit()
+
+    return redirect(url_for('view_memberships'))
+
+
+# @app.route('/delete_membership/<int:membership_id>', methods=['GET', 'POST'])
+# def delete_membership(id):
+#     membership = Membership.query.get(id)
+#     if membership:
+#         db.session.delete(membership)
+#         db.session.commit()
+#     return render_template('view_memtype.html')
 
 # # Route to delete a membership type
 # @app.route('/delete_membership/<int:membership_id>', methods=['POST'])
