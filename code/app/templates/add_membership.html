@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../static/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
-    <title>Update Facility</title>      
+    <title>Add Membership Type</title>      
     </head>
     <body>
     <!-- <div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg"> -->
@@ -27,13 +27,62 @@
           <ul class="navbar-nav ml-auto">
             <li class="nav-item"> <a class="nav-link" href="/mgr_homepage">HOME</a> </li>
           <li class="nav-item"> <a class="nav-link" href="/create_emp">EMPLOYEE ACCOUNT</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/create_facility">ADD FACILITY</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/create_activity">ADD ACTIVITY</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/update_facility">EDIT FACILITY</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/update_Activity">EDIT ACTIVITY</a> </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              FACILITY
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/create_facility">ADD FACILITY</a>
+              <a class="dropdown-item" href="/update_facility">EDIT FACILITY</a>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              ACTIVITY
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/create_activity">ADD ACTIVITY</a>
+              <a class="dropdown-item" href="/update_Activity">EDIT ACTIVITY</a>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              MEMBERSHIP
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/mgr_membership">Add membership</a>
+              <a class="dropdown-item" href="/mgr_edit_membership">Edit membership</a>
+            </div>
+          </li>
           <li class="nav-item"> <a class="nav-link" href="/pricing">PRICING</a> </li>
           <li class="nav-item"> <a class="nav-link" href="/analytics">ANALYTICS</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/mgr_membership">Membership</a> </li>
+          
 
           <li class="nav-item"> <a class="nav-link" href="/logout">LOGOUT</a> </li>
             </li>
@@ -41,6 +90,56 @@
         </div>
       </div>
     </nav>
+    <br>
+    <br>
+    <br>
+    <div class="w-full flex items-center justify-center px-4">
+      <div class="max-w-md w-full">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+          <form class="form-signin" method="POST" name="create_facility">
+            {{ form.hidden_tag() }}
+            <div class="mb-4">
+              <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">ADD MEMBERSHIP TYPE</h1>
+  
+  
+              <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
+              <label class="block text-gray-700 font-bold mb-2" for="name">
+                Membership Type
+              </label>
+              {{ form.name(class_="form-control") }}
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 font-bold mb-2" for="capacity">
+                Price
+              </label>
+              {{ form.price(class_="form-control") }}
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 font-bold mb-2" for="start_time">
+                Interval
+              </label>
+              {{ form.interval(class_="form-control") }}
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 font-bold mb-2" for="end_time">
+                Currency
+              </label>
+              {{ form.currency(class_="form-control") }}
+            </div>
+            
+            {% with messages = get_flashed_messages() %}
+       {% if messages %}
+             {% for message in messages %}
+                  <p style="color: red;">{{ message }}</p>
+             {% endfor %}
+       {% endif %}
+    {% endwith %}
+            <br>
+            <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Add</button>
+          </form>
+        </div>
+      </div>
+    </div>
     <br>
     <br>
     <br>

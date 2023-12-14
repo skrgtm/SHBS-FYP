@@ -461,3 +461,8 @@ footer::before {
 .flash-messages p {
   color: black
 }
+
+.nav-item {
+  flex: 0 0 auto; /* This ensures the item won't grow or shrink */
+  margin-right: 10px; /* Adjust this value for the desired right gap */
+}
