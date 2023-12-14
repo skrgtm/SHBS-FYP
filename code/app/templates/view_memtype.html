@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../static/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
-    <title>Edit Membership Type</title>      
+    <title>View Membership Type</title>      
     </head>
     <body>
     <!-- <div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg"> -->
@@ -76,7 +76,7 @@
               MEMBERSHIP
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/login">Add membership</a>
+              <a class="dropdown-item" href="/mgr_membership">Add membership</a>
               <a class="dropdown-item" href="/mgr_edit_membership">Edit membership</a>
             </div>
           </li>
@@ -92,11 +92,65 @@
     </nav>
     <br>
     <br>
-    <br>
+    
+    {% with messages = get_flashed_messages() %} {% if messages %} {% for
+        message in messages %} {% endfor %} {% endif %} {% endwith %} {% if memberships
+        %}
+        <div class="w-full flex items-center justify-center px-4">
+          <div class="max-w-screen-xl">
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+              <b><h1 class="h3 mb-3 font-weight-normal">MEMBERSHIP TYPES</h1></b>
+              <div class="table-responsive">
+                <table class="table table-hover w-full">
+                  <thead>
+                    <tr>
+                        <th>Membership Type</th>
+                        <th>Price</th>
+                        <th>Interval</th>
+                        <th>Currency</th>
+                        <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for membership_type in memberships %}
+                    <tr>
+                        <td>{{ membership_type.name }}</td>
+                        <td>{{ membership_type.price }}</td>
+                        <td>{{ membership_type.interval }}</td>
+                        <td>{{ membership_type.currency }}</td>
 
-     
+                      <td>
+                        
+                        <button type="submit" class="btn btn-custom">
+                          <a
+                            href="{{ url_for('delete_membership', membership_id=membership_type.id) }}"
+                            >Delete</a
+                          >
+                        </button>
+                        
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <b
+          ><h1 align="center" class="custom-text">
+            You Have No Membership type Currently
+          </h1></b
+        ><br />
+        <b
+          ><h1 align="center" class="custom-text">
+            Pls Add a Membership type 
+          </h1></b
+        >
+        {% endif %}
 
-  
+    
   <br>
   <br>
   <br>
