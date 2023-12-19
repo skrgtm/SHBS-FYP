@@ -49,11 +49,13 @@
             <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
               <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">USER CURRENT BOOKING</h1>
                     <div class="card-body">
+                      {% if booking %}
                 <p><strong>Activity:</strong> {{ booking.activity.Activity_Name }}</p>
                 <p><strong>Facility:</strong> {{ booking.session.facility.Name }}</p>
                 <p><strong>Date:</strong> {{ booking.session.Date.strftime('%Y-%m-%d') }}</p>
                 <p><strong>Start Time:</strong> {{ booking.session.Start_time.strftime('%H:%M') }}
                 <p><strong>End Time:</strong> {{ booking.session.End_time.strftime('%H:%M') }}</p>
+                      {% endif %}
                 </div>
             </div>
         </div>
@@ -70,6 +72,8 @@
                         {{ form.start_time(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
                         <label class="block text-gray-700 font-bold mb-2">End Time</label>
                         {{ form.end_time(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                        <br>
+                        <!-- <br> -->
                         <button type="submit" name="save" value="save" class="btn btn-primary">SAVE</button>
                         <button type="submit" name="cancel" value="cancel" class="btn btn-danger">DELETE</button>
                     </form>

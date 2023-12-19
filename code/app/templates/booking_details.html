@@ -43,12 +43,7 @@
       <form class="form-signin" method="POST" name="signin">
         <div class = "filter-data">
             <div align = "center">
-              {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                  {% for message in messages %}
-                {% endfor %}
-              {% endif %}
-              {% endwith %}
+              
               <div class="booking-details">
                   <form method="POST">
                       {{ form.hidden_tag() }}
@@ -66,6 +61,14 @@
                       <label class="block text-gray-700 font-bold mb-2">Group Size</label>
                       {{ form.capacity(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
                     <br>
+                    {% with messages = get_flashed_messages() %}
+     {% if messages %}
+           {% for message in messages %}
+                <p style="color: black;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+  {% endwith %}
+  <br>
                       <button class="btn btn-custom" type="submit" >Submit</button>
                   </form>
                 </div>

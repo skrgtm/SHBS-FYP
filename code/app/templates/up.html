@@ -169,8 +169,7 @@
                 </form>
               </div>
             </div>
-
-            {% if memberships %} {% for membership in memberships %}
+            <!-- {% for membership in memberships %}
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
                 <h3 class="text-lg font-bold">{{ membership.name }}</h3>
@@ -179,43 +178,30 @@
                 <p class="text-sm">
                   Get access to all our content for an even lower yearly fee.
                 </p>
-                <p class="text-sm font-semibold">
-                  Price: {{ membership.currency }} {{ membership.price }} per {{
+                <p class="text-sm font-semibold"> Price:
+                  {{ membership.currency }} {{ membership.price }} per {{
                   membership.interval }}
                 </p>
                 <br /><br />
                 <form
-                  action="{{ url_for('display_memberships', username=username) }}"
+                  action="{{ url_for('order_subscription', username=username) }}"
                   method="POST"
                 >
-                  <input
-                    type="hidden"
-                    name="plan_id"
-                    value="{{ membership.id }}"
-                  />
+                  <input type="hidden" name="plan_id" value="yearly" />
                   <button class="btn btn-custom btn-square" type="submit">
                     Subscribe
                   </button>
                 </form>
               </div>
             </div>
-            {% endfor %} {% endif %}
+            {% endfor %}
           </div>
           <br />
           <br />
         </div>
       </div>
       {% endif %}
-    </div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
+    </div> -->
 
     <footer class="container-fluid">
       <div class="container">
