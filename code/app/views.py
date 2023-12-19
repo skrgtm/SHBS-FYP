@@ -274,6 +274,7 @@ def signup():
         userData.verification_token = verification_token
         db.session.add(userData)
         db.session.commit()
+        # flash('New Employee account created successfully!', 'success')
 
         return redirect(url_for('send_verification_email', user_email=user_email, verification_token=verification_token))
 
@@ -684,6 +685,7 @@ def payment_success():
 
 
 # ******************************* When User Purchases Membership ************************
+# ************************************************************************************************************
 # Membership Prices For Monthly and annual memberships.
 plans = {
     'monthly': {
@@ -741,6 +743,7 @@ def subscription_success():
 @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
 def order_subscription(username):
     user = UserAccount.query.filter_by(User=username).first()
+    plan_id = request.form.get('plan_id')
 
     if user is None:
         abort(404, f"No user found with username: {username}")
@@ -786,34 +789,16 @@ def order_subscription(username):
     return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
 
 
+
+
 # **********************************************************************************
-# @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
-# def order_subscription(username):
-#     user = UserAccount.query.filter_by(User=username).first()
 
-#     if user is None:
-#         abort(404, f"No user found with username: {username}")
+# Route to display all membership types
+@app.route('/display_memberships')
+def display_memberships():
+    memberships = Membership.query.all()  # Retrieve all memberships from the database
+    return render_template('all_subscriptions.html', memberships=memberships)
 
-#     if request.method == 'POST':
-#         plan_id = request.form.get('plan_id')
-
-#         checkout_session = stripe.checkout.Session.create(
-#             payment_method_types=["card"],
-#             line_items=[
-#                 {
-#                     "price": plans[plan_id]['price_id'],
-#                     "quantity": 1,
-#                 },
-#             ],
-#             mode="subscription",
-#             # success_url=request.host_url + f'success?payment_type=subscription&username={username}&plan_id={plan_id}',
-#             # cancel_url=request.host_url + "cancel",
-#         )
-
-#         # Redirect the user to the Checkout page for the subscription
-#         return redirect(checkout_session.url)
-
-#     return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
 # *************************************************************************************************************
 # Route to allow users to cancel their membership
 # Cchecks if the user account exists and if the user is a member before cancelling.
@@ -959,7 +944,8 @@ def newemp():
         userData.verified = True
         userData.roles.append(role)
         db.session.commit()
-        return redirect('/mgr_homepage')
+        flash('New Employee created successfully!', 'success')
+        return redirect('/create_emp')
     # redirects user to landing page
     return render_template('newemp.html', title='Home', form=form)
 
@@ -988,9 +974,10 @@ def new_facility():
         facility.activities.append(activity)
         db.session.add(facility)
         db.session.commit()
+        flash('New Facility created successfully!', 'success')
         dynamic_sessions(facility.id, form.Start_time.data,
                          form.End_time.data, form.Capacity.data, activity.id)
-        return redirect('/mgr_homepage')
+        return redirect('/create_facility')
     return render_template('createfacility.html', form=form)
 
 
@@ -1020,8 +1007,9 @@ def new_activity():
         facility.activities.append(activity)
         db.session.add(activity)
         db.session.commit()
+        flash('New Activity created successfully!', 'success')
         append_to_session(facility.id, activity.id)
-        return redirect('/mgr_homepage')
+        return redirect('/create_activity')
     return render_template('createactivity.html', form=form)
 
 # Route to update facility information
@@ -1049,7 +1037,8 @@ def update_facility():
         facility.Start_Facility = form.Start_time.data
         facility.End_Facility = form.End_time.data
         db.session.commit()
-        return redirect('/mgr_homepage')
+        flash('New Facility updated successfully!', 'success')
+        return redirect('/update_facility')
     if not form.validate_on_submit():
         print(form.errors)
     return render_template('updatefacility.html', form=form)
@@ -1081,7 +1070,8 @@ def update_activity():
         # facilityz = Facility.query.filter_by(id = int(form.New_Facility_Name.data)).first()
         # activity.facility_id = facilityz.id
         db.session.commit()
-        return redirect('/mgr_homepage')
+        flash('New Activity updated successfully!', 'success')
+        return redirect('/update_Activity')
     return render_template('updateactivity.html', form=form)
 
 
@@ -1144,14 +1134,6 @@ def extractactivites(facility_id):
 def pricing():
     activity = Activity.query.all()
     return render_template('pricing.html', activity=activity)
-
-
-# page that shows the analytics
-@app.route('/analytics', methods=['GET'])
-@login_required
-def analytics():
-
-    return render_template('analytics.html')
 
 
 # Your route for manager membership addition
@@ -1415,9 +1397,7 @@ def create_booking():
 
             if verifyuser.has_role("User"):
                 bookings = UserAccount.query.filter_by(Email=user_email).all()
-                flash('Not a User')
-            else:
-                flash('Not a User')
+                flash('User')
 
     return render_template('create_bookings.html', bookings=bookings, form=form, form_submitted=form_submitted)
 
@@ -1520,7 +1500,7 @@ def book_session_emp():
         db.session.commit()
 
         # Add a message to notify the user that the booking was successful.
-        flash('Booking successful!')
+        flash('Booking successfully!', 'success')
     else:
         flash('Not enough remaining capacity for the booking.')
 
@@ -1537,6 +1517,7 @@ def get_activities_createBooking(facility_id):
     activities = [{'id': activity.id, 'Name': activity.Name}
                   for activity in facility.activities]
     return jsonify(activities)
+
 
 # ****************************************** End of Employee ******************************************************
 
@@ -1922,3 +1903,53 @@ def user_information():
 
 
 # ************************************ End of User Information ********************************************
+
+
+# **********************************************ANALYTICS**********************************************************
+
+# Loads the analytics page and the selectors required for retrieving relevant datta
+@app.route('/analytics', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def analytics():
+    activityset = Activity.query.all()
+    facilityset = Facility.query.all()
+    current_year = datetime.utcnow().year
+    current_year = datetime.utcnow().year
+    start_of_year = datetime(current_year, 1, 1)
+    end_of_year = datetime(current_year, 12, 31)
+    next_year_start = datetime(current_year + 1, 1, 1)
+
+    last_week_of_year = end_of_year - timedelta(days=end_of_year.weekday())
+    next_year_first_week = next_year_start - \
+        timedelta(days=next_year_start.weekday())
+
+    weeks_in_current_year = last_week_of_year.isocalendar(
+    )[1] + 1 if next_year_first_week.year != current_year else last_week_of_year.isocalendar()[1]
+
+    week_data = []
+
+    for week_number in range(1, weeks_in_current_year + 1):
+        start_date = datetime.strptime(
+            f"{current_year}-W{week_number-1}-1", "%Y-W%W-%w")
+        end_date = start_date + timedelta(days=6)
+        week_data.append((week_number, start_date.date(), end_date.date()))
+    return render_template('analytics.html', title="Analytics", data=activityset, data1=facilityset, week=week_data)
+
+# Getter that retrieves the count of members and non members
+# Sends this data in JSON form
+# This data is passed on to google charts and displayed in the analytics page as a pie chart
+
+
+@app.route('/analyzemember', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def analyze_members():
+    total_users = UserAccount.query.count()
+    member_users = UserAccount.query.filter_by(Member=True).count()
+    non_member_users = UserAccount.query.filter_by(Member=False).count()
+    data = {
+        'members': member_users,
+        'nonmembers': non_member_users,
+    }
+    return jsonify(data)

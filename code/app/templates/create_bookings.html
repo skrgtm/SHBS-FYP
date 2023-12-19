@@ -53,12 +53,12 @@
             <br>
               <button class="btn btn-custom" type="submit">Submit</button>
               <br>
-              {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+              {% if messages %}
+           {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+
               
         </form>
         

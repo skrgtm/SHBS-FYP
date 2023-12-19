@@ -87,7 +87,7 @@
                         <th>End Time</th>
                         <th>Group Size</th>
                         <th>Amount Paid</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -101,7 +101,7 @@
                         <td>{{ item.session.End_time }}</td>
                         <td>{{ item.Size }}</td>
                         <td>{{ item.Amount }}</td>
-                        <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('edit_booking', booking_id=item.id) }}">Edit</a></td>
+                        <!-- <td><a class="btn btn-primary btn-block btn-sm btn-custom" href="{{ url_for('edit_booking', booking_id=item.id) }}">Edit</a></td> -->
                     </tr>
                     {% endfor %}
                 </tbody>
