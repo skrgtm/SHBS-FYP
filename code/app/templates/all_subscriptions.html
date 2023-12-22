@@ -133,7 +133,7 @@
               </div>
               <div class="card-body">
                 <p class="text-sm">
-                  Get access to all our content for a low monthly fee.
+                  Get access to all our content for a low fee.
                 </p>
                 <p class="text-sm font-semibold">Price: Rs 2500 per month</p>
                 <br /><br />
@@ -154,7 +154,7 @@
               </div>
               <div class="card-body">
                 <p class="text-sm">
-                  Get access to all our content for an even lower yearly fee.
+                  Get access to all our content for an even lower fee.
                 </p>
                 <p class="text-sm font-semibold">Price: Rs 25000 per year</p>
                 <br /><br />
@@ -170,14 +170,14 @@
               </div>
             </div>
 
-            {% if memberships %} {% for membership in memberships %}
+            {% for membership in memberships %}
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
                 <h3 class="text-lg font-bold">{{ membership.name }}</h3>
               </div>
               <div class="card-body">
                 <p class="text-sm">
-                  Get access to all our content for an even lower yearly fee.
+                  Get access to all our content for an even lower fee.
                 </p>
                 <p class="text-sm font-semibold">
                   Price: {{ membership.currency }} {{ membership.price }} per {{
@@ -205,7 +205,7 @@
           <br />
         </div>
       </div>
-      {% endif %}
+      
     </div>
     <br />
     <br />

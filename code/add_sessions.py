@@ -27,7 +27,7 @@ def create_activities():
 
     for facility, activities in activities_data:
         for activity_name in activities:
-            activity = Activity(Activity_Name=activity_name, Amount=15)
+            activity = Activity(Activity_Name=activity_name, Amount=150)
             facility.activities.append(activity)
             db.session.add(activity)
     db.session.commit()
@@ -149,13 +149,13 @@ def create_session(facility, start_time, end_time, activity_names, day=None, wee
 
 def create_facilities():
     facilities_data = [
-        ("Swimming Pool", 300, "08:00", "20:00"),
-        ("Fitness Room", 350, "08:00", "22:00"),
-        ("Squash Court 1", 400, "08:00", "22:00"),
-        ("Squash Court 2", 400, "08:00", "22:00"),
-        ("Sports Hall", 450, "08:00", "22:00"),
-        ("Climbing Wall", 220, "10:00", "20:00"),
-        ("Studio", 250, "08:00", "22:00"),
+        ("Swimming Pool", 30, "08:00", "20:00"),
+        ("Fitness Room", 35, "08:00", "22:00"),
+        ("Squash Court 1", 40, "08:00", "22:00"),
+        ("Squash Court 2", 40, "08:00", "22:00"),
+        ("Basketball Sports Hall", 45, "08:00", "22:00"),
+        ("Climbing Wall", 22, "10:00", "20:00"),
+        ("Studio", 25, "08:00", "22:00"),
     ]
 
     facilities = []
