@@ -71,7 +71,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="/logout">Logout</a>
+              <a class="nav-link" href="#" id="logout">Logout</a>
             </li>
           </ul>
         </div>
@@ -81,12 +81,13 @@
     <br />
     <br />
     <br />
-    {% with messages = get_flashed_messages() %} {% if messages %} {% for
-    message in messages %} {% endfor %} {% endif %} {% endwith %} {% if bookings
-    %}
+
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-screen-xl">
         <div class="bg-white p-8 rounded-lg shadow-lg">
+          {% with messages = get_flashed_messages() %} {% if messages %} {% for
+          message in messages %} {% endfor %} {% endif %} {% endwith %} {% if
+          bookings %}
           <b><h1 class="h3 mb-3 font-weight-normal">YOUR BOOKINGS</h1></b>
           <div class="table-responsive">
             <table class="table table-hover w-full">
@@ -95,6 +96,8 @@
                   <th>Facility</th>
                   <th>Activity</th>
                   <th>Booked Date</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
                   <th>Number of People</th>
                   <th>Amount</th>
                   <th>Status</th>
@@ -107,8 +110,10 @@
                   <td>{{ item.session.facility.Name }}</td>
                   <td>{{ item.activity.Activity_Name }}</td>
                   <td>{{ item.Book_Time }}</td>
+                  <td>{{ item.session.Start_time }}</td>
+                  <td>{{ item.session.End_time }}</td>
                   <td>{{ item.Size }}</td>
-                  <td>{{ item.Size * item.activity.Amount }}</td>
+                  <td>Rs {{ item.Size * item.activity.Amount }}</td>
                   <td>{{ item.Status }}</td>
                   <td>
                     {% if item.Book_Time > current_time %}
@@ -207,10 +212,32 @@
       </div>
     </footer>
 
+    <script>
+      document.getElementById("logout").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevents the default link behavior
+
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to logout?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, logout!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Redirect to logout URL
+            window.location.href = "/logout";
+          }
+        });
+      });
+    </script>
+
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
     <script src="../static/javascript/parallax.js"></script>
     <script src="../static/javascript/wow.js"></script>
     <script src="../static/javascript/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>
 </html>

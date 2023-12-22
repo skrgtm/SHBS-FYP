@@ -565,6 +565,7 @@ def logout():
 # khalti payment gateway
 @app.route('/order_products', methods=['POST'])
 @login_required
+@require_role(role="User")
 def order_products():
     total_amount = request.form.get(
         'total_amount') or request.json.get('total_amount')
@@ -605,6 +606,7 @@ def order_products():
 # Recipt is now generated and a pdf version is sent to the users Email.
 @app.route('/payment_success', methods=['GET'], strict_slashes=False)
 @login_required
+@require_role(role="User")
 def payment_success():
 
     user_bookings = Booking.query.filter_by(
@@ -711,6 +713,7 @@ plans = {
 
 @app.route('/subscription_success', methods=['GET'], strict_slashes=False)
 @login_required
+@require_role(role="User")
 def subscription_success():
     user_id = current_user.id
     user_subscription = UserAccount.query.filter_by(id=user_id).first()
@@ -741,6 +744,8 @@ def subscription_success():
 
 
 @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
+@login_required
+@require_role(role="User")
 def order_subscription(username):
     user = UserAccount.query.filter_by(User=username).first()
     plan_id = request.form.get('plan_id')
@@ -789,14 +794,14 @@ def order_subscription(username):
     return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
 
 
-
-
 # **********************************************************************************
 
 # Route to display all membership types
 @app.route('/display_memberships')
 def display_memberships():
-    memberships = Membership.query.all()  # Retrieve all memberships from the database
+    # Retrieve all memberships from the database
+    memberships = Membership.query.all()
+    print(memberships)
     return render_template('all_subscriptions.html', memberships=memberships)
 
 # *************************************************************************************************************
@@ -807,8 +812,8 @@ def display_memberships():
 
 
 @app.route('/cancel_usermembership/<int:user_id>', methods=['POST'])
-@require_role(role="User")
 @login_required
+@require_role(role="User")
 def cancel_usermembership(user_id):
     user = UserAccount.query.filter_by(id=user_id).first()
     print(user)
@@ -831,6 +836,8 @@ def cancel_usermembership(user_id):
 # route to handle the successful payment
 # Makes the user a member and sets info based on the length of the subscription.
 @app.route('/success')
+@login_required
+@require_role(role="User")
 def success():
     payment_type = request.args.get('payment_type')
 
@@ -884,6 +891,7 @@ def employee_login():
             app.logger.warning('Invalid Login')
             return redirect('/emp_login')
         if not user.has_role("Employee") and not user.has_role("Manager"):
+            flash('This login is for employees and managers only!', 'error')
             app.logger.warning('Not an Employee')
             return redirect('/emp_login')
         if user.has_role("Employee"):
@@ -937,6 +945,14 @@ def newemp():
             app.logger.warning(
                 'Invalid Account Creation: Passwords do not match')
             return redirect('/create_emp')
+        # Password complexity check (you can define your own criteria)
+        import re
+        pattern = re.compile(
+            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$')
+        if not re.match(pattern, form.userPassword.data):
+            flash('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character', 'userPassword')
+            app.logger.warning('Invalid Account Creation: Weak password')
+            return redirect('/create_emp')
         userData = UserAccount(User=usr, Email=email, Password=form.userPassword.data,
                                Mobile=form.CountryCode.data+form.Mobile.data)
         db.session.add(userData)
@@ -962,9 +978,18 @@ def newemp():
 def new_facility():
     form = CreateFacilityForm()
     if form.validate_on_submit():
+
+        if form.Start_time.data > form.End_time.data:
+            flash('Start time cannot be after end time', 'Start_time')
+            return redirect('/create_facility')
+
         checkfacility = Facility.query.filter_by(Name=form.Name.data).first()
         if checkfacility is not None:
             flash('Facility already exists')
+            return redirect('/create_facility')
+
+        if form.Capacity.data <= 0:
+            flash('Capacity should be a positive number', 'Capacity')
             return redirect('/create_facility')
         facility = Facility(Name=form.Name.data, Capacity=form.Capacity.data,
                             Start_Facility=form.Start_time.data, End_Facility=form.End_time.data)
@@ -974,7 +999,7 @@ def new_facility():
         facility.activities.append(activity)
         db.session.add(facility)
         db.session.commit()
-        flash('New Facility created successfully!', 'success')
+        flash('New Facility created successfully', 'success')
         dynamic_sessions(facility.id, form.Start_time.data,
                          form.End_time.data, form.Capacity.data, activity.id)
         return redirect('/create_facility')
@@ -997,8 +1022,18 @@ def new_activity():
 
     if form.validate_on_submit():
         facility = Facility.query.filter_by(id=form.Facility_Name.data).first()
+
+        if not facility:
+            flash('Facility not found', 'error')
+            return redirect('/create_activity')
+
         check_activity = Activity.query.filter_by(
             Activity_Name=form.Activity_Name.data, facility_id=form.Facility_Name.data).first()
+
+        if check_activity and check_activity in facility.activities:
+            flash('Activity already exists for this facility', 'error')
+            return redirect('/create_activity')
+
         activity = Activity(
             Activity_Name=form.Activity_Name.data, Amount=form.Amount.data)
         if check_activity in facility.activities:
@@ -1006,10 +1041,18 @@ def new_activity():
             return redirect('/create_activity')
         facility.activities.append(activity)
         db.session.add(activity)
-        db.session.commit()
-        flash('New Activity created successfully!', 'success')
-        append_to_session(facility.id, activity.id)
-        return redirect('/create_activity')
+        try:
+            db.session.commit()
+            flash('New Activity created successfully!', 'success')
+            # Assuming this function exists
+            append_to_session(facility.id, activity.id)
+            return redirect('/create_activity')
+        except Exception as e:
+            db.session.rollback()
+            flash('Error creating activity. Please try again.', 'error')
+            app.logger.error(f'Error creating activity: {str(e)}')
+            return redirect('/create_activity')
+
     return render_template('createactivity.html', form=form)
 
 # Route to update facility information
@@ -1025,22 +1068,30 @@ def update_facility():
     form = UpdateFacilityForm()
     facilities = Facility.query.all()
     facility_choices = [(f.id, f.Name) for f in facilities]
-    form = UpdateFacilityForm()
     form.Facility_Namez.choices = facility_choices
 
     if request.method == "POST" and form.validate_on_submit():
+        try:
+            facility = Facility.query.filter_by(
+                id=int(form.Facility_Namez.data)).first()
 
-        facility = Facility.query.filter_by(
-            id=int(form.Facility_Namez.data)).first()
-        facility.Name = form.Name.data
-        facility.Capacity = form.Capacity.data
-        facility.Start_Facility = form.Start_time.data
-        facility.End_Facility = form.End_time.data
-        db.session.commit()
-        flash('New Facility updated successfully!', 'success')
-        return redirect('/update_facility')
-    if not form.validate_on_submit():
-        print(form.errors)
+            if not facility:
+                flash('Facility not found', 'error')
+                return redirect('/update_facility')
+
+            facility.Name = form.Name.data
+            facility.Capacity = form.Capacity.data
+            facility.Start_Facility = form.Start_time.data
+            facility.End_Facility = form.End_time.data
+            db.session.commit()
+            flash('Facility updated successfully!', 'success')
+            return redirect('/update_facility')
+        except Exception as e:
+            db.session.rollback()
+            flash('Error updating facility. Please try again.', 'error')
+            app.logger.error(f'Error updating facility: {str(e)}')
+            return redirect('/update_facility')
+
     return render_template('updatefacility.html', form=form)
 
 # Route to update activity information
@@ -1620,7 +1671,7 @@ def view_sessions():
 
 @app.route('/book_session', methods=['POST'])
 @login_required
-# @require_role(role="User")
+@require_role(role="User")
 def book_session():
     session_id = request.form.get('session_id')
     activity_id = request.form.get('activity_id')
@@ -1877,6 +1928,7 @@ def get_sessions_for_activity(facility_id, activity_id):
 
 @app.route('/update_user', methods=['GET', 'POST'])
 @login_required
+@require_role(role="User")
 def update_user():
     form = UpdateUserForm()
     if form.validate_on_submit():
