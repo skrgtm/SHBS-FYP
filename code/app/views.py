@@ -660,14 +660,19 @@ def payment_success():
 
         p.drawImage(img, x, y, width=img_width, height=img_height)
 
+    
         # Other content for the receipt
         print("\n")
+    if current_user.Member:
+        discount = int(total_amount * 0.5)  # 50% discount for members
+        total_amount = total_amount - discount  # Apply the member discount
 
     p.drawCentredString(300, 600, "-------Booking Receipt-------")
     p.drawCentredString(300, 550, f"Name: {current_user.User}")
     p.drawCentredString(300, 500, f"Date: {datetime.now().date()}")
     p.drawCentredString(300, 450, f"Time: {datetime.now().time()}")
     p.drawCentredString(300, 400, f"Amount: {total_amount}")
+    
     receipt_bookings = Booking.query.filter_by(
         receipt_id=new_receipt.id).all()
     y = 400
