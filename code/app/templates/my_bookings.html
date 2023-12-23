@@ -85,6 +85,7 @@
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-screen-xl">
         <div class="bg-white p-8 rounded-lg shadow-lg">
+          
           {% with messages = get_flashed_messages() %} {% if messages %} {% for
           message in messages %} {% endfor %} {% endif %} {% endwith %} {% if
           bookings %}
@@ -117,18 +118,25 @@
                   <td>{{ item.Status }}</td>
                   <td>
                     {% if item.Book_Time > current_time %}
-                    <button type="submit" class="btn btn-custom">
-                      <a
-                        href="{{ url_for('cancel_booking', booking_id=item.id) }}"
-                        >Cancel</a
-                      >
+                    <button type="button" class="btn btn-custom cancel-booking-btn" data-booking-id="{{ item.id }}">
+                      Cancel
                     </button>
                     {% endif %}
                   </td>
                 </tr>
                 {% endfor %}
-              </tbody>
+                
             </table>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div id="flash-message" class="alert alert-{{ category }}">
+                  <p style="color: black">{{ message }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          </tbody>
           </div>
         </div>
       </div>
@@ -211,6 +219,49 @@
         </div>
       </div>
     </footer>
+    <script>
+      // Automatically hide the flash message after 5 seconds
+      document.addEventListener('DOMContentLoaded', function () {
+        const flashMessage = document.getElementById('flash-message');
+        
+        if (flashMessage) {
+          setTimeout(function () {
+            flashMessage.style.display = 'none';
+          }, 5000); // 5000 milliseconds = 5 seconds
+        }
+      });
+    </script>
+
+    <script>
+      // Add a click event listener to the cancel booking buttons
+      document.addEventListener('DOMContentLoaded', function () {
+        const cancelButtons = document.querySelectorAll('.cancel-booking-btn');
+        
+        cancelButtons.forEach(function (button) {
+          button.addEventListener('click', function (event) {
+            const bookingId = event.target.getAttribute('data-booking-id');
+            
+            // Display SweetAlert confirmation
+            Swal.fire({
+              title: 'Are you sure?',
+              text: 'This action cannot be undone!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+              // If user confirms the action
+              if (result.isConfirmed) {
+                // Redirect to cancel_booking route with the booking ID
+                window.location.href = `/cancel_booking/${bookingId}`;
+              }
+            });
+          });
+        });
+      });
+    </script>
+
 
     <script>
       document.getElementById("logout").addEventListener("click", function (e) {
@@ -231,13 +282,16 @@
           }
         });
       });
-    </script>
 
+      
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
     <script src="../static/javascript/parallax.js"></script>
     <script src="../static/javascript/wow.js"></script>
     <script src="../static/javascript/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
   </body>
 </html>
