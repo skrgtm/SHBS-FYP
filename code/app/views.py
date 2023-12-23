@@ -221,7 +221,9 @@ def login():
         if not user.verified:
             flash('Please verify your email before logging in.')
             return redirect(url_for('login'))
-        login_user(user, remember=form.remember.data)
+        remember_me = form.remember.data
+
+        login_user(user, remember=remember_me)
         if user.has_role("User"):
             return redirect("/user")
         else:
@@ -563,7 +565,7 @@ def logout():
 
 
 # khalti payment gateway
-@app.route('/order_products', methods=['POST'])
+@app.route('/order_products', methods=['GET', 'POST'])
 @login_required
 @require_role(role="User")
 def order_products():
@@ -582,7 +584,10 @@ def order_products():
     })
     headers = {
         # Ensure the 'Key' prefix is included
+        # test key
         'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
+        # my key
+        # 'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
         'Content-Type': 'application/json',
     }
 
@@ -604,7 +609,7 @@ def order_products():
 # Handles success for user bookings.
 # Sets the booking status form 'Saved' to 'Paid'.
 # Recipt is now generated and a pdf version is sent to the users Email.
-@app.route('/payment_success', methods=['GET'], strict_slashes=False)
+@app.route('/payment_success', methods=['GET'])
 @login_required
 @require_role(role="User")
 def payment_success():
@@ -696,12 +701,24 @@ plans = {
         'interval': 'month',
         'currency': 'Rs'
     },
+    '3_months': {
+        'name': '3-Month Membership',
+        'price_id': 7000,
+        'interval': '3 months',
+        'currency': 'Rs'
+    },
+    '6_months': {
+        'name': '6-Month Membership',
+        'price_id': 13000,
+        'interval': '6 months',
+        'currency': 'Rs'
+    },
     'yearly': {
         'name': 'Yearly Membership',
         'price_id': 25000,
         'interval': 'year',
         'currency': 'Rs'
-    }
+    },
 }
 
 # Route to handle the user orders.
@@ -712,8 +729,8 @@ plans = {
 
 
 @app.route('/subscription_success', methods=['GET'], strict_slashes=False)
-@login_required
-@require_role(role="User")
+# @login_required
+# @require_role(role="User")
 def subscription_success():
     user_id = current_user.id
     user_subscription = UserAccount.query.filter_by(id=user_id).first()
@@ -724,11 +741,17 @@ def subscription_success():
     # Extract membership_type from the query parameters
     membership_type = request.args.get('membership_type')
 
+   
+
     if membership_type:
-        user_subscription.Member = True
-        user_subscription.Membership_Type = membership_type.split(
-            '?')[0]  # Splitting and taking the first part
-        user_subscription.start_date = datetime.now().date()
+        membership_type = membership_type.split('?')[0]
+
+        selected_plan = plans.get(membership_type)
+        if selected_plan:
+            user_subscription.Member = True
+            # Store membership name
+            user_subscription.member_type = selected_plan['name']
+            user_subscription.start_date = datetime.now().date()
 
         if membership_type.startswith('yearly'):
             user_subscription.end_date = user_subscription.start_date + \
@@ -736,11 +759,25 @@ def subscription_success():
         elif membership_type.startswith('monthly'):
             user_subscription.end_date = user_subscription.start_date + \
                 timedelta(days=30)
+        elif membership_type.startswith('3_months'):
+            user_subscription.end_date = user_subscription.start_date + \
+                timedelta(days=90)
+        elif membership_type.startswith('6_months'):
+            user_subscription.end_date = user_subscription.start_date + \
+                timedelta(days=180)
 
         db.session.commit()
+        msg = Message('Membership Subscription Confirmation',
+                  sender='skrgtm2059@gmail.com',
+                  recipients=[current_user.Email])
+        msg.html = render_template('membership_email.html', membership_type=membership_type)
+        mail.send(msg)
         return redirect(url_for('user'))
 
     return 'Membership type not specified', 400
+
+    
+    
 
 
 @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
@@ -813,17 +850,16 @@ def display_memberships():
 
 @app.route('/cancel_usermembership/<int:user_id>', methods=['POST'])
 @login_required
-@require_role(role="User")
 def cancel_usermembership(user_id):
     user = UserAccount.query.filter_by(id=user_id).first()
     print(user)
     if user:
         user.Member = False
-        user.Membership_Type = None
+        user.member_type = None
         user.start_date = None
         user.end_date = None
         db.session.commit()
-        flash('Membership canceled successfully')
+        # flash('Membership canceled successfully')
         return redirect(url_for('user'))
     else:
         flash('User not found')
@@ -836,8 +872,8 @@ def cancel_usermembership(user_id):
 # route to handle the successful payment
 # Makes the user a member and sets info based on the length of the subscription.
 @app.route('/success')
-@login_required
-@require_role(role="User")
+# @login_required
+# @require_role(role="User")
 def success():
     payment_type = request.args.get('payment_type')
 
@@ -1412,7 +1448,7 @@ def cancel_membership(user_id):
     user = UserAccount.query.get(user_id)
     if user:
         user.Member = False
-        user.Membership_Type = None
+        user.member_type = None
         user.start_date = None
         user.end_date = None
         db.session.commit()
@@ -1671,7 +1707,7 @@ def view_sessions():
 
 @app.route('/book_session', methods=['POST'])
 @login_required
-@require_role(role="User")
+# @require_role(role="User")
 def book_session():
     session_id = request.form.get('session_id')
     activity_id = request.form.get('activity_id')
@@ -1734,9 +1770,11 @@ def checkout_page():
         })
     discount = 0
     if len(aggregated_data) >= 3:
+        # 15% discount for 3 or more sessions
         discount = int(total_amount * 0.15)
-    if current_user.Member == True:
-        total_amount = 0
+    if current_user.Member:
+        discount = int(total_amount * 0.5)  # 50% discount for members
+        total_amount = total_amount - discount  # Apply the member discount
 
     return render_template('checkout_page.html', data=aggregated_data, total_amount=total_amount, discount=discount)
 
@@ -1928,7 +1966,7 @@ def get_sessions_for_activity(facility_id, activity_id):
 
 @app.route('/update_user', methods=['GET', 'POST'])
 @login_required
-@require_role(role="User")
+# @require_role(role="User")
 def update_user():
     form = UpdateUserForm()
     if form.validate_on_submit():

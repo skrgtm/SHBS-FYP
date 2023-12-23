@@ -79,7 +79,9 @@
           <li class="nav-item"> <a class="nav-link" href="/pricing">PRICING</a> </li>
           <li class="nav-item"> <a class="nav-link" href="/analytics">ANALYTICS</a> </li>
           
-          <li class="nav-item"> <a class="nav-link" href="/logout">LOGOUT</a> </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logout">Logout</a>
+          </li>
           </li>
             </ul>
           </div>
@@ -196,6 +198,27 @@
       </div>
     </div>
   </footer>
+  <script>
+    document.getElementById("logout").addEventListener("click", function (e) {
+      e.preventDefault(); // Prevents the default link behavior
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, logout!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirect to logout URL
+          window.location.href = "/logout";
+        }
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </body>
 </html>

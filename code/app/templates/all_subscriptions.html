@@ -71,7 +71,7 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="/logout">Logout</a>
+              <a class="nav-link" href="#" id="logout">Logout</a>
             </li>
           </ul>
         </div>
@@ -94,7 +94,7 @@
                 Phone Number: {{ current_user.Mobile }}
               </p>
               <p class="text-sm font-semibold">
-                Membership Type: {{ current_user.Membership_Type }}
+                Membership Type: {{ current_user.member_type }}
               </p>
               <p class="text-sm font-semibold">
                 Membership Start Date: {{
@@ -107,11 +107,8 @@
             </div>
           </div>
           <div class="mt-4">
-            <form
-              action="{{ url_for('cancel_usermembership', user_id= current_user.id) }}"
-              method="POST"
-            >
-              <button class="btn btn-secondary btn-square" type="submit">
+            <form id="cancelForm" action="{{ url_for('cancel_usermembership', user_id= current_user.id) }}" method="POST">
+              <button id="cancelButton" class="btn btn-secondary btn-square" type="button">
                 Cancel Membership
               </button>
             </form>
@@ -119,6 +116,7 @@
         </div>
       </div>
       <br /><br />
+      
       {% else %}
       <div class="d-flex justify-content-center">
         <div class="max-w-2xl w-full">
@@ -127,6 +125,7 @@
           </h1>
           <br /><br />
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Existing Monthly Membership -->
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
                 <h3 class="text-lg font-bold">Monthly Membership</h3>
@@ -148,13 +147,61 @@
                 </form>
               </div>
             </div>
+          
+            <!-- New 3-Month Membership -->
+            <div class="card">
+              <div class="card-header bg-gray-900 text-white">
+                <h3 class="text-lg font-bold">3-Month Membership</h3>
+              </div>
+              <div class="card-body">
+                <p class="text-sm">
+                  Get access to all our content for a lower fee.
+                </p>
+                <p class="text-sm font-semibold">Price: Rs 7000 for 3 months</p>
+                <br /><br />
+                <form
+                  action="{{ url_for('order_subscription', username=username) }}"
+                  method="POST"
+                >
+                  <input type="hidden" name="plan_id" value="3_months" />
+                  <button class="btn btn-custom btn-square" type="submit">
+                    Subscribe
+                  </button>
+                </form>
+              </div>
+            </div>
+          
+            <!-- New 6-Month Membership -->
+            <div class="card">
+              <div class="card-header bg-gray-900 text-white">
+                <h3 class="text-lg font-bold">6-Month Membership</h3>
+              </div>
+              <div class="card-body">
+                <p class="text-sm">
+                  Get access to all our content for a lower fee.
+                </p>
+                <p class="text-sm font-semibold">Price: Rs 13000 for 6 months</p>
+                <br /><br />
+                <form
+                  action="{{ url_for('order_subscription', username=username) }}"
+                  method="POST"
+                >
+                  <input type="hidden" name="plan_id" value="6_months" />
+                  <button class="btn btn-custom btn-square" type="submit">
+                    Subscribe
+                  </button>
+                </form>
+              </div>
+            </div>
+          
+            <!-- Existing Annual Membership -->
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
                 <h3 class="text-lg font-bold">Annual Membership</h3>
               </div>
               <div class="card-body">
                 <p class="text-sm">
-                  Get access to all our content for an even lower fee.
+                  Get access to all our content for a lower fee.
                 </p>
                 <p class="text-sm font-semibold">Price: Rs 25000 per year</p>
                 <br /><br />
@@ -169,6 +216,10 @@
                 </form>
               </div>
             </div>
+          
+
+
+
 
             {% for membership in memberships %}
             <div class="card">
@@ -180,26 +231,24 @@
                   Get access to all our content for an even lower fee.
                 </p>
                 <p class="text-sm font-semibold">
-                  Price: {{ membership.currency }} {{ membership.price }} per {{
-                  membership.interval }}
+                  Price: {{ membership.currency }} {{ membership.price }} per {{ membership.interval }}
                 </p>
                 <br /><br />
-                <form
-                  action="{{ url_for('display_memberships', username=username) }}"
-                  method="POST"
-                >
-                  <input
-                    type="hidden"
-                    name="plan_id"
-                    value="{{ membership.id }}"
-                  />
+                <form action="{{ url_for('display_memberships', username=username) }}" method="POST">
+                  <input type="hidden" name="plan_id" value="{{ membership.id }}" />
                   <button class="btn btn-custom btn-square" type="submit">
                     Subscribe
                   </button>
                 </form>
               </div>
             </div>
-            {% endfor %} {% endif %}
+            {% endfor %}
+          </div>
+
+          
+    
+          
+             {% endif %}
           </div>
           <br />
           <br />
@@ -284,6 +333,50 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      // Add a click event listener to the button
+      document.getElementById('cancelButton').addEventListener('click', function() {
+        // Display a SweetAlert confirmation
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'This action cannot be undone!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+          // If user confirms the action, submit the form
+          if (result.isConfirmed) {
+            document.getElementById('cancelForm').submit(); // Submit the form
+          }
+        });
+      });
+    </script>
+
+
+    <script>
+      document.getElementById("logout").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevents the default link behavior
+
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to logout?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, logout!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Redirect to logout URL
+            window.location.href = "/logout";
+          }
+        });
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
     <script src="../static/javascript/parallax.js"></script>

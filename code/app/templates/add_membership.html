@@ -1,108 +1,156 @@
 <html>
-    <head>
+  <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
     <!-- Bootstrap CSS -->
-    <link href="../static/css/animate.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css">
-    <title>Add Membership Type</title>      
-    </head>
-    <body>
+    <link href="../static/css/animate.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="../static/css/bootstrap.min.css"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:300,400,700"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"
+    />
+    <title>Add Membership Type</title>
+  </head>
+  <body>
     <!-- <div class="container-fluid pl-0 pr-0 bg-img clearfix parallax-window2" data-parallax="scroll" data-image-src="../static/images/banner2.jpg"> -->
     <nav class="navbar navbar-expand-md navbar-dark">
-      <div class="container"> 
-        <!-- Brand --> 
-        <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png" alt="Sportsmitra" class = "logo"/></a> 
-        
+      <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand mr-auto" href="/"
+          ><img src="../static/images/nb.png" alt="Sportsmitra" class="logo"
+        /></a>
+
         <!-- Toggler/collapsibe Button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar"> <span class="navbar-toggler-icon"></span> </button>
-        
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#collapsibleNavbar"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
         <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item"> <a class="nav-link" href="/mgr_homepage">HOME</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/create_emp">EMPLOYEE ACCOUNT</a> </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              FACILITY
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/create_facility">ADD FACILITY</a>
-              <a class="dropdown-item" href="/update_facility">EDIT FACILITY</a>
-            </div>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              ACTIVITY
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/create_activity">ADD ACTIVITY</a>
-              <a class="dropdown-item" href="/update_Activity">EDIT ACTIVITY</a>
-            </div>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              MEMBERSHIP
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/mgr_membership">Add membership</a>
-              <a class="dropdown-item" href="/mgr_edit_membership">View membership</a>
-            </div>
-          </li>
-          <li class="nav-item"> <a class="nav-link" href="/pricing">PRICING</a> </li>
-          <li class="nav-item"> <a class="nav-link" href="/analytics">ANALYTICS</a> </li>
-          
-
-          <li class="nav-item"> <a class="nav-link" href="/logout">LOGOUT</a> </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/mgr_homepage">HOME</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/create_emp">EMPLOYEE ACCOUNT</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                FACILITY
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/create_facility"
+                  >ADD FACILITY</a
+                >
+                <a class="dropdown-item" href="/update_facility"
+                  >EDIT FACILITY</a
+                >
+              </div>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                ACTIVITY
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/create_activity"
+                  >ADD ACTIVITY</a
+                >
+                <a class="dropdown-item" href="/update_Activity"
+                  >EDIT ACTIVITY</a
+                >
+              </div>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                MEMBERSHIP
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/mgr_membership"
+                  >Add membership</a
+                >
+                <a class="dropdown-item" href="/mgr_edit_membership"
+                  >View membership</a
+                >
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/pricing">PRICING</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/analytics">ANALYTICS</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="logout">Logout</a>
+            </li>
+          
+            
           </ul>
         </div>
       </div>
     </nav>
-    <br>
-    <br>
-    <br>
+    <br />
+    <br />
+    <br />
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg">
           <form class="form-signin" method="POST" name="create_facility">
             {{ form.hidden_tag() }}
             <div class="mb-4">
-              <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">ADD MEMBERSHIP TYPE</h1>
-  
-  
-              <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
+              <h1 class="h3 mb-3" style="text-align: center; font-weight: bold">
+                ADD MEMBERSHIP TYPE
+              </h1>
+
+              <img
+                src="../static/images/logo-black.png"
+                style="transform: scale(0.75); display: block; margin: 0"
+              /><br />
               <label class="block text-gray-700 font-bold mb-2" for="name">
                 Membership Type
               </label>
@@ -115,7 +163,10 @@
               {{ form.price(class_="form-control") }}
             </div>
             <div class="mb-4">
-              <label class="block text-gray-700 font-bold mb-2" for="start_time">
+              <label
+                class="block text-gray-700 font-bold mb-2"
+                for="start_time"
+              >
                 Interval
               </label>
               {{ form.interval(class_="form-control") }}
@@ -126,96 +177,126 @@
               </label>
               {{ form.currency(class_="form-control") }}
             </div>
-            
-            {% with messages = get_flashed_messages() %}
-       {% if messages %}
-             {% for message in messages %}
-                  <p style="color: red;">{{ message }}</p>
-             {% endfor %}
-       {% endif %}
-    {% endwith %}
-            <br>
-            <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Add</button>
+
+            {% with messages = get_flashed_messages() %} {% if messages %} {%
+            for message in messages %}
+            <p style="color: red">{{ message }}</p>
+            {% endfor %} {% endif %} {% endwith %}
+            <br />
+            <button
+              class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+              type="submit"
+            >
+              Add
+            </button>
           </form>
         </div>
       </div>
     </div>
-    <br>
-    <br>
-    <br>
+    <br />
+    <br />
+    <br />
 
-     
+    <br />
+    <br />
+    <br />
 
-  
-  <br>
-  <br>
-  <br>
-
-   <footer class="container-fluid">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-3 footer1 d-flex wow bounceInLeft" data-wow-delay=".25s">
-          <div class="d-flex flex-wrap align-content-center"> <a href="#"><br><br><img src="../static/images/fnb.png" alt="logo" class = "logo"></a>
-            <p>Empowering athletes, nurturing talent, fostering 
-              teamwork, celebrating <br>
-              achievements.</p>
-              <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+    <footer class="container-fluid">
+      <div class="container">
+        <div class="row">
+          <div
+            class="col-md-3 footer1 d-flex wow bounceInLeft"
+            data-wow-delay=".25s"
+          >
+            <div class="d-flex flex-wrap align-content-center">
+              <a href="#"
+                ><br /><br /><img
+                  src="../static/images/fnb.png"
+                  alt="logo"
+                  class="logo"
+              /></a>
+              <p>
+                Empowering athletes, nurturing talent, fostering teamwork,
+                celebrating <br />
+                achievements.
+              </p>
+              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+            </div>
+          </div>
+          <div
+            class="col-md-3 footer2 wow bounceInUp"
+            data-wow-delay=".25s"
+            id="contact"
+          >
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <h5>QUICK LINKS</h5>
+            <a href="/create_facility">Add Facility</a><br />
+            <a href="/create_activity">Add Activity</a><br />
+            <a href="/update_facility">Edit Facility</a><br />
+            <a href="/update_Activity">Edit Activity</a><br />
+          </div>
+          <div
+            class="col-md-3 footer2 wow bounceInUp"
+            data-wow-delay=".25s"
+            id="contact"
+          >
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <h5>EXPLORE MORE</h5>
+            <a href="https://www.nike.com"> NIKE </a><br />
+            <a href="https://www.jdsports.com"> JD SPORTS </a><br />
+            <a href="https://www.sportsdirect.com"> SPORTS DIRECT </a><br />
+            <a href="https://www.adidas.co.uk"> ADIDAS </a><br />
+          </div>
+          <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
+            <h5>ADDRESS</h5>
+            <p>koteshwor Kathmandu</p>
+            <h5>PHONE</h5>
+            <p>9818255262</p>
+            <h5>EMAIL</h5>
+            <p>sportsmitra@gmail.com</p>
           </div>
         </div>
-        <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
-          <br>
-          <br> 
-          <br> 
-          <br>
-          <br> 
-          <br> 
-          <br>
-          <h5>QUICK LINKS</h5>
-          <a href = "/create_facility">Add Facility</a><br>
-          <a href = "/create_activity">Add Activity</a><br>
-          <a href = "/update_facility">Edit Facility</a><br>
-          <a href = "/update_Activity">Edit Activity</a><br>
-          
-        </div>
-        <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
-          <br>
-          <br> 
-          <br> 
-          <br>
-          <br> 
-          <br> 
-          <br>
-          <h5>EXPLORE MORE</h5>
-          <a href="https://www.nike.com">
-            NIKE
-          </a><br>
-          <a href="https://www.jdsports.com">
-            JD SPORTS
-          </a><br>
-          <a href = "https://www.sportsdirect.com">
-            SPORTS DIRECT
-          </a><br>
-          <a href = "https://www.adidas.co.uk">
-            ADIDAS
-          </a><br>
-        </div>
-        <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
-          <h5>ADDRESS</h5>
-          <p>koteshwor Kathmandu</p>
-          <h5>PHONE</h5>
-          <p>9818255262</p>
-          <h5>EMAIL</h5>
-          <p>sportsmitra@gmail.com</p>
-        </div>
       </div>
-    </div>
-  </footer>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{{ url_for('static', filename='javascript/javascript.js') }}"></script>
-  <script src="../static/javascript/jquery.min.js"></script>
-  <script src="../static/javascript/bootstrap.min.js"></script>
-  <script src="../static/javascript/parallax.js"></script>
-  <script src="../static/javascript/wow.js"></script>
-  <script src="../static/javascript/main.js"></script>
+    </footer>
+    <script>
+      document.getElementById("logout").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevents the default link behavior
+
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to logout?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, logout!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Redirect to logout URL
+            window.location.href = "/logout";
+          }
+        });
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='javascript/javascript.js') }}"></script>
+    <script src="../static/javascript/jquery.min.js"></script>
+    <script src="../static/javascript/bootstrap.min.js"></script>
+    <script src="../static/javascript/parallax.js"></script>
+    <script src="../static/javascript/wow.js"></script>
+    <script src="../static/javascript/main.js"></script>
   </body>
 </html>
