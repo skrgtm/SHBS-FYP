@@ -220,7 +220,14 @@ def get_id(self):
 # add membership form
 class AddMembershipForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    price = IntegerField('Price', validators=[DataRequired(), NumberRange(min=0)])
+    price = IntegerField('Price', validators=[
+                         DataRequired(), NumberRange(min=0)])
     interval = StringField('Interval', validators=[DataRequired()])
-    currency = StringField('Currency', validators=[DataRequired()])
+    currency = StringField('Currency', default='Rs',
+                           render_kw={'readonly': True})
     submit = SubmitField('Submit')
+
+
+class empcheckout(FlaskForm):
+    discount = IntegerField('Discount', validators=[
+                         DataRequired(), NumberRange(min=0)])

@@ -7,6 +7,13 @@ from flask import render_template, redirect, url_for, flash
 from flask import Flask, render_template, flash, redirect, request, make_response, url_for, current_app, abort, session, jsonify
 from app import app, models, db, admin, login_manager, mail
 from flask_admin.contrib.sqla import ModelView
+from flask import render_template_string
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
@@ -19,7 +26,7 @@ from PIL import Image as PILImage
 from reportlab.lib.utils import ImageReader
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm
+from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm, empcheckout
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions, Activity, session_activity_association
@@ -221,9 +228,9 @@ def login():
         if not user.verified:
             flash('Please verify your email before logging in.')
             return redirect(url_for('login'))
-        remember_me = form.remember.data
+        remember = form.remember.data
 
-        login_user(user, remember=remember_me)
+        login_user(user, remember=remember, duration=timedelta(days=10))
         if user.has_role("User"):
             return redirect("/user")
         else:
@@ -605,95 +612,156 @@ def order_products():
         return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
 
 
+# Define the validate_session function
+def validate_session():
+    if current_user.is_authenticated:
+        # User is logged in, session is active
+        return True
+    else:
+        # User is not logged in or session expired
+        return False
+
 # khalti payment success
 # Handles success for user bookings.
 # Sets the booking status form 'Saved' to 'Paid'.
 # Recipt is now generated and a pdf version is sent to the users Email.
+
+
 @app.route('/payment_success', methods=['GET'])
 @login_required
 @require_role(role="User")
 def payment_success():
+    if validate_session():
 
-    user_bookings = Booking.query.filter_by(
-        user_id=current_user.id, Status="Saved").all()
+        user_bookings = Booking.query.filter_by(
+            user_id=current_user.id, Status="Saved").all()
 
-    if not user_bookings:
-        flash('No bookings found with the "Saved" status. Please try again.')
+        if not user_bookings:
+            flash('No bookings found with the "Saved" status. Please try again.')
+            return redirect(url_for('my_bookings'))
+
+        total_amount = sum(
+            [booking.Size * booking.activity.Amount for booking in user_bookings])
+
+        new_receipt = Receipt(
+            user_id=current_user.id,
+            Amount=total_amount
+        )
+
+        db.session.add(new_receipt)
+        db.session.commit()
+        receipt_id = new_receipt.id
+
+        for booking in user_bookings:
+            booking.Status = 'Booked'
+            booking.receipt_id = receipt_id
+
+        db.session.commit()
+        flash('Payment successful! Your booking statuses have been updated to "Booked".')
+
+        static_folder = os.path.join(app.root_path, 'static')
+        image_path = os.path.join(static_folder, 'images', 'nb.png')
+
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+
+        # Load image
+        static_folder = os.path.join(app.root_path, 'static')
+        image_path = os.path.join(static_folder, 'images', 'nb.png')
+
+        # Drawing image on canvas
+        x = 50
+        y = 700
+        with PILImage.open(image_path) as pil_image:
+            # Resize the image
+            max_image_width = 500
+            max_image_height = 200
+            pil_image.thumbnail((max_image_width, max_image_height))
+
+            # Convert the image to ReportLab's ImageReader format
+            img = ImageReader(pil_image)
+            img_width, img_height = pil_image.size
+
+            p.drawImage(img, x, y, width=img_width, height=img_height)
+
+        # Define styles
+        styles = getSampleStyleSheet()
+        style_title = styles['Title']
+        style_body = styles['Normal']
+
+        # Create a title
+        p.setFont("Helvetica-Bold", 20)
+        p.drawCentredString(
+            300, 650, "----------------Booking Receipt----------------")
+
+        # Other receipt details
+        p.setFont("Helvetica", 12)
+        y_start = 600
+        line_height = 20
+
+        if current_user.Member:
+            discount = int(total_amount * 0.5)  # 50% discount for members
+            total_amount = total_amount - discount  # Apply the member discount
+
+        receipt_bookings = Booking.query.filter_by(
+            receipt_id=new_receipt.id).all()
+
+        # Creating a table for booking details
+        table_data = [
+            ['Booking ID', 'Facility', 'Activity', 'Start Time', 'End Time']
+        ]
+
+        for booking in receipt_bookings:
+            facility_name = booking.session.facility.Name
+            activity_name = booking.activity.Activity_Name
+            start_time = booking.session.Start_time
+            end_time = booking.session.End_time
+            table_data.append([str(booking.id), facility_name,
+                              activity_name, str(start_time), str(end_time)])
+
+        table = Table(table_data, colWidths=[60, 120, 120, 100, 100])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ]))
+
+        table.wrapOn(p, 400, 200)
+        table.drawOn(p, x, y - img_height - 50)
+
+        print("\n")
+        print("\n")
+        print("\n")
+        print("\n")
+        print("\n")
+        print("\n")
+
+        p.drawString(450, 200, f"Name: {current_user.User}")
+        p.drawString(450, 200 - line_height, f"Date: {datetime.now().date()}")
+        p.drawString(450, 200 - 2 * line_height,
+                     f"Time: {datetime.now().time()}")
+        p.drawString(450, 200 - 3 * line_height,
+                     f"Total Amount: {total_amount}")
+
+        # Save the PDF buffer
+        p.save()
+        buffer.seek(0)
+
+        # Send the email with the PDF attachment
+        msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com',
+                      recipients=[current_user.Email])
+        msg.attach('receipt.pdf', 'application/pdf', buffer.read())
+        mail.send(msg)
+
         return redirect(url_for('my_bookings'))
 
-    total_amount = sum(
-        [booking.Size * booking.activity.Amount for booking in user_bookings])
-
-    new_receipt = Receipt(
-        user_id=current_user.id,
-        Amount=total_amount
-    )
-
-    db.session.add(new_receipt)
-    db.session.commit()
-    receipt_id = new_receipt.id
-
-    for booking in user_bookings:
-        booking.Status = 'Booked'
-        booking.receipt_id = receipt_id
-
-    db.session.commit()
-    flash('Payment successful! Your booking statuses have been updated to "Booked".')
-
-    static_folder = os.path.join(app.root_path, 'static')
-    image_path = os.path.join(static_folder, 'images', 'nb.png')
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-
-    x = 5
-    y = 610
-
-    with PILImage.open(image_path) as pil_image:
-        # Resize the image
-        max_image_width = 800  # Adjust the desired width
-        max_image_height = 300  # Adjust the desired height
-        pil_image.thumbnail((max_image_width, max_image_height))
-
-        # Convert the image to ReportLab's ImageReader format
-        img = ImageReader(pil_image)
-        img_width, img_height = pil_image.size
-
-        p.drawImage(img, x, y, width=img_width, height=img_height)
-
-    
-        # Other content for the receipt
-        print("\n")
-    if current_user.Member:
-        discount = int(total_amount * 0.5)  # 50% discount for members
-        total_amount = total_amount - discount  # Apply the member discount
-
-    p.drawCentredString(300, 600, "-------Booking Receipt-------")
-    p.drawCentredString(300, 550, f"Name: {current_user.User}")
-    p.drawCentredString(300, 500, f"Date: {datetime.now().date()}")
-    p.drawCentredString(300, 450, f"Time: {datetime.now().time()}")
-    p.drawCentredString(300, 400, f"Amount: {total_amount}")
-    
-    receipt_bookings = Booking.query.filter_by(
-        receipt_id=new_receipt.id).all()
-    y = 400
-    for booking in receipt_bookings:
-        y -= 50
-        facility_name = booking.session.facility.Name
-        activity_name = booking.activity.Activity_Name
-        session_start_time = booking.session.Start_time
-        session_end_time = booking.session.End_time
-        p.drawCentredString(
-            300, y, f"Booking ID {booking.id}:Facility {facility_name},: Activity {activity_name}, Session start {session_start_time}, Session end {session_end_time}")
-
-    p.save()
-    buffer.seek(0)
-
-    msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com',
-                  recipients=[current_user.Email])
-    msg.attach('receipt.pdf', 'application/pdf', buffer.read())
-    mail.send(msg)
-
-    return redirect(url_for('my_bookings'))
+    else:
+        # Session expired or user not logged in
+        # Redirect the user to the login page or handle re-authentication as needed
+        return redirect(url_for('login'))  # Redirect to the login page
 
 
 # ******************************* When User Purchases Membership ************************
@@ -701,26 +769,26 @@ def payment_success():
 # Membership Prices For Monthly and annual memberships.
 plans = {
     'monthly': {
-        'name': 'Monthly Membership',
-        'price_id': 2500,
+        'name': 'Club Membership',
+        'price_id': 150,
         'interval': 'month',
         'currency': 'Rs'
     },
     '3_months': {
-        'name': '3-Month Membership',
-        'price_id': 7000,
+        'name': 'Gym Membership',
+        'price_id': 250,
         'interval': '3 months',
         'currency': 'Rs'
     },
     '6_months': {
-        'name': '6-Month Membership',
-        'price_id': 13000,
+        'name': 'Club Membership',
+        'price_id': 350,
         'interval': '6 months',
         'currency': 'Rs'
     },
     'yearly': {
-        'name': 'Yearly Membership',
-        'price_id': 25000,
+        'name': 'Club Membership',
+        'price_id': 500,
         'interval': 'year',
         'currency': 'Rs'
     },
@@ -734,8 +802,8 @@ plans = {
 
 
 @app.route('/subscription_success', methods=['GET'], strict_slashes=False)
-# @login_required
-# @require_role(role="User")
+@login_required
+@require_role(role="User")
 def subscription_success():
     user_id = current_user.id
     user_subscription = UserAccount.query.filter_by(id=user_id).first()
@@ -745,8 +813,6 @@ def subscription_success():
 
     # Extract membership_type from the query parameters
     membership_type = request.args.get('membership_type')
-
-   
 
     if membership_type:
         membership_type = membership_type.split('?')[0]
@@ -773,16 +839,14 @@ def subscription_success():
 
         db.session.commit()
         msg = Message('Membership Subscription Confirmation',
-                  sender='skrgtm2059@gmail.com',
-                  recipients=[current_user.Email])
-        msg.html = render_template('membership_email.html', membership_type=membership_type)
+                      sender='skrgtm2059@gmail.com',
+                      recipients=[current_user.Email])
+        msg.html = render_template(
+            'membership_email.html', membership_type=membership_type)
         mail.send(msg)
         return redirect(url_for('user'))
 
     return 'Membership type not specified', 400
-
-    
-    
 
 
 @app.route('/order_subscription/<string:username>', methods=['GET', 'POST'])
@@ -790,7 +854,9 @@ def subscription_success():
 @require_role(role="User")
 def order_subscription(username):
     user = UserAccount.query.filter_by(User=username).first()
+    
     plan_id = request.form.get('plan_id')
+    memberships = Membership.query.all()
 
     if user is None:
         abort(404, f"No user found with username: {username}")
@@ -817,8 +883,11 @@ def order_subscription(username):
             })
 
             headers = {
-                # Replace with your actual key
-                'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
+               
+                 # test key
+                # 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
+                # my key
+                'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
                 'Content-Type': 'application/json',
             }
 
@@ -833,7 +902,67 @@ def order_subscription(username):
                     f"Failed to initiate payment: {response.text}")
                 return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
 
-    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user)
+    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user, memberships=memberships)
+
+# ************************************************************************************
+# @app.route('/manorder_subscription/<string:username>', methods=['GET', 'POST'])
+# @login_required
+# @require_role(role="User")
+# def manorder_subscription(username):
+#     user = UserAccount.query.filter_by(User=username).first()
+#     c_user = user.User
+
+#     if (user.Member == True):
+#         print("Is a member")
+#     else:
+#         print("Nope")
+    
+#     if user is None:
+#         abort(404, f"No user found with username: {username}")
+
+#     if request.method == 'POST':
+        
+#         plan_id = request.form.get('plan_id')
+
+#         selected_plan = Membership.query.filter_by(id=plan_id).first()
+
+#         if selected_plan:
+#             amount = selected_plan.price
+#             amount_paisa = int(amount * 100)
+
+#             # Modify the return_url to include the membership_type as a query parameter
+#             return_url = url_for('subscription_success',
+#                                  _external=True) + f"?membership_type={plan_id}"
+
+#             payload = json.dumps({
+#                 "return_url": return_url,
+#                 "website_url": "http://localhost:5000",
+#                 "amount": amount_paisa,
+#                 "purchase_order_id": "Order01",
+#                 "purchase_order_name": "Member"
+#                 # Add other fields as needed
+#             })
+
+#             headers = {
+#                 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
+#                 'Content-Type': 'application/json',
+#             }
+
+#             response = requests.post(
+#                 "https://a.khalti.com/api/v2/epayment/initiate/", headers=headers, data=payload)
+
+#             if response.status_code == 200:
+#                 response_data = response.json()
+#                 return redirect(response_data['payment_url'])
+#             else:
+#                 app.logger.error(
+#                     f"Failed to initiate payment: {response.text}")
+#                 return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
+
+#     # Fetch all available membership plans from the database
+#     memberships = Membership.query.all()
+
+#     return render_template('all_subscriptions.html', username=username, memberships=memberships, current_user=c_user)
 
 
 # **********************************************************************************
@@ -855,6 +984,7 @@ def display_memberships():
 
 @app.route('/cancel_usermembership/<int:user_id>', methods=['POST'])
 @login_required
+@require_role(role="User")
 def cancel_usermembership(user_id):
     user = UserAccount.query.filter_by(id=user_id).first()
     print(user)
@@ -873,12 +1003,12 @@ def cancel_usermembership(user_id):
 # ******************************* When User Purchases Membership ************************
 
 
-@login_required
+# @login_required
 # route to handle the successful payment
 # Makes the user a member and sets info based on the length of the subscription.
 @app.route('/success')
-# @login_required
-# @require_role(role="User")
+@login_required
+@require_role(role="User")
 def success():
     payment_type = request.args.get('payment_type')
 
@@ -1020,9 +1150,9 @@ def new_facility():
     form = CreateFacilityForm()
     if form.validate_on_submit():
 
-        if form.Start_time.data > form.End_time.data:
-            flash('Start time cannot be after end time', 'Start_time')
-            return redirect('/create_facility')
+        # if form.Start_time.data > form.End_time.data:
+        #     flash('Start time cannot be after end time', 'Start_time')
+        #     return redirect('/create_facility')
 
         checkfacility = Facility.query.filter_by(Name=form.Name.data).first()
         if checkfacility is not None:
@@ -1550,6 +1680,7 @@ def booking_details():
                     Sessions.Start_time >= venue.Start_Facility,
                     Sessions.Remaining_Cap >= capacity
                 ).all()
+
         else:
             print("Form validation failed")
             print(form.errors)
@@ -1568,6 +1699,7 @@ def book_session_emp():
     session_id = request.form.get('session_id')
     activity_id = int(request.args.get('activity_id'))
     user_id = int(request.form.get('user_id'))
+    print("User ID:", user_id)
     group_size = int(request.args.get('group_size'))
     activity_price = int(request.args.get('activity_price'))
     booking_Price = int(group_size * activity_price)
@@ -1579,11 +1711,11 @@ def book_session_emp():
             session_id=session_id,
             activity_id=activity_id,
             Book_Time=session.Date,
-            Status="Saved",
+            Status="employeeDiscount",
             Size=group_size,
             Amount=booking_Price
         )
-        booking.user_id = 1
+        booking.user_id = user_id
 
         # Reduce the session's remaining capacity by the group size
         session.Remaining_Cap -= group_size
@@ -1593,10 +1725,65 @@ def book_session_emp():
 
         # Add a message to notify the user that the booking was successful.
         flash('Booking successfully!', 'success')
+        return redirect(url_for('create_booking'))
     else:
         flash('Not enough remaining capacity for the booking.')
 
     return redirect(url_for('booking_details'))
+
+
+@app.route('/empcheckout_page', methods=['POST', 'GET'])
+@login_required
+@require_role(role="Employee")
+def empcheckout_page():
+
+    form = CreateBookings()
+    form1 = empcheckout()
+    total_amount = 0
+    discount_amount = 0
+    final_amount = 0
+
+    aggregated_data = []
+    if request.method == 'POST' and form.validate_on_submit():
+        form_submitted = True
+        user_email = form.userEmail.data
+
+        isuser = UserAccount.query.filter_by(Email=user_email).first()
+        print(isuser.id)
+        if isuser:
+
+            data = Booking.query.filter_by(
+                user_id=isuser.id, Status="employeeDiscount").all()
+            print(data)
+
+            grouped_data = defaultdict(list)
+
+            for item in data:
+                grouped_data[item.session_id].append(item)
+            total_amount = sum(
+                [item.Size * item.activity.Amount for item in data])
+
+            for session_id, items in grouped_data.items():
+                total_size = sum(item.Size for item in items)
+                aggregated_data.append({
+                    'item': items[0],
+                    'quantity': len(items),
+                    'total_size': total_size
+                })
+            print(aggregated_data)
+
+            if request.method == 'POST' and form1.validate_on_submit():
+                discount = form.discount.data
+                discount_amount = total_amount * (discount / 100)
+                final_amount = total_amount - discount_amount
+
+        else:
+            print("Not a user")
+
+    else:
+        print("form error")
+
+    return render_template('empcheckout_page.html', data=aggregated_data, form=form, form1=form1, discount_amount=discount_amount, final_amount=final_amount)
 
 
 # Getter that displays activity id and activity name for a given facility
@@ -1971,7 +2158,7 @@ def get_sessions_for_activity(facility_id, activity_id):
 
 @app.route('/update_user', methods=['GET', 'POST'])
 @login_required
-# @require_role(role="User")
+@require_role(role="User")
 def update_user():
     form = UpdateUserForm()
     if form.validate_on_submit():
@@ -2048,3 +2235,137 @@ def analyze_members():
         'nonmembers': non_member_users,
     }
     return jsonify(data)
+
+
+# Getter that calculated the average booking size.
+# Take the total number of bookings, total size, average size and converts this data to JSON
+# This data is displayed as a Table in the analytics page
+@app.route('/analyzebookings', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def bookingstats():
+    total_bookings = Booking.query.count()
+    total_size = Booking.query.with_entities(
+        db.func.sum(Booking.Size)).scalar()
+    if total_size is None:
+        total_size = 0
+    if total_bookings > 0:
+        avg_booking_size = int(total_size / total_bookings)
+    else:
+        avg_booking_size = 0
+    data = {
+        'totalbookings': total_bookings,
+        'totalsize': total_size,
+        'avgsize': avg_booking_size
+    }
+    return jsonify(data)
+
+# **************************************************************************************************
+
+
+@app.route('/book', methods=['POST'])
+def book():
+    booking_data = request.json
+
+    # Extract details from the POST request sent by the modal
+    facility = booking_data.get('facility')
+    activity = booking_data.get('activity')
+    date = booking_data.get('date')
+    start_time = booking_data.get('startTime')
+    end_time = booking_data.get('endTime')
+    amount = booking_data.get('amount')
+    discount = booking_data.get('discount')
+    total_amount_after_discount = booking_data.get('totalAmount')
+
+    # Generate PDF receipt
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set fonts and colors
+    header_font = "Helvetica-Bold"
+    content_font = "Helvetica"
+    header_font_size = 20
+    content_font_size = 12
+    header_color = ('#336699')
+
+    # Drawing the receipt content
+    x = 50
+    y = 750
+
+    # Header
+    p.setFont(header_font, header_font_size)
+    p.setFillColor(header_color)
+    p.drawCentredString(300, y, "Booking Receipt")
+    y -= 50
+
+    # Receipt details
+    p.setFont(content_font, content_font_size)
+    p.setFillColor(header_color)  # Black color for content
+    p.drawString(x, y, f"Facility ID: {facility}")
+    y -= 20
+    p.drawString(x, y, f"Activity ID: {activity}")
+    y -= 20
+    p.drawString(x, y, f"Date: {date}")
+    y -= 20
+    p.drawString(x, y, f"Start Time: {start_time}")
+    y -= 20
+    p.drawString(x, y, f"End Time: {end_time}")
+    y -= 20
+    p.drawString(x, y, f"Amount: {amount}")
+    y -= 20
+    p.drawString(x, y, f"Discount: {discount}%")
+    y -= 20
+    p.drawString(
+        x, y, f"Total Amount after discount: {total_amount_after_discount}")
+
+    # Save the PDF
+    p.save()
+    buffer.seek(0)
+
+    # Compose email message
+    msg = Message('Booking Receipt',
+                  sender='skrgtm2059@gmail.com',
+                  recipients=['skrgtm2059@gmail.com'])
+
+    # Attach PDF to email
+    msg.attach('receipt.pdf', 'application/pdf', buffer.getvalue())
+
+    # HTML content for the email body resembling a receipt
+    email_content = render_template_string('''
+        <html>
+            <head>
+                <style>
+                    /* Add CSS for styling */
+                    /* Example: */
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        padding: 20px;
+                    }
+                    .receipt {
+                        background-color: #fff;
+                        border-radius: 5px;
+                        padding: 20px;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    }
+                    /* Add more styles as needed */
+                </style>
+            </head>
+            <body>
+                <div class="receipt">
+                    <h1>Booking Receipt</h1>
+                    
+                    <!-- Add other details in a similar manner -->
+                    <p>Thank you for choosing our services!</p>
+                </div>
+            </body>
+        </html>
+    ''', facility=facility, activity=activity, date=date, start_time=start_time, end_time=end_time, amount=amount, discount=discount, total_amount_after_discount=total_amount_after_discount)
+
+    # Set email content as HTML
+    msg.html = email_content
+
+    # Send the email
+    mail.send(msg)
+
+    return redirect(url_for('create_booking'))

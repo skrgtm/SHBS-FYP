@@ -108,6 +108,9 @@
               w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
               focus:shadow-outline", id="password", type="password",
               placeholder="Password")}}
+              <br>
+              <input type="checkbox" id="showPassword">
+              <label for="showPassword">Show Password</label>
             </div>
 
             {% with messages = get_flashed_messages() %} {% if messages %} {%
@@ -115,11 +118,8 @@
             <p style="color: red">{{ message }}</p>
             {% endfor %} {% endif %} {% endwith %}
             <br />
-            <div class="checkbox mb-3">
-              <label>
-                  <p>Remember Me <input type="checkbox" name="remember"></p>
-              </label>
-          </div>
+            <label for="remember">Remember Me</label>
+            <input type="checkbox" id="remember" name="remember">
 
             <button
               class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
@@ -140,7 +140,7 @@
                 Login with Phone
                 <a href="/2FA" class="text-blue-600">Click Here</a>
               </p> -->
-              <div class="mx-auto" align="center">
+              <!-- <div class="mx-auto" align="center">
                 <button
                   class="bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded-full flex items-center justify-center border border-gray-300 mt-4"
                 >
@@ -151,7 +151,7 @@
                   />
                   <span>Sign in with Google</span>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </div>
@@ -225,6 +225,18 @@
         </div>
       </div>
     </footer>
+    <script>
+      const passwordField = document.getElementById('password');
+      const showPasswordCheckbox = document.getElementById('showPassword');
+  
+      showPasswordCheckbox.addEventListener('change', function() {
+          if (showPasswordCheckbox.checked) {
+              passwordField.type = 'text';
+          } else {
+              passwordField.type = 'password';
+          }
+      });
+  </script>
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
     <script src="../static/javascript/parallax.js"></script>

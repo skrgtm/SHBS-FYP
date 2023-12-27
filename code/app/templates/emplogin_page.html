@@ -109,6 +109,12 @@
               w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none
               focus:shadow-outline", id="password", type="password",
               placeholder="Password")}}
+              <input
+                type="checkbox"
+                id="showPassword"
+                
+              />
+              <label for="showPassword">Show Password</label>
             </div>
             {% with messages = get_flashed_messages(with_categories=true) %} {%
             if messages %} {% for category, message in messages %} {% if
@@ -200,7 +206,19 @@
         </div>
       </div>
     </footer>
-    
+    <script>
+      const passwordField = document.getElementById("password");
+      const showPasswordCheckbox = document.getElementById("showPassword");
+
+      showPasswordCheckbox.addEventListener("change", function () {
+        if (showPasswordCheckbox.checked) {
+          passwordField.type = "text";
+        } else {
+          passwordField.type = "password";
+        }
+      });
+    </script>
+
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>
     <script src="../static/javascript/parallax.js"></script>

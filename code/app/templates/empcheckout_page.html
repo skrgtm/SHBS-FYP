@@ -26,14 +26,13 @@
         <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item"> <a class="nav-link" href="/user">Home</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="/lookup_venue">Book Sessions</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="/my_bookings">Your Bookings</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="{{ url_for('order_subscription', username=current_user.User) }}">Membership</a></li>
-            
-            
-            <li class="nav-item"> <a class="nav-link" href="/checkout_page">Checkout</a> </li>
-            <li class="nav-item"> <a class="nav-link" href="/update_user">Account</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/emp_homepage">Home</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/lookup_bookings">View Booking</a> </li>
+            <li class="nav-item"> <a class="nav-link" href="/create_bookings">Book Session</a> </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view_userMembership">MEMBERSHIP</a>
+            </li>
+            <li class="nav-item"> <a class="nav-link" href="/employeeDiscount">Checkout</a> </li>
             
             <li class="nav-item">
               <a class="nav-link" href="#" id="logout">Logout</a>
@@ -46,94 +45,137 @@
     <br>
     <br>
     <br>
+    <div class="w-full flex items-center justify-center px-4">
+        <div class="max-w-md w-full">
+          <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
+            <form class="form-signin" method="POST" name="signin">
+              <h1 class="h3 mb-3 font-weight-normal"> SEARCH USER CHECKOUT </h1>
+              {{ form.hidden_tag() }}
+              <div class="mb-4">
+                <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
+                <label class="block text-gray-700 font-bold mb-2" for="username">
+                  User Email
+                </label>
+                  {{form.userEmail(class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="username", type="text", placeholder="User Email")}}
+                <br>
+                
+                  <button class="btn btn-custom" type="submit" style="margin-top: 5px;">Submit</button>
+                  <br>
+                  {% if messages %}
+               {% for message in messages %}
+                    <p style="color: red;">{{ message }}</p>
+               {% endfor %}
+         {% endif %}
+    
+                  
+            </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+
         <!-- {% with messages = get_flashed_messages() %}
     {% if messages %}
           {% for message in messages %}
                <p>{{ message }}</p>
           {% endfor %}
     {% endif %}
- {% endwith %}
-      {% if data %} -->
-      <div align = "center">
-        <h1 class ="custom-text text-size">Your Cart</h1><br>
-        <p class = "custom-text">Items in the cart will be removed after <span id="timer">10:00</span> minutes</p>
-      </div>
-                <!-- <div class="bg-white p-8 rounded-lg shadow-lg"> -->
-            <div class="container">
-            <div class="row justify-content-center vh-100 align-items-center">
-                <div class="col-md-4">
-                    <h4 class="d-flex justify-content-between align-items-center mb-6">
-                        <span class="text-muted"></span>
-                        <span class="badge badge-secondary badge-pill">{{ items }}</span>
-                    </h4>
-                    <ul class="list-group mb-3 sticky-top">
-                      {% for item_info in data %}
+ {% endwith %}-->
+ {% if data %}
+    <div align="center">
+        <h1 class="custom-text text-size">Your Cart</h1><br>
+        <p class="custom-text">Items in the cart will be removed after <span id="timer">10:00</span> minutes</p>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center vh-100 align-items-center">
+            <div class="col-md-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-6">
+                    <span class="text-muted">Total Items</span>
+                    <span class="badge badge-secondary badge-pill">{{ data|length }}</span>
+                </h4>
+                <ul class="list-group mb-3 sticky-top">
+                    {% for item_info in data %}
                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
-                                <h6 class="my-0">{{item_info.item.session.facility.Name}}</h6>
-                                <span id ="total-size">Size: {{ item_info.total_size }}</span><br>
+                                <h6 class="my-0">{{ item_info.item.session.facility.Name }}</h6>
+                                <span id="total-size">Size: {{ item_info.total_size }}</span><br>
                                 <small class="text-muted">{{ item_info.item.activity.Activity_Name }}</small><br>
-                                <small class ="text-muted">{{ item_info.item.session.Start_time }} - {{ item_info.item.session.End_time }}</small><br>
-                                <small class ="text-muted">{{ item_info.item.session.Date }}</small><br>
-                                {% if item_info.item.session.facility.Name == 'Squash Court 1' or item_info.item.session.facility.Name == 'Squash Court 2' %}
-                                  {{ item_info.quantity}}
-                                  {% else %}
-                                  <!-- <a href="#" class="btn btn-sm btn-outline-secondary decrease-quantity-btn" data-booking-id="{{ item_info.item.id }}"><small> - </small></a>  -->
-                                  <!-- {{ item_info.quantity}} -->
-                                  <!-- Add class="increase-quantity-btn" to the button -->
-                                  <!-- <a href="#" class="btn btn-sm btn-outline-secondary increase-quantity-btn" data-booking-id="{{ item_info.item.id }}"><small> + </small></a>   -->
-                                  {% endif %}
+                                <small class="text-muted">{{ item_info.item.session.Start_time }} - {{ item_info.item.session.End_time }}</small><br>
+                                <small class="text-muted">{{ item_info.item.session.Date }}</small>
                             </div>
+                            <span class="amount" id="amount">Rs {{ item_info.total_size * item_info.item.activity.Amount }}</span>
                             <a href="{{ url_for('delete_booking', booking_id=item_info.item.id) }}" class="text-danger" title="Delete">
                               &#x1F5D1;
-                            </a> 
-                            <span class = "amount" id ="amount">Rs  {{ item_info.total_size * item_info.item.activity.Amount }}</span>
-                            {% endfor %}
+                            </a>
                         </li>
-                        {%if current_user.Member == False%}
-                            {% if discount > 0 %}
-                              <li class="list-group-item d-flex justify-content-between">
-                                <span>Original Amount</span>
-                                <div id = "original_amount">
-                                <strong>Rs {{ total_amount }}</strong></div>
-                              </li>
-                              <li class="list-group-item d-flex justify-content-between">
-                                <span>Discount (15%)</span>
-                                <div id = "discount">
-                                <strong>Rs {{ discount }}</strong></div>
-                              </li>
-                            {% endif %}
-                              <li class="list-group-item d-flex justify-content-between">
-                                <span>Total Amount</span>
-                                <div id = "total_amount">
-                                <strong>Rs {{ total_amount - discount }}</strong>
-                              </div>
-                              </li>
-                              <li class="list-group-item d-flex justify-content-between">
-                                <span> </span>
-                                
-                                  <form action="/order_products" method="post">
-                                    <input type="hidden" name="total_amount" value="{{ total_amount - discount }}">
-                                    <button type="submit" class="btn btn-custom">Pay with Khalti</button>
-                                </form>
-                              </li>
-                        {% elif current_user.Member == True %}
-                              <li class="list-group-item d-flex justify-content-between">
-                                <span> </span>
-                                <a href="/payment_success" class="btn btn-custom" id="pay_now_link">Book Now</a>
-                              </li>
-                        {% endif %}
-                      </ul>
-                  </div>
-                </div>
-              </div>
-              </div>
-              </div>
-              </div>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    {%else%}
-    <b><h1 align = "center" class ="custom-text">No Item In Cart.</h1></b>
+    Discount Form
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <form  id = "discount-form" method="POST">
+                    {{ form1.hidden_tag() }}
+                    <label class="block text-gray-700 font-bold mb-2" for="discount">Discount</label>
+                    {{ form1.discount(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="discount", type="text", placeholder="Discount in %") }}
+                    <button class="btn btn-custom" type="submit" name="submit_discount" style="margin-top: 5px;"></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="final-total-container">
+        {% if final_amount is not none %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    
+                    <p>Discount Applied: Rs {{ discount_amount }}</p>
+                    <p>Final Total After Discount: Rs {{ final_amount }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display Updated Total Amount -->
+    
+    {% endif %}
+{% else %}
+    <b><h1 align="center" class="custom-text">No Item In Cart.</h1></b>
 {% endif %}
+      
+
+<script>
+    $(document).ready(function() {
+        $('#discount-form').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for("empcheckout_page") }}',
+                data: formData,
+                success: function(response) {
+                    $('#final-total-container').html(
+                        '<p>Original Total: Rs ' + response.total_amount + '</p>' +
+                        '<p>Discount Applied: Rs ' + response.discount_amount + '</p>' +
+                        '<p>Final Total After Discount: Rs ' + response.final_amount + '</p>'
+                    );
+                }
+            });
+        });
+    });
+</script>
+
+    
+
 
 <script>
   const tableBody = document.querySelector("table tbody");

@@ -152,7 +152,7 @@
                               </div>
                               <div class="form-group">
                                   <label for="remainingCapacity">Remaining Capacity</label>
-                                  <input type="text" id="remainingCapacity" class="form-control" value="{{ item.Remaining_Cap - group_size }}" readonly>
+                                  <input type="text" id="remainingCapacity" class="form-control" value="{{ item.Remaining_Cap }}" readonly>
                               </div>
                               
                               <div class="form-group">
@@ -198,58 +198,54 @@
 
     <script>
       document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('book-now-btn')) {
-        const sessionId = event.target.dataset.sessionId;
-        
-        // Gather form details
-        const facility = document.getElementById('facility').value;
-        const activity = document.getElementById('activity').value;
-        const date = document.getElementById('date').value;
-        const startTime = document.getElementById('startTime').value;
-        const endTime = document.getElementById('endTime').value;
-        const amount = document.getElementById('amount').value;
-        const discount = document.getElementById(`discount_${sessionId}`).value;
-        const totalAmount = document.getElementById(`totalAmount_${sessionId}`).value;
+          if (event.target.classList.contains('book-now-btn')) {
+              const sessionId = event.target.dataset.sessionId;
+              
+              // Gather form details
+              const facility = document.getElementById('facility').value;
+              const activity = document.getElementById('activity').value;
+              const date = document.getElementById('date').value;
+              const startTime = document.getElementById('startTime').value;
+              const endTime = document.getElementById('endTime').value;
+              const amount = document.getElementById('amount').value;
+              const discount = document.getElementById(`discount_${sessionId}`).value;
+              const totalAmount = document.getElementById(`totalAmount_${sessionId}`).value;
 
-        // Construct the data object to be sent
-        const data = {
-            facility: facility,
-            activity: activity,
-            date: date,
-            startTime: startTime,
-            endTime: endTime,
-            amount: amount,
-            discount: discount,
-            totalAmount: totalAmount
-        };
+              // Construct the data object to be sent
+              const data = {
+                  facility: facility,
+                  activity: activity,
+                  date: date,
+                  startTime: startTime,
+                  endTime: endTime,
+                  amount: amount,
+                  discount: discount,
+                  totalAmount: totalAmount
+              };
 
-        // Send a POST request to the Flask endpoint
-        fetch('/book', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(result => {
-            console.log(result); // Log the response from the server
-            // Close the popup
-            const popup = document.getElementById('your-popup-id'); // Replace 'your-popup-id' with the actual ID of your popup
-            if (popup) {
-                popup.style.display = 'none'; // Or use any method your popup uses to close
-            }
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-    }
-});
+              // Send a POST request to the Flask endpoint
+              fetch('/book', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(data)
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  return response.text();
+              })
+              .then(result => {
+                  console.log(result); // Log the response from the server
+                  // You can perform additional actions based on the server response here
+              })
+              .catch(error => {
+                  console.error('There was a problem with the fetch operation:', error);
+              });
+          }
+      });
     </script>
 
 
