@@ -11,6 +11,10 @@ from google.auth.transport import requests
 import stripe 
 import os
 
+from flask_login import LoginManager
+
+
+
 
 
 #creates the flask app and configuration is retireved from config.py
@@ -54,3 +58,6 @@ migrate = Migrate(app, db)
 admin = Admin(app,template_mode='bootstrap4')
 
 from app import views,models
+
+
+

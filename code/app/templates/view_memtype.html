@@ -117,20 +117,18 @@
                     {% for membership_type in memberships %}
                     <tr>
                         <td>{{ membership_type.name }}</td>
-                        <td>{{ membership_type.price }}</td>
+                        <td>{{ '%d' | format(membership_type.price) }}</td>
                         <td>{{ membership_type.interval }}</td>
                         <td>{{ membership_type.currency }}</td>
 
-                      <td>
-                        
-                        <button type="submit" class="btn btn-custom">
-                          <a
-                            href="{{ url_for('delete_membership', membership_id=membership_type.id) }}"
-                            >Delete</a
-                          >
-                        </button>
-                        
-                      </td>
+                        <td>
+                          <form id="deleteForm" action="{{ url_for('delete_membership', membership_id=membership_type.id) }}" method="POST">
+                            <!-- Use a form to submit the deletion -->
+                            <button type="button" class="btn btn-custom" id="deleteButton">
+                              Delete
+                            </button>
+                          </form>
+                        </td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -217,6 +215,41 @@
     </div>
   </footer>
   <script>
+    document.getElementById('deleteButton').addEventListener('click', function() {
+      // Show SweetAlert confirmation
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to delete this item. This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Here you can place your deletion logic
+          // For example, call a function to delete the item
+          deleteItem();
+        }
+      });
+    });
+  
+    // Function to delete the item
+    function deleteItem() {
+      // Perform deletion logic here
+      // This function is called when the user confirms deletion in SweetAlert
+      // Replace this with your actual deletion code
+      console.log('Item deleted!');
+      // For demo purposes, I'm logging a message instead
+    }
+  </script>
+
+
+  
+
+
+  <script>
     document.getElementById("logout").addEventListener("click", function (e) {
       e.preventDefault(); // Prevents the default link behavior
 
@@ -244,5 +277,7 @@
   <script src="../static/javascript/parallax.js"></script>
   <script src="../static/javascript/wow.js"></script>
   <script src="../static/javascript/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  
   </body>
 </html>

@@ -52,18 +52,16 @@
                 User Email
               </label>
                 {{form.userEmail(class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="username", type="text", placeholder="User Email")}}
-              <br>
-              {% with messages = get_flashed_messages() %}
+                <br>
+                <button class="btn btn-custom" type="submit" style="margin-top: 5px;">Submit</button>
+          </form>
+        </div>
+        {% with messages = get_flashed_messages() %}
     {% if messages %}
         {% for message in messages %}
         {% endfor %}
     {% endif %}
 {% endwith %}
-              <br>
-              
-                <button class="btn btn-custom" type="submit">Submit</button>
-          </form>
-        </div>
       </div>
     </div>
 </div>

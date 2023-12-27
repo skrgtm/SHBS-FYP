@@ -133,6 +133,14 @@
             </label>
             {{ form.End_time(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="End_time", type="text", placeholder="End Time") }}
           </div>
+          {% with messages = get_flashed_messages() %}
+     {% if messages %}
+           {% for message in messages %}
+                <p style="color: black;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+  {% endwith %}
+  <br>
           <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">Update Facility</button>
         </form>
       </div>

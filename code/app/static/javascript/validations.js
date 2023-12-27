@@ -1,4 +1,5 @@
 const passwordInput = document.getElementById('userPassword');
+
 const passwordError = document.getElementById('password-error');
 const submit = document.getElementById('submitbtn');
 
@@ -6,6 +7,7 @@ passwordInput.addEventListener('input', validatePassword);
 
 function validatePassword() {
   const password = passwordInput.value;
+  
   let errorMessage = '';
 
   // Check the length of the password
@@ -38,6 +40,7 @@ function validatePassword() {
 
   }
 
+  
   // Update the UI to show the error messages or clear the error messages if there are none
   if (errorMessage) {
     passwordError.innerHTML = errorMessage;

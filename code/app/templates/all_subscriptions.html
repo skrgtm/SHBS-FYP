@@ -109,7 +109,7 @@
           <div class="mt-4">
             <form id="cancelForm" action="{{ url_for('cancel_usermembership', user_id= current_user.id) }}" method="POST">
               <button id="cancelButton" class="btn btn-secondary btn-square" type="button">
-                Cancel Membership
+                Upgrade Membership
               </button>
             </form>
           </div>
@@ -119,22 +119,22 @@
       
       {% else %}
       <div class="d-flex justify-content-center">
-        <div class="max-w-2xl w-full">
+        <div class="max-w-3xl w-full">
           <h1 class="text-3xl font-bold text-white">
             Choose your subscription plan!
           </h1>
           <br /><br />
-          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
             <!-- Existing Monthly Membership -->
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
-                <h3 class="text-lg font-bold">Monthly Membership</h3>
+                <h3 class="text-lg font-bold">Club Membership</h3>
               </div>
               <div class="card-body">
                 <p class="text-sm">
                   Get access to all our content for a low fee.
                 </p>
-                <p class="text-sm font-semibold">Price: Rs 2500 per month</p>
+                <p class="text-sm font-semibold">Price: Rs 150 per month</p>
                 <br /><br />
                 <form
                   action="{{ url_for('order_subscription', username=username) }}"
@@ -151,13 +151,13 @@
             <!-- New 3-Month Membership -->
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
-                <h3 class="text-lg font-bold">3-Month Membership</h3>
+                <h3 class="text-lg font-bold">Gym Membership</h3>
               </div>
               <div class="card-body">
                 <p class="text-sm">
                   Get access to all our content for a lower fee.
                 </p>
-                <p class="text-sm font-semibold">Price: Rs 7000 for 3 months</p>
+                <p class="text-sm font-semibold">Price: Rs 250 for 3 months</p>
                 <br /><br />
                 <form
                   action="{{ url_for('order_subscription', username=username) }}"
@@ -174,13 +174,13 @@
             <!-- New 6-Month Membership -->
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
-                <h3 class="text-lg font-bold">6-Month Membership</h3>
+                <h3 class="text-lg font-bold">Club Membership</h3>
               </div>
               <div class="card-body">
                 <p class="text-sm">
                   Get access to all our content for a lower fee.
                 </p>
-                <p class="text-sm font-semibold">Price: Rs 13000 for 6 months</p>
+                <p class="text-sm font-semibold">Price: Rs 350 for 6 months</p>
                 <br /><br />
                 <form
                   action="{{ url_for('order_subscription', username=username) }}"
@@ -197,13 +197,13 @@
             <!-- Existing Annual Membership -->
             <div class="card">
               <div class="card-header bg-gray-900 text-white">
-                <h3 class="text-lg font-bold">Annual Membership</h3>
+                <h3 class="text-lg font-bold">Club Membership</h3>
               </div>
               <div class="card-body">
                 <p class="text-sm">
                   Get access to all our content for a lower fee.
                 </p>
-                <p class="text-sm font-semibold">Price: Rs 25000 per year</p>
+                <p class="text-sm font-semibold">Price: Rs 500 per year</p>
                 <br /><br />
                 <form
                   action="{{ url_for('order_subscription', username=username) }}"
@@ -216,10 +216,6 @@
                 </form>
               </div>
             </div>
-          
-
-
-
 
             {% for membership in memberships %}
             <div class="card">
@@ -228,21 +224,28 @@
               </div>
               <div class="card-body">
                 <p class="text-sm">
-                  Get access to all our content for an even lower fee.
+                  Get access to all our content for a lower fee.
                 </p>
                 <p class="text-sm font-semibold">
-                  Price: {{ membership.currency }} {{ membership.price }} per {{ membership.interval }}
+                  Price:  {{ membership.currency }} {{ '%d' | format(membership.price) }} per {{ membership.interval }}
                 </p>
                 <br /><br />
-                <form action="{{ url_for('display_memberships', username=username) }}" method="POST">
-                  <input type="hidden" name="plan_id" value="{{ membership.id }}" />
+                <form
+                  action="{{ url_for('order_subscription', username=username) }}"
+                  method="POST"
+                >
+                  <input type="hidden" name="plan_id" value="yearly" />
                   <button class="btn btn-custom btn-square" type="submit">
                     Subscribe
                   </button>
                 </form>
+                
+                <!-- Add forms or buttons related to these memberships if needed -->
               </div>
             </div>
             {% endfor %}
+
+            
           </div>
 
           
