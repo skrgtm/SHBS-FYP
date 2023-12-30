@@ -592,9 +592,9 @@ def order_products():
     headers = {
         # Ensure the 'Key' prefix is included
         # test key
-        'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
+        # 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
         # my key
-        # 'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
+        'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
         'Content-Type': 'application/json',
     }
 
@@ -631,7 +631,7 @@ def validate_session():
 @login_required
 @require_role(role="User")
 def payment_success():
-    if validate_session():
+    # if validate_session():
 
         user_bookings = Booking.query.filter_by(
             user_id=current_user.id, Status="Saved").all()
@@ -758,10 +758,10 @@ def payment_success():
 
         return redirect(url_for('my_bookings'))
 
-    else:
-        # Session expired or user not logged in
-        # Redirect the user to the login page or handle re-authentication as needed
-        return redirect(url_for('login'))  # Redirect to the login page
+    # else:
+    #     # Session expired or user not logged in
+    #     # Redirect the user to the login page or handle re-authentication as needed
+    #     return redirect(url_for('login'))  # Redirect to the login page
 
 
 # ******************************* When User Purchases Membership ************************
