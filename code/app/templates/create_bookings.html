@@ -43,7 +43,7 @@
     <div class="max-w-md w-full">
       <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
         <form class="form-signin" method="POST" name="signin">
-          <h1 class="h3 mb-3 font-weight-normal"> CREATE USER BOOKING </h1>
+          <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">CREATE USER BOOKING</h1>
           {{ form.hidden_tag() }}
           <div class="mb-4">
             <img src="../static/images/logo-black.png" style="transform: scale(0.75); display: block; margin: 0;"><br>
@@ -55,11 +55,18 @@
             
               <button class="btn btn-custom" type="submit" style="margin-top: 5px;">Submit</button>
               <br>
-              {% if messages %}
-           {% for message in messages %}
-                <p style="color: red;">{{ message }}</p>
-           {% endfor %}
-     {% endif %}
+              <div id="successMessage" style="display: none;">
+                Booking Successful!
+            </div>
+              {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div id="flash-message" class="alert alert-{{ category }}">
+                  <p style="color: black">{{ message }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
 
               
         </form>
@@ -162,6 +169,32 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookingSuccess = urlParams.get('bookingSuccess');
+    
+        if (bookingSuccess === 'true') {
+            document.getElementById('successMessage').style.display = 'block';
+        }
+    });
+    </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const bookingSuccess = urlParams.get('bookingSuccess');
+      const successMessage = document.getElementById('successMessage');
+  
+      if (bookingSuccess === 'true') {
+          successMessage.style.display = 'block';
+          setTimeout(function() {
+              successMessage.style.display = 'none';
+          }, 5000); // Hide the message after 5 seconds (5000 milliseconds)
+      }
+  });
+  </script>
   <script>
     document.getElementById("logout").addEventListener("click", function (e) {
       e.preventDefault(); // Prevents the default link behavior

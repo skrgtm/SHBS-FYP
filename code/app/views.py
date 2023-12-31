@@ -7,6 +7,7 @@ from flask import render_template, redirect, url_for, flash
 from flask import Flask, render_template, flash, redirect, request, make_response, url_for, current_app, abort, session, jsonify
 from app import app, models, db, admin, login_manager, mail
 from flask_admin.contrib.sqla import ModelView
+from flask import redirect, url_for
 from flask import render_template_string
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -633,130 +634,130 @@ def validate_session():
 def payment_success():
     # if validate_session():
 
-        user_bookings = Booking.query.filter_by(
-            user_id=current_user.id, Status="Saved").all()
+    user_bookings = Booking.query.filter_by(
+        user_id=current_user.id, Status="Saved").all()
 
-        if not user_bookings:
-            flash('No bookings found with the "Saved" status. Please try again.')
-            return redirect(url_for('my_bookings'))
-
-        total_amount = sum(
-            [booking.Size * booking.activity.Amount for booking in user_bookings])
-
-        new_receipt = Receipt(
-            user_id=current_user.id,
-            Amount=total_amount
-        )
-
-        db.session.add(new_receipt)
-        db.session.commit()
-        receipt_id = new_receipt.id
-
-        for booking in user_bookings:
-            booking.Status = 'Booked'
-            booking.receipt_id = receipt_id
-
-        db.session.commit()
-        flash('Payment successful! Your booking statuses have been updated to "Booked".')
-
-        static_folder = os.path.join(app.root_path, 'static')
-        image_path = os.path.join(static_folder, 'images', 'nb.png')
-
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-
-        # Load image
-        static_folder = os.path.join(app.root_path, 'static')
-        image_path = os.path.join(static_folder, 'images', 'nb.png')
-
-        # Drawing image on canvas
-        x = 50
-        y = 700
-        with PILImage.open(image_path) as pil_image:
-            # Resize the image
-            max_image_width = 500
-            max_image_height = 200
-            pil_image.thumbnail((max_image_width, max_image_height))
-
-            # Convert the image to ReportLab's ImageReader format
-            img = ImageReader(pil_image)
-            img_width, img_height = pil_image.size
-
-            p.drawImage(img, x, y, width=img_width, height=img_height)
-
-        # Define styles
-        styles = getSampleStyleSheet()
-        style_title = styles['Title']
-        style_body = styles['Normal']
-
-        # Create a title
-        p.setFont("Helvetica-Bold", 20)
-        p.drawCentredString(
-            300, 650, "----------------Booking Receipt----------------")
-
-        # Other receipt details
-        p.setFont("Helvetica", 12)
-        y_start = 600
-        line_height = 20
-
-        if current_user.Member:
-            discount = int(total_amount * 0.5)  # 50% discount for members
-            total_amount = total_amount - discount  # Apply the member discount
-
-        receipt_bookings = Booking.query.filter_by(
-            receipt_id=new_receipt.id).all()
-
-        # Creating a table for booking details
-        table_data = [
-            ['Booking ID', 'Facility', 'Activity', 'Start Time', 'End Time']
-        ]
-
-        for booking in receipt_bookings:
-            facility_name = booking.session.facility.Name
-            activity_name = booking.activity.Activity_Name
-            start_time = booking.session.Start_time
-            end_time = booking.session.End_time
-            table_data.append([str(booking.id), facility_name,
-                              activity_name, str(start_time), str(end_time)])
-
-        table = Table(table_data, colWidths=[60, 120, 120, 100, 100])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ]))
-
-        table.wrapOn(p, 400, 200)
-        table.drawOn(p, x, y - img_height - 50)
-
-        print("\n")
-        print("\n")
-        print("\n")
-        print("\n")
-        print("\n")
-        print("\n")
-
-        p.drawString(450, 200, f"Name: {current_user.User}")
-        p.drawString(450, 200 - line_height, f"Date: {datetime.now().date()}")
-        p.drawString(450, 200 - 2 * line_height,
-                     f"Time: {datetime.now().time()}")
-        p.drawString(450, 200 - 3 * line_height,
-                     f"Total Amount: {total_amount}")
-
-        # Save the PDF buffer
-        p.save()
-        buffer.seek(0)
-
-        # Send the email with the PDF attachment
-        msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com',
-                      recipients=[current_user.Email])
-        msg.attach('receipt.pdf', 'application/pdf', buffer.read())
-        mail.send(msg)
-
+    if not user_bookings:
+        flash('No bookings found with the "Saved" status. Please try again.')
         return redirect(url_for('my_bookings'))
+
+    total_amount = sum(
+        [booking.Size * booking.activity.Amount for booking in user_bookings])
+
+    new_receipt = Receipt(
+        user_id=current_user.id,
+        Amount=total_amount
+    )
+
+    db.session.add(new_receipt)
+    db.session.commit()
+    receipt_id = new_receipt.id
+
+    for booking in user_bookings:
+        booking.Status = 'Booked'
+        booking.receipt_id = receipt_id
+
+    db.session.commit()
+    flash('Payment successful! Your booking statuses have been updated to "Booked".')
+
+    static_folder = os.path.join(app.root_path, 'static')
+    image_path = os.path.join(static_folder, 'images', 'nb.png')
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+
+    # Load image
+    static_folder = os.path.join(app.root_path, 'static')
+    image_path = os.path.join(static_folder, 'images', 'nb.png')
+
+    # Drawing image on canvas
+    x = 50
+    y = 700
+    with PILImage.open(image_path) as pil_image:
+        # Resize the image
+        max_image_width = 500
+        max_image_height = 200
+        pil_image.thumbnail((max_image_width, max_image_height))
+
+        # Convert the image to ReportLab's ImageReader format
+        img = ImageReader(pil_image)
+        img_width, img_height = pil_image.size
+
+        p.drawImage(img, x, y, width=img_width, height=img_height)
+
+    # Define styles
+    styles = getSampleStyleSheet()
+    style_title = styles['Title']
+    style_body = styles['Normal']
+
+    # Create a title
+    p.setFont("Helvetica-Bold", 20)
+    p.drawCentredString(
+        300, 650, "----------------Booking Receipt----------------")
+
+    # Other receipt details
+    p.setFont("Helvetica", 12)
+    y_start = 600
+    line_height = 20
+
+    if current_user.Member:
+        discount = int(total_amount * 0.5)  # 50% discount for members
+        total_amount = total_amount - discount  # Apply the member discount
+
+    receipt_bookings = Booking.query.filter_by(
+        receipt_id=new_receipt.id).all()
+
+    # Creating a table for booking details
+    table_data = [
+        ['Booking ID', 'Facility', 'Activity', 'Start Time', 'End Time']
+    ]
+
+    for booking in receipt_bookings:
+        facility_name = booking.session.facility.Name
+        activity_name = booking.activity.Activity_Name
+        start_time = booking.session.Start_time
+        end_time = booking.session.End_time
+        table_data.append([str(booking.id), facility_name,
+                          activity_name, str(start_time), str(end_time)])
+
+    table = Table(table_data, colWidths=[60, 120, 120, 100, 100])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+    ]))
+
+    table.wrapOn(p, 400, 200)
+    table.drawOn(p, x, y - img_height - 50)
+
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+    print("\n")
+
+    p.drawString(450, 200, f"Name: {current_user.User}")
+    p.drawString(450, 200 - line_height, f"Date: {datetime.now().date()}")
+    p.drawString(450, 200 - 2 * line_height,
+                 f"Time: {datetime.now().time()}")
+    p.drawString(450, 200 - 3 * line_height,
+                 f"Total Amount: {total_amount}")
+
+    # Save the PDF buffer
+    p.save()
+    buffer.seek(0)
+
+    # Send the email with the PDF attachment
+    msg = Message('Booking Receipt', sender='skrgtm2059@gmail.com',
+                  recipients=[current_user.Email])
+    msg.attach('receipt.pdf', 'application/pdf', buffer.read())
+    mail.send(msg)
+
+    return redirect(url_for('my_bookings'))
 
     # else:
     #     # Session expired or user not logged in
@@ -854,7 +855,7 @@ def subscription_success():
 @require_role(role="User")
 def order_subscription(username):
     user = UserAccount.query.filter_by(User=username).first()
-    
+
     plan_id = request.form.get('plan_id')
     memberships = Membership.query.all()
 
@@ -883,8 +884,8 @@ def order_subscription(username):
             })
 
             headers = {
-               
-                 # test key
+
+                # test key
                 # 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
                 # my key
                 'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
@@ -916,12 +917,12 @@ def order_subscription(username):
 #         print("Is a member")
 #     else:
 #         print("Nope")
-    
+
 #     if user is None:
 #         abort(404, f"No user found with username: {username}")
 
 #     if request.method == 'POST':
-        
+
 #         plan_id = request.form.get('plan_id')
 
 #         selected_plan = Membership.query.filter_by(id=plan_id).first()
@@ -972,7 +973,7 @@ def order_subscription(username):
 def display_memberships():
     # Retrieve all memberships from the database
     memberships = Membership.query.all()
-    print(memberships)
+    # print(memberships)
     return render_template('all_subscriptions.html', memberships=memberships)
 
 # *************************************************************************************************************
@@ -987,7 +988,7 @@ def display_memberships():
 @require_role(role="User")
 def cancel_usermembership(user_id):
     user = UserAccount.query.filter_by(id=user_id).first()
-    print(user)
+    # print(user)
     if user:
         user.Member = False
         user.member_type = None
@@ -1600,7 +1601,7 @@ def cancel_membership(user_id):
 @app.route('/create_bookings', methods=['GET', 'POST'])
 @require_role(role="Employee")
 @login_required
-def create_booking():
+def create_bookings():
     form = CreateBookings()
     bookings = None
     form_submitted = None
@@ -1612,7 +1613,7 @@ def create_booking():
         isuser = UserAccount.query.filter_by(Email=user_email).all()
 
         if not isuser:
-            flash('Not a User')
+            print(" ")
 
         else:
             verifyuser = UserAccount.query.filter_by(Email=user_email).first()
@@ -2277,9 +2278,33 @@ def book():
     discount = booking_data.get('discount')
     total_amount_after_discount = booking_data.get('totalAmount')
 
+    
+
     # Generate PDF receipt
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
+
+    # Load image
+    # Load image
+    static_folder = os.path.join(app.root_path, 'static')
+    image_path = os.path.join(static_folder, 'images', 'nb.png')
+
+    # Drawing image on canvas
+    x = 50
+    y = 700
+    with PILImage.open(image_path) as pil_image:
+        # Resize the image
+        max_image_width = 500
+        max_image_height = 200
+        pil_image.thumbnail((max_image_width, max_image_height))
+
+        # Convert the image to ReportLab's ImageReader format
+        img = ImageReader(pil_image)
+        img_width, img_height = pil_image.size
+
+        p.drawImage(img, x, y, width=img_width, height=img_height)
+
+    y -= img_height + 30
 
     # Set fonts and colors
     header_font = "Helvetica-Bold"
@@ -2290,7 +2315,7 @@ def book():
 
     # Drawing the receipt content
     x = 50
-    y = 750
+    # y = 750
 
     # Header
     p.setFont(header_font, header_font_size)
@@ -2368,4 +2393,6 @@ def book():
     # Send the email
     mail.send(msg)
 
-    return redirect(url_for('create_booking'))
+    flash('Booking successful!', 'success')
+
+    return redirect(url_for('create_bookings'))

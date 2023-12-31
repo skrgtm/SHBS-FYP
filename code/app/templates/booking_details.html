@@ -63,13 +63,16 @@
                       <label class="block text-gray-700 font-bold mb-2">Group Size</label>
                       {{ form.capacity(class_="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
                     <br>
-                    {% with messages = get_flashed_messages() %}
-     {% if messages %}
-           {% for message in messages %}
-                <p style="color: black;">{{ message }}</p>
-           {% endfor %}
-     {% endif %}
-  {% endwith %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div id="flash-message" class="alert alert-{{ category }}">
+                  <p style="color: black">{{ message }}</p>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+                    
   <br>
                       <button class="btn btn-custom" type="submit" >Submit</button>
                   </form>
@@ -239,11 +242,12 @@
         })
         .then(result => {
             console.log(result); // Log the response from the server
-            // Close the popup
-            const popup = document.getElementById('your-popup-id'); // Replace 'your-popup-id' with the actual ID of your popup
-            if (popup) {
-                popup.style.display = 'none'; // Or use any method your popup uses to close
-            }
+
+            // Close the popup modal
+            $('#bookingModal_' + sessionId).modal('hide');
+
+            // Redirect the user back to the 'Create Bookings' page
+            window.location.href = '/create_bookings?bookingSuccess=true'; 
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -251,6 +255,19 @@
     }
 });
     </script>
+
+<script>
+  // Automatically hide the flash message after 5 seconds
+  document.addEventListener('DOMContentLoaded', function () {
+    const flashMessage = document.getElementById('flash-message');
+    
+    if (flashMessage) {
+      setTimeout(function () {
+        flashMessage.style.display = 'none';
+      }, 9000); // 9000 milliseconds = 9 seconds
+    }
+  });
+</script>
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
