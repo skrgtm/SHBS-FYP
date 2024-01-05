@@ -80,8 +80,7 @@
     <br />
     <br />
     <br />
-    {% with messages = get_flashed_messages() %} {% if messages %} {% for
-    message in messages %} {% endfor %} {% endif %} {% endwith %}
+    
 
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
@@ -91,6 +90,8 @@
               UPDATE PERSONAL INFORMATION
             </h1></b
           >
+          
+          
           <form action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-group">
@@ -110,8 +111,17 @@
             <div class="form-group">
               {{ form.mobile.label }} {{ form.mobile(class="form-control") }}
             </div>
+            
             <!-- {{ form.submit(class="btn btn-primary") }} -->
             <button class="btn btn-custom" type="submit">UPDATE</button>
+            <br>
+            {% with messages = get_flashed_messages() %}
+     {% if messages %}
+           {% for message in messages %}
+                <p style="color: black;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+  {% endwith %}
           </form>
         </div>
       </div>

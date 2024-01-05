@@ -21,9 +21,7 @@ from flask_login import LoginManager
 app = Flask(__name__)
 app.config.from_object('config')
 
-#setup for recaptcha
-#recaptcha was not used 
-# app.config['SECRET_KEY'] = 'lablam.2017'
+
 app.config['RECAPTCHA_USE_SSL']= False
 app.config['RECAPTCHA_PUBLIC_KEY']='6LfIW4UkAAAAACk9Wog68aHpKSpvUHSjmvXOAo_p'
 app.config['RECAPTCHA_PRIVATE_KEY']='6LfIW4UkAAAAADqnSWXE-h6dlvd96D7saDY3X4ua'
@@ -40,6 +38,7 @@ app.config['MAIL_PASSWORD'] = 'igatzyfmajkjfyun'
 
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+
 
 
 mail = Mail(app)

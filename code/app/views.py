@@ -583,7 +583,9 @@ def order_products():
 
     payload = json.dumps({
         # This will be the URL Khalti redirects to after payment
-        "return_url": "http://localhost:5000/payment_success",
+        # "return_url": "http://localhost:5000/payment_success",
+
+        "return_url": url_for('payment_success', _external=True),
         "website_url": "http://localhost:5000",  # Your website's URL
         "amount": total_amount_paisa,  # The amount in paisa
         "purchase_order_id": "Order01",  # Unique ID for the order
@@ -606,6 +608,7 @@ def order_products():
     if response.status_code == 200:
         # If the response is successful, get the payment URL and redirect the user to it
         response_data = response.json()
+
         return redirect(response_data['payment_url'])
     else:
         # If there was an error, log it and return a JSON response with the error
@@ -614,13 +617,13 @@ def order_products():
 
 
 # Define the validate_session function
-def validate_session():
-    if current_user.is_authenticated:
-        # User is logged in, session is active
-        return True
-    else:
-        # User is not logged in or session expired
-        return False
+# def validate_session():
+#     if current_user.is_authenticated:
+#         # User is logged in, session is active
+#         return True
+#     else:
+#         # User is not logged in or session expired
+#         return False
 
 # khalti payment success
 # Handles success for user bookings.
@@ -628,7 +631,7 @@ def validate_session():
 # Recipt is now generated and a pdf version is sent to the users Email.
 
 
-@app.route('/payment_success', methods=['GET'])
+@app.route('/payment_success', methods=['GET'], strict_slashes=False)
 @login_required
 @require_role(role="User")
 def payment_success():
@@ -2168,8 +2171,8 @@ def update_user():
         current_user.Email = form.email.data
         current_user.Mobile = form.mobile.data
         db.session.commit()
-        flash('Your personal information has been updated!', 'success')
-        return redirect(url_for('user'))
+        flash('Your personal information has been updated', 'success')
+        return redirect(url_for('update_user'))
     elif request.method == 'GET':
         form.User.data = current_user.User
         form.email.data = current_user.Email
@@ -2277,8 +2280,6 @@ def book():
     amount = booking_data.get('amount')
     discount = booking_data.get('discount')
     total_amount_after_discount = booking_data.get('totalAmount')
-
-    
 
     # Generate PDF receipt
     buffer = BytesIO()
