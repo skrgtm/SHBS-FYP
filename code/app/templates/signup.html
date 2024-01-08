@@ -29,6 +29,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
   </head>
   <body>
@@ -133,12 +135,11 @@
               {{form.userPassword(class_ ="form-control shadow appearance-none
               border rounded w-full py-2 px-3 text-gray-700 leading-tight
               focus:outline-none focus:shadow-outline") }}
+              <i class="fas fa-eye-slash toggle-password" style="cursor: pointer;padding-left: 360px;"></i>
+             
             </p>
 
-            <div
-              id="password-error"
-              class="text-danger block text-gray-700 font-bold mb-2"
-            ></div>
+            
             <label class="block text-gray-700 font-bold mb-2"
               >Re-Enter Password</label
             >
@@ -147,7 +148,12 @@
               {{form.userVerifyPassword(class = "form-control shadow
               appearance-none border rounded w-full py-2 px-3 text-gray-700
               leading-tight focus:outline-none focus:shadow-outline") }}
+              <i class="fas fa-eye-slash toggle-confirm-password" style="cursor: pointer; padding-left: 360px;"></i>
             </p>
+            <div
+              id="password-error"
+              class="text-danger block text-gray-700 font-bold mb-2"
+            ></div>
             <label class="block text-gray-700 font-bold mb-2"
               >Enter Mobile Number</label
             >
@@ -185,7 +191,7 @@
     <script>
       var input = document.querySelector("#Mobile");
       var iti = window.intlTelInput(input, {
-        preferredCountries: ["us", "gb", "ca"],
+        preferredCountries: ["np","us", "gb", "ca"],
         utilsScript:
           "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
       });
@@ -269,6 +275,30 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      $(document).ready(function () {
+        $(".toggle-password").click(function () {
+          $(this).toggleClass("fa-eye fa-eye-slash");
+          var input = $(this).prev();
+          if (input.attr("type") === "password") {
+            input.attr("type", "text");
+          } else {
+            input.attr("type", "password");
+          }
+        });
+    
+        $(".toggle-confirm-password").click(function () {
+          $(this).toggleClass("fa-eye fa-eye-slash");
+          var input = $(this).prev();
+          if (input.attr("type") === "password") {
+            input.attr("type", "text");
+          } else {
+            input.attr("type", "password");
+          }
+        });
+      });
+    </script>
     
 
     <script src="../static/javascript/jquery.min.js"></script>

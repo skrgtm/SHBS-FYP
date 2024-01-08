@@ -101,7 +101,7 @@
   <div class="w-full flex items-center justify-center px-4">
     <div class="max-w-md w-full">
       <div class="bg-white p-8 rounded-lg shadow-lg">
-        <form class="form-signin" method="POST" name="signup" onsubmit="Validations()">
+        <form class="form-signin" method="POST" name="signup" onsubmit="return validatePasswords()">
           {{ form.hidden_tag() }}
           <div class="mb-4">
             <h1 class="h3 mb-3" style="text-align: center; font-weight: bold;">CREATE EMPLOYEE</h1>
@@ -121,14 +121,15 @@
             <label class="block text-gray-700 font-bold mb-2 text-left" for="password">
               Password
             </label>
-            {{ form.userPassword(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+            {{ form.userPassword(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="password") }}
           </div>
           
           <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2 text-left" for="verify_password">
               Confirm Password
             </label>
-            {{ form.userVerifyPassword(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+            {{ form.userVerifyPassword(class_="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline", id="verify_password") }}
+            <p id="passwordMatchError" class="text-red-500 text-sm hidden" style="text-align: left;">Passwords do not match</p>
           </div>
           <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2 text-left" for="mobile">
@@ -221,6 +222,25 @@
     </div>
   </footer>
   <script>
+    function validatePasswords() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("verify_password").value;
+        var passwordMatchError = document.getElementById("passwordMatchError");
+
+        if (password !== confirmPassword) {
+            passwordMatchError.classList.remove("hidden");
+            return false; // Prevent form submission
+        } else {
+            passwordMatchError.classList.add("hidden");
+            return true; // Allow form submission
+        }
+    }
+  </script>
+
+
+
+
+  <script>
     document.getElementById("logout").addEventListener("click", function (e) {
       e.preventDefault(); // Prevents the default link behavior
 
@@ -244,7 +264,7 @@
 <script>
   var input = document.querySelector("#Mobile");
   var iti = window.intlTelInput(input, {
-    preferredCountries: ["us", "gb", "ca"],
+    preferredCountries: ["np","us", "gb", "ca"],
     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
   });
 

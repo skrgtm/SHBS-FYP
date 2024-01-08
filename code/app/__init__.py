@@ -41,6 +41,9 @@ app.config['MAIL_USE_SSL'] = True
 
 
 
+
+
+
 mail = Mail(app)
 
 
