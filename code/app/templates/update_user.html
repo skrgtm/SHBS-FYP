@@ -25,6 +25,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark">
@@ -80,7 +84,6 @@
     <br />
     <br />
     <br />
-    
 
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
@@ -90,20 +93,46 @@
               UPDATE PERSONAL INFORMATION
             </h1></b
           >
-          
-          
-          <form action="" method="POST">
+
+          <form id="myForm" action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-group">
               {{ form.User.label }} {{ form.User(class="form-control") }}
             </div>
             <div class="form-group">
-              {{ form.password.label }} {{ form.password(class="form-control")
-              }}
+              {{ form.password.label }}
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  name="password"
+                />
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <i class="fas fa-eye" id="togglePassword"></i>
+                  </span>
+                </div>
+              </div>
             </div>
             <div class="form-group">
-              {{ form.confirm_password.label }} {{
-              form.confirm_password(class="form-control") }}
+              {{ form.confirm_password.label }}
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="confirm_password"
+                  class="form-control"
+                  name="confirm_password"
+                />
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <i class="fas fa-eye" id="toggleConfirmPassword"></i>
+                  </span>
+                </div>
+              </div>
+              <p id="passwordMismatch" style="color: red; display: none">
+                Passwords do not match
+              </p>
             </div>
             <div class="form-group">
               {{ form.email.label }} {{ form.email(class="form-control") }}
@@ -111,17 +140,14 @@
             <div class="form-group">
               {{ form.mobile.label }} {{ form.mobile(class="form-control") }}
             </div>
-            
+
             <!-- {{ form.submit(class="btn btn-primary") }} -->
             <button class="btn btn-custom" type="submit">UPDATE</button>
-            <br>
-            {% with messages = get_flashed_messages() %}
-     {% if messages %}
-           {% for message in messages %}
-                <p style="color: black;">{{ message }}</p>
-           {% endfor %}
-     {% endif %}
-  {% endwith %}
+            <br />
+            {% with messages = get_flashed_messages() %} {% if messages %} {%
+            for message in messages %}
+            <p style="color: black">{{ message }}</p>
+            {% endfor %} {% endif %} {% endwith %}
           </form>
         </div>
       </div>
@@ -192,6 +218,34 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      const togglePassword = document.getElementById("togglePassword");
+      const toggleConfirmPassword = document.getElementById(
+        "toggleConfirmPassword"
+      );
+      const passwordField = document.getElementById("password");
+      const confirmPasswordField = document.getElementById("confirm_password");
+
+      togglePassword.addEventListener("click", function () {
+        const type =
+          passwordField.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+        passwordField.setAttribute("type", type);
+        this.classList.toggle("fa-eye-slash");
+      });
+
+      toggleConfirmPassword.addEventListener("click", function () {
+        const type =
+          confirmPasswordField.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+        confirmPasswordField.setAttribute("type", type);
+        this.classList.toggle("fa-eye-slash");
+      });
+    </script>
+
     <script>
       document.getElementById("logout").addEventListener("click", function (e) {
         e.preventDefault(); // Prevents the default link behavior
@@ -219,5 +273,21 @@
     <script src="../static/javascript/parallax.js"></script>
     <script src="../static/javascript/wow.js"></script>
     <script src="../static/javascript/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#myForm").submit(function (event) {
+          var password = $("#password").val();
+          var confirm_password = $("#confirm_password").val();
+
+          if (password !== confirm_password) {
+            event.preventDefault(); // Prevent form submission
+            // Display an error message
+            $(".error-message").remove(); // Remove existing error messages
+            $("#passwordMismatch").css("display", "block");
+          }
+        });
+      });
+    </script>
   </body>
 </html>

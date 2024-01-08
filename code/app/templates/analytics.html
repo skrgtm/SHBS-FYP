@@ -107,20 +107,22 @@
   <br>
   <br>
 
-  <div class="bg-black text-white p-8">
-    <h1 class="text-4xl font-bold mb-4">Sportsmitra Analytics</h1>
-    <div class="row">
-      <div class="col">
-        <p class="text-lg mb-4">User Statistics</p>
-        <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="member">View</button>
-        <br>
-        <br>
-        <div id="memberChart"></div>
-      </div>
-      <div class="col">
-        <p class="text-lg mb-4">Booking Summary</p>
-        <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="bookings">View</button>
-        <table id="bookingtable" style="display:none;">
+  <div class="container">
+    <div class="bg-black text-white p-8">
+      <h1 class="text-4xl font-bold mb-4">Sportsmitra Analytics</h1>
+      <div class="row">
+        <div class="col-md-6 analytics-section">
+          <p class="text-lg mb-4">User Statistics</p>
+          <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="member">View</button>
+          <br><br>
+          <div id="memberChart"></div>
+        </div>
+        <div class="col-md-6 analytics-section">
+          <p class="text-lg mb-4">Booking Summary</p>
+          <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="bookings">View</button>
+          
+          <table id="bookingtable" style="display:none;">
+            
           <thead>
             <tr>
               <th class="text-white">Total Number Bookings</th>
@@ -140,65 +142,72 @@
       </div>
   <br><br>
   <br><br><br>
+  <!-- <footer class="container-fluid">
+    <div class="container">
+      <div class="row">
+        <div
+          class="col-md-3 footer1 d-flex wow bounceInLeft"
+          data-wow-delay=".25s"
+        >
+          <div class="d-flex flex-wrap align-content-center">
+            <a href="#"
+              ><img src="../static/images/fnb.png" alt="logo" class="logo"
+            /></a>
+            <p>
+              Empowering athletes, nurturing talent, fostering teamwork,
+              celebrating <br />
+              achievements.
+            </p>
+            <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+          </div>
+        </div>
+        <div
+          class="col-md-3 footer2 wow bounceInUp"
+          data-wow-delay=".25s"
+          id="contact"
+        >
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <h5>QUICK LINKS</h5>
+          <a href="/create_facility">Add Facility</a><br />
+          <a href="/create_activity">Add Activity</a><br />
+        </div>
+        <div
+          class="col-md-3 footer2 wow bounceInUp"
+          data-wow-delay=".25s"
+          id="contact"
+        >
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <h5>EXPLORE MORE</h5>
+          <a href="https://www.nike.com"> NIKE </a><br />
+          <a href="https://www.jdsports.com"> JD SPORTS </a><br />
+          <a href="https://www.sportsdirect.com"> SPORTS DIRECT </a><br />
+          <a href="https://www.adidas.co.uk"> ADIDAS </a><br />
+        </div>
+        <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
+          <h5>ADDRESS</h5>
+          <p>koteshwor Kathmandu</p>
+          <h5>PHONE</h5>
+          <p>9818255262</p>
+          <h5>EMAIL</h5>
+          <p>sportsmitra@gmail.com</p>
+        </div>
+      </div>
+    </div>
+  </footer> -->
   
-          <footer class="container-fluid">
-            <div class="container">
-              <div class="row">
-                <div class="col-md-3 footer1 d-flex wow bounceInLeft" data-wow-delay=".25s">
-                  <div class="d-flex flex-wrap align-content-center"> <a href="#"><br><br><img src="../static/images/fnb.png" alt="logo" class = "logo"></a>
-                    <p>Empowering athletes, nurturing talent, fostering 
-                      teamwork, celebrating <br>
-                      achievements.</p>
-                      <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
-                  </div>
-                </div>
-                <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
-                  <br>
-                  <br> 
-                  <br> 
-                  <br>
-                  <br> 
-                  <br> 
-                  <br>
-                  <h5>QUICK LINKS</h5>
-                  <a href="/create_emp"> Create Employee</a><br />
-                  <a href="/create_facility">Add Facility</a><br />
-                  <a href="/create_activity">Add Activity</a><br />
-                  <a href="/pricing">Pricing</a><br />
-                </div>
-                <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
-                  <br>
-                  <br> 
-                  <br> 
-                  <br>
-                  <br> 
-                  <br> 
-                  <br>
-                  <h5>EXPLORE</h5>
-                  <a href="https://www.nike.com">
-                    NIKE
-                  </a><br>
-                  <a href="https://www.jdsports.com">
-                    JD SPORTS
-                  </a><br>
-                  <a href = "https://www.sportsdirect.com">
-                    SPORTS DIRECT
-                  </a><br>
-                  <a href = "https://www.adidas.co.uk">
-                    ADIDAS
-                  </a><br>
-                </div>
-                <div class="col-md-3 footer3 wow bounceInRight" data-wow-delay=".25s">
-                  <h5>ADDRESS</h5>
-                  <p>koteshwor Kathmandu</p>
-                  <h5>PHONE</h5>
-                  <p>9818255262</p>
-                  <h5>EMAIL</h5>
-                  <p>sportsmitra@gmail.com</p>
-                </div>
-              </div>
-            </div>
-          </footer>
+  
           <script>
             document.getElementById("logout").addEventListener("click", function (e) {
               e.preventDefault(); // Prevents the default link behavior

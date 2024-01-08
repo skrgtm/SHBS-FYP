@@ -30,6 +30,8 @@ class UserAccount(UserMixin, db.Model):
     end_date = db.Column(db.Date, nullable=True)
     Member = db.Column(db.Boolean, default=False)
     member_type = db.Column(db.String(50))
+    profile_picture = db.Column(
+        db.String(255), nullable=True, default='../static/images/3.jpg')
 
     roles = db.relationship("Role", secondary=user_role,
                             backref=db.backref("users", lazy="dynamic"))

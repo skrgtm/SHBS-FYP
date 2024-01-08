@@ -1,14 +1,21 @@
 const passwordInput = document.getElementById('userPassword');
-
+const verifyPasswordInput = document.getElementById('userVerifyPassword');
 const passwordError = document.getElementById('password-error');
 const submit = document.getElementById('submitbtn');
 
 passwordInput.addEventListener('input', validatePassword);
+verifyPasswordInput.addEventListener('input', validatePassword);
 
 function validatePassword() {
   const password = passwordInput.value;
+  const verifyPassword = verifyPasswordInput.value;
   
   let errorMessage = '';
+
+  // Check if password and verify password match
+  if (password !== verifyPassword) {
+    errorMessage += 'Passwords do not match<br>';
+  }
 
   // Check the length of the password
   if (password.length < 8) {

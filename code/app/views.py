@@ -22,12 +22,13 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle
 from reportlab.lib.units import inch
 import os
+from werkzeug.utils import secure_filename
 from io import BytesIO
 from PIL import Image as PILImage
 from reportlab.lib.utils import ImageReader
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm, SignupForm, Auth2FaForm, Verify2FA, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm, empcheckout
+from .forms import LoginForm, SignupForm, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm, empcheckout
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions, Activity, session_activity_association
@@ -270,6 +271,14 @@ def signup():
             app.logger.error('Error: Create Account Failed')
             return redirect('/create_account')
 
+        # Check if the phone number already exists
+        user_phone = UserAccount.query.filter_by(
+            Mobile=form.CountryCode.data + user_number).first()
+        if user_phone is not None:
+            flash('Phone number already registered', 'phone_exists')
+            app.logger.error('Error: Create Account Failed')
+            return redirect('/create_account')
+
         # Check if passwords match
         if user_password != user_confirm_password:
             flash('Passwords do not match', 'password_mismatch')
@@ -292,7 +301,7 @@ def signup():
     return render_template('signup.html', title='Signup', form=form)
 
 
-# ******************* Route for Login with Phone ****************************************
+# # ******************* Route for Login with Phone ****************************************
 
 # Route to handle Two-Factor authentication.
 # validate mobile number information.
@@ -317,9 +326,9 @@ def signup():
 
 #     return render_template('login2fa.html', title='2FA', form=f1)
 
-# Route to verify the generated code is entered.
-# Twilio checks if the token is correct.
-# If correct the user logs in.
+# # Route to verify the generated code is entered.
+# # Twilio checks if the token is correct.
+# # If correct the user logs in.
 
 
 @app.route('/ec', methods=['GET', 'POST'])
@@ -344,31 +353,31 @@ def generate_verification_token(user_email):
     s = Serializer(current_app.config['SECRET_KEY'])
     return s.dumps({'email': user_email}).decode('utf-8')
 
-# Twilio method to check verification toekn.
-# If Handles any exceptions raised by twilio for errors.
+# # Twilio method to check verification toekn.
+# # If Handles any exceptions raised by twilio for errors.
 
 
-# def check_verification_token(phone, token):
-#     print("Phone:", phone)
-#     print("Token:", token)
-#     verify = client.verify.services('VA3aca3bf651a0ca9bcb349309b4737dc4')
-#     try:
-#         result = verify.verification_checks.create(to=phone, code=token)
-#     except TwilioException as e:
-#         print("Twilio exception:", e)
-#         return False
-#     return True
+# # def check_verification_token(phone, token):
+# #     print("Phone:", phone)
+# #     print("Token:", token)
+# #     verify = client.verify.services('VA3aca3bf651a0ca9bcb349309b4737dc4')
+# #     try:
+# #         result = verify.verification_checks.create(to=phone, code=token)
+# #     except TwilioException as e:
+# #         print("Twilio exception:", e)
+# #         return False
+# #     return True
 
-# Twilio method to generate token given the users mobile number.
-# Handles Any exceptions by twilio. Preventing user login if False is returned.
+# # Twilio method to generate token given the users mobile number.
+# # Handles Any exceptions by twilio. Preventing user login if False is returned.
 
 
-# def request_verification_token(phone):
-#     verify = client.verify.services('VA3aca3bf651a0ca9bcb349309b4737dc4')
-#     try:
-#         verify.verifications.create(to=phone, channel='sms')
-#     except TwilioException:
-#         return False
+# # def request_verification_token(phone):
+# #     verify = client.verify.services('VA3aca3bf651a0ca9bcb349309b4737dc4')
+# #     try:
+# #         verify.verifications.create(to=phone, channel='sms')
+# #     except TwilioException:
+# #         return False
 
 
 # ******************* Sending Account Verification Link ****************************************
@@ -590,7 +599,13 @@ def order_products():
         "amount": total_amount_paisa,  # The amount in paisa
         "purchase_order_id": "Order01",  # Unique ID for the order
         "purchase_order_name": "test",  # Name or description of the order
-        # Add other fields from the sample payload as needed
+        "customer_info": {
+            "name": "Test",
+            "email": "test@khalti.com",
+            "phone": "9800000005"
+        }
+
+
     })
     headers = {
         # Ensure the 'Key' prefix is included
@@ -661,7 +676,7 @@ def payment_success():
         booking.receipt_id = receipt_id
 
     db.session.commit()
-    flash('Payment successful! Your booking statuses have been updated to "Booked".')
+    flash('Payment successful! "Booked" Please check e-mail for booking receipt')
 
     static_folder = os.path.join(app.root_path, 'static')
     image_path = os.path.join(static_folder, 'images', 'nb.png')
@@ -703,16 +718,16 @@ def payment_success():
     y_start = 600
     line_height = 20
 
-    if current_user.Member:
-        discount = int(total_amount * 0.5)  # 50% discount for members
-        total_amount = total_amount - discount  # Apply the member discount
+    # if current_user.Member:
+    #     discount = int(total_amount * 0.5)  # 50% discount for members
+    #     total_amount = total_amount - discount  # Apply the member discount
 
     receipt_bookings = Booking.query.filter_by(
         receipt_id=new_receipt.id).all()
 
     # Creating a table for booking details
     table_data = [
-        ['Booking ID', 'Facility', 'Activity', 'Start Time', 'End Time']
+        ['Facility', 'Activity', 'Start Time', 'End Time', 'Number']
     ]
 
     for booking in receipt_bookings:
@@ -720,10 +735,11 @@ def payment_success():
         activity_name = booking.activity.Activity_Name
         start_time = booking.session.Start_time
         end_time = booking.session.End_time
-        table_data.append([str(booking.id), facility_name,
-                          activity_name, str(start_time), str(end_time)])
+        num_people = booking.Size
+        table_data.append([facility_name,
+                          activity_name, str(start_time), str(end_time), str(num_people)])
 
-    table = Table(table_data, colWidths=[60, 120, 120, 100, 100])
+    table = Table(table_data, colWidths=[100, 100, 100, 100, 100])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -2168,8 +2184,9 @@ def update_user():
     if form.validate_on_submit():
         current_user.User = form.User.data
         current_user.set_password(form.password.data)
-        current_user.Email = form.email.data
+        # current_user.Email = form.email.data
         current_user.Mobile = form.mobile.data
+
         db.session.commit()
         flash('Your personal information has been updated', 'success')
         return redirect(url_for('update_user'))
@@ -2177,6 +2194,7 @@ def update_user():
         form.User.data = current_user.User
         form.email.data = current_user.Email
         form.mobile.data = current_user.Mobile
+
     return render_template('update_user.html', title='Update Personal Information', form=form)
 
 # Route to display user information
