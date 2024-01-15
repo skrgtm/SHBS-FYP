@@ -39,6 +39,10 @@ app.config['MAIL_PASSWORD'] = 'igatzyfmajkjfyun'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'profile')
+
+# app.config['UPLOAD_FOLDER'] = 'profile_pictures'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
 
 

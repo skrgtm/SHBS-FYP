@@ -87,7 +87,7 @@
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg">
-          <form class="form-signin" method="POST" name="signin">
+          <form class="form-signin" method="POST" name="signin" onsubmit="return validateForm()">
             {{ form.hidden_tag() }}
             <h1 class="h3 mb-3" style="text-align: center; font-weight: bold">
               BOOK SESSIONS
@@ -141,7 +141,7 @@
               >
                 Group Size
               </label>
-              {{form.size(class_="form-control")}} {{
+              {{form.size(class_="form-control", id="group_size")}} {{
               form.activity_id(class_="form-control", id="activity_id") }}
             </div>
 
@@ -204,7 +204,7 @@
                 celebrating <br />
                 achievements.
               </p>
-              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+              <p>&copy; 2024 Sportsmitra. <br />All rights reserved.<br /></p>
             </div>
           </div>
           <div
@@ -252,6 +252,32 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      function validateForm() {
+          var facilitySelect = document.getElementById("facility_name");
+          var groupSizeInput = document.getElementById("group_size");
+  
+          // Get the selected facility
+          var selectedFacility = facilitySelect.value;
+  
+          // Check if the selected facility requires a minimum group size of 10
+          if (selectedFacility === "Futsal 1" || selectedFacility === "Futsal 2") {
+              var groupSize = parseInt(groupSizeInput.value);
+  
+              // Check if group size is less than 10
+              if (groupSize < 10) {
+                  alert("Group size must be equal to or more than 10 for selected facility.");
+                  return false; // Prevent form submission
+              }
+          }
+  
+          // Proceed with form submission
+          return true;
+      }
+  </script>
+  
+
     <script>
       document.getElementById("logout").addEventListener("click", function (e) {
         e.preventDefault(); // Prevents the default link behavior
@@ -273,6 +299,7 @@
       });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="../static/javascript/jquery.min.js"></script>
     <script src="../static/javascript/bootstrap.min.js"></script>

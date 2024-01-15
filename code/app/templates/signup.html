@@ -131,25 +131,17 @@
             </p>
 
             <label class="block text-gray-700 font-bold mb-2">Password</label>
-            <p name="password">
-              {{form.userPassword(class_ ="form-control shadow appearance-none
-              border rounded w-full py-2 px-3 text-gray-700 leading-tight
-              focus:outline-none focus:shadow-outline") }}
-              <i class="fas fa-eye-slash toggle-password" style="cursor: pointer;padding-left: 360px;"></i>
-             
-            </p>
+            <div class="relative">
+              {{form.userPassword(class_ ="form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+              <i class="fas fa-eye-slash toggle-password absolute inset-y-0 right-0 pr-3 pt-2.5 cursor-pointer"></i>
+            </div>
 
             
-            <label class="block text-gray-700 font-bold mb-2"
-              >Re-Enter Password</label
-            >
-
-            <p>
-              {{form.userVerifyPassword(class = "form-control shadow
-              appearance-none border rounded w-full py-2 px-3 text-gray-700
-              leading-tight focus:outline-none focus:shadow-outline") }}
-              <i class="fas fa-eye-slash toggle-confirm-password" style="cursor: pointer; padding-left: 360px;"></i>
-            </p>
+            <label class="block text-gray-700 font-bold mb-2">Re-Enter Password</label>
+            <div class="relative">
+              {{form.userVerifyPassword(class = "form-control shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+              <i class="fas fa-eye-slash toggle-confirm-password absolute inset-y-0 right-0 pr-3 pt-2.5 cursor-pointer"></i>
+            </div>
             <div
               id="password-error"
               class="text-danger block text-gray-700 font-bold mb-2"
@@ -191,7 +183,7 @@
     <script>
       var input = document.querySelector("#Mobile");
       var iti = window.intlTelInput(input, {
-        preferredCountries: ["np","us", "gb", "ca"],
+        preferredCountries: ["us", "gb", "ca"],
         utilsScript:
           "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
       });
@@ -227,7 +219,7 @@
                 celebrating <br />
                 achievements.
               </p>
-              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+              <p>&copy; 2024 Sportsmitra. <br />All rights reserved.<br /></p>
             </div>
           </div>
           <div

@@ -30,6 +30,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
   </head>
+
   <body>
     <nav class="navbar navbar-expand-md navbar-dark">
       <div class="container">
@@ -93,8 +94,51 @@
               UPDATE PERSONAL INFORMATION
             </h1></b
           >
+          <!-- Profile Picture Display -->
+          <div class="text-center mb-3">
+            <div
+              class="profile-picture"
+              style="display: flex; justify-content: center"
+            >
+              {% if current_user.profile_picture %}
+              <img
+                id="profileImage"
+                src="/static/{{ current_user.profile_picture }}"
+                alt="Profile Picture"
+                style="
+                  border-radius: 50%;
+                  object-fit: cover;
+                  width: 150px;
+                  height: 150px;
+                "
+              />
+              {% else %}
+              <!-- Default profile picture or placeholder -->
+              <img
+                src="{{ url_for('static', filename='..static/images/3.jpg') }}"
+                alt="Default Profile Picture"
+                class="rounded-circle"
+                style="width: 150px; height: 150px; object-fit: cover"
+              />
+              {% endif %}
+              <label for="profile-picture-input" class="camera-icon">
+                <!-- <i id="cameraIcon" class="fas fa-camera"></i> -->
+              </label>
+              {{ form.profile_picture(class="d-none",
+              id="profile-picture-input") }}
+            </div>
+          </div>
 
-          <form id="myForm" action="" method="POST">
+          <form
+            id="myForm"
+            action=""
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            <div class="form-group" id="id_photo">
+              {{ form.profile_picture.label }} {{
+              form.profile_picture(class="form-control-file") }}
+            </div>
             {{ form.hidden_tag() }}
             <div class="form-group">
               {{ form.User.label }} {{ form.User(class="form-control") }}
@@ -170,7 +214,7 @@
                 celebrating <br />
                 achievements.
               </p>
-              <p>&copy; 2023 Sportsmitra. <br />All rights reserved.<br /></p>
+              <p>&copy; 2024 Sportsmitra. <br />All rights reserved.<br /></p>
             </div>
           </div>
           <div
@@ -218,6 +262,45 @@
         </div>
       </div>
     </footer>
+    <script>
+      // JavaScript to trigger file input when camera icon is clicked
+      document
+        .getElementById("cameraIcon")
+        .addEventListener("click", function () {
+          // Assuming your file input has the id 'id_photo'
+          document.getElementById("id_photo").click();
+        });
+
+      // JavaScript to handle file input change event
+      document
+        .getElementById("id_photo")
+        .addEventListener("change", function (event) {
+          // Assuming your image has the id 'profileImage'
+          var imageElement = document.getElementById("profileImage");
+
+          // Check if a file is selected
+          if (event.target.files.length > 0) {
+            // Update the image source with the selected file
+            var newImage = URL.createObjectURL(event.target.files[0]);
+            imageElement.src = newImage;
+          }
+        });
+    </script>
+    <script>
+      document
+        .getElementById("id_photo")
+        .addEventListener("change", function (event) {
+          // Assuming your image has the id 'profileImage'
+          var imageElement = document.getElementById("profileImage");
+
+          // Check if a file is selected
+          if (event.target.files.length > 0) {
+            // Update the image source with the selected file
+            var newImage = URL.createObjectURL(event.target.files[0]);
+            imageElement.src = newImage;
+          }
+        });
+    </script>
 
     <script>
       const togglePassword = document.getElementById("togglePassword");
