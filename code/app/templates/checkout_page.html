@@ -56,7 +56,7 @@
       {% if data %} -->
       <div align = "center">
         <h1 class ="custom-text text-size">Your Cart</h1><br>
-        
+        <p class = "custom-text">Items in the cart will be removed after <span id="timer">10:00</span> minutes</p>
       </div>
                 <!-- <div class="bg-white p-8 rounded-lg shadow-lg"> -->
             <div class="container">
@@ -135,6 +135,7 @@
     <b><h1 align = "center" class ="custom-text">No Item In Cart.</h1></b>
 {% endif %}
 
+
  
       <footer class="container-fluid">
         <div class="container">
@@ -144,7 +145,7 @@
                 <p>Empowering athletes, nurturing talent, fostering 
                   teamwork, celebrating <br>
                   achievements.</p>
-                  <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+                  <p>&copy; 2024 Sportsmitra. <br>All rights reserved.<br> </p>
               </div>
             </div>
             <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
@@ -194,6 +195,73 @@
           </div>
         </div>
       </footer>
+      <script>
+        const tableBody = document.querySelector("table tbody");
+        const itemCount = tableBody ? tableBody.childElementCount : 0;
+
+        const timerDuration = 600 * 1000; // 10 minutes in milliseconds
+        let startTime;
+        let remainingTime = timerDuration;
+
+        // Check if the timer is already running
+        const timerRunning = sessionStorage.getItem("timerRunning") === "true";
+
+        if (timerRunning) {
+          startTime = parseInt(sessionStorage.getItem("startTime"));
+          remainingTime = timerDuration - (new Date().getTime() - startTime);
+        } else {
+          startTime = new Date().getTime();
+          sessionStorage.setItem("startTime", startTime);
+          sessionStorage.setItem("timerRunning", "true");
+        }
+
+        if (remainingTime <= 0) {
+          remainingTime = 0;
+          sessionStorage.removeItem("startTime");
+          sessionStorage.removeItem("timerRunning");
+          deleteExpiredBooking();
+        }
+
+        const timerDisplay = document.getElementById("timer");
+
+        let interval;
+
+        function updateTimer() {
+          console.log("Timer Started ........");
+          const remainingTimeSeconds = Math.floor(remainingTime / 1000);
+          const minutes = Math.floor(remainingTimeSeconds / 60);
+          const seconds = remainingTimeSeconds % 60;
+          timerDisplay.textContent = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+          remainingTime -= 1000;
+
+          if (remainingTime <= 0) {
+            clearInterval(interval);
+            deleteExpiredBooking();
+          }
+        }
+
+        // Start the timer if it's not already running
+        if (!timerRunning) {
+          updateTimer(); // Display the timer initially
+          interval = setInterval(updateTimer, 1000);
+        }
+
+        function deleteExpiredBooking() {
+          console.log("Deleting expired bookings...");
+          $.ajax({
+            url: "/delete_expired_booking",
+            method: "POST",
+            success: function(data) {
+              if (data.status === "success") {
+                location.reload();
+              }
+            }
+          });
+        }
+
+        </script>   
+
+
       <script>
         document.getElementById("logout").addEventListener("click", function (e) {
           e.preventDefault(); // Prevents the default link behavior

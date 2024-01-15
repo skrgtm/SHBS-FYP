@@ -13,7 +13,7 @@ def create_activities():
     squash_activities = ["1-hour sessions"]
     sports_hall_activities = ["1-hour sessions", "Team events"]
     climbing_activities = ["General use"]
-    studio_activities = ["Pilates", "Aerobics", "Yoga"]
+    studio_activities = ["MMA", "Zumba", "Yoga"]
 
     activities_data = [
         (swimming_pool, swimming_activities),
@@ -34,17 +34,17 @@ def create_activities():
 
 
 def create_sessions():
-    # Pilates: Monday 6-7pm
-    pilates_start_time = time(18, 0)
-    pilates_end_time = time(19, 0)
-    create_session(studio, pilates_start_time, pilates_end_time, ["Pilates"])
+    # MMA: Monday 6-7pm
+    mma_start_time = time(18, 0)
+    mma_end_time = time(19, 0)
+    create_session(studio, mma_start_time, mma_end_time, ["MMA"])
 
-    # Aerobics: Tuesday 10-11am, Thursday 7-8pm, Saturday 10-11am
-    aerobics_start_times = [time(10, 0), time(19, 0), time(10, 0)]
-    aerobics_end_times = [time(11, 0), time(20, 0), time(11, 0)]
-    aerobics_days = [1, 3, 5]  # Tuesday, Thursday, Saturday
-    for start_time, end_time, day in zip(aerobics_start_times, aerobics_end_times, aerobics_days):
-        create_session(studio, start_time, end_time, ["Aerobics"], day)
+    # Zumba: Tuesday 10-11am, Thursday 7-8pm, Saturday 10-11am
+    zumba_start_times = [time(10, 0), time(19, 0), time(10, 0)]
+    zumba_end_times = [time(11, 0), time(20, 0), time(11, 0)]
+    zumba_days = [1, 3, 5]  # Tuesday, Thursday, Saturday
+    for start_time, end_time, day in zip(zumba_start_times, zumba_end_times, zumba_days):
+        create_session(studio, start_time, end_time, ["Zumba"], day)
 
     # Yoga: Friday 7-8pm, Sunday 9-10am
     yoga_start_times = [time(19, 0), time(9, 0)]
@@ -98,7 +98,7 @@ def create_sessions():
             create_session(climbing_wall, start_time,
                            end_time, climbing_activity, day)
 
-    # Squash Court 1: 1:hr session
+    # Futsal 1: 1:hr session
     fitness_activity = ["1-hour sessions"]
     fitness_room_hours = [(time(hour), time(hour + 1))
                           for hour in range(8, 22)]
@@ -150,10 +150,10 @@ def create_session(facility, start_time, end_time, activity_names, day=None, wee
 def create_facilities():
     facilities_data = [
         ("Swimming Pool", 30, "08:00", "20:00"),
-        ("Fitness Room", 35, "08:00", "22:00"),
-        ("Squash Court 1", 40, "08:00", "22:00"),
-        ("Squash Court 2", 40, "08:00", "22:00"),
-        ("Basketball Sports Hall", 45, "08:00", "22:00"),
+        ("Fitness Gym", 35, "08:00", "22:00"),
+        ("Futsal 1", 20, "08:00", "22:00"),
+        ("Futsal 2", 20, "08:00", "22:00"),
+        ("Basketball Sports Hall", 20, "08:00", "22:00"),
         ("Climbing Wall", 22, "10:00", "20:00"),
         ("Studio", 25, "08:00", "22:00"),
     ]

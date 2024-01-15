@@ -227,7 +227,7 @@ class UpdateUserForm(FlaskForm):
                              DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[
                                      DataRequired(), EqualTo('password')])
-    email = StringField('Email', render_kw={'disabled': True}) 
+    email = StringField('Email', validators=[DataRequired(), Email()])
     mobile = StringField('Mobile', validators=[
                          DataRequired(), Length(min=10, max=15)])
     profile_picture = FileField('Profile Picture', validators=[

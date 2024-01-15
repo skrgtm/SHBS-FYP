@@ -73,6 +73,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th>Profile Picture</th>
                         <th>User Name</th>
                         <th>Membership Type</th>
                         <th>Start Date</th>
@@ -82,6 +83,10 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td>
+                          <img id="profileImage" src="/static/{{ member.profile_picture }}" alt="Profile Picture" style="border-radius: 50%; object-fit: cover; width: 150px; height: 150px;">
+                        </td>
+                        
                         <td>{{ member.User }}</td>
                         <td>{{ member.member_type }}</td>
                         <td>{{ member.start_date}}</td>
@@ -111,7 +116,7 @@
             <p>Empowering athletes, nurturing talent, fostering 
               teamwork, celebrating <br>
               achievements.</p>
-              <p>&copy; 2023 Sportsmitra. <br>All rights reserved.<br> </p>
+              <p>&copy; 2024 Sportsmitra. <br>All rights reserved.<br> </p>
           </div>
         </div>
         <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">

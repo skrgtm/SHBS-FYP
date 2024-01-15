@@ -101,14 +101,6 @@ def require_role(role):
         return wrapped_function
     return decorator
 
-# method to validate phone numbers. Helps reduce Twilio Errors.
-# def is_valid_phone_number(number):
-#     try:
-#         parsed_number = phonenumbers.parse(number, None)
-#         return phonenumbers.is_valid_number(parsed_number)
-#     except phonenumbers.NumberParseException:
-#         return False
-
 
 # ************************* Admin View ******************************************
 # Disabled For Submission.
@@ -122,11 +114,12 @@ admin.add_view(ModelView(Receipt, db.session))
 admin.add_view(ModelView(Membership, db.session))
 # *******************************************************************************
 
+# decorator used to reload the user object
+
 
 @login_manager.user_loader
 def load_user(user_id):
-    # Replace this with your actual user loading logic
-    # Example assuming you have a User model
+
     user = UserAccount.query.get(int(user_id))
     return user
 # **************************** HomePage *************************************************
@@ -173,6 +166,7 @@ def load_user(user_id):
 #         return redirect('/')
 #   elif request.method == 'GET':
 #     return render_template('contact_us.html', form=form)
+# ***********************************************************************************************************************
 @app.route('/', methods=['GET', 'POST'])
 def Homepage():
     form = ContactUsForm()
@@ -202,7 +196,7 @@ def Homepage():
             return redirect('/')
     elif request.method == 'GET':
         return render_template('homepage.html', title='HomePage', form=form)
-
+# ************************************************************************************************************
 # Getter to get the information of upcoming activites using facility id.
 
 
@@ -212,7 +206,7 @@ def get_upcomming_activities(facility_id):
     return jsonify([activity.activity_to_dict() for activity in activities])
 
 
-# **** User Create Account and Login: Reset Password, 2FA & Google Login ***********************
+# **** User Create Account and Login: Reset Password***********************
 
 # ******************* Route for Login ****************************************
 
@@ -467,8 +461,8 @@ def reset():
     return render_template('recover.html', title='Reset Password', form=form)
 
 # route to validate the reset password.
-# Only allows password to be reset if the toek is validate.
-# Chceks if the user email also exists before resetting the password.
+# Only allows password to be reset if the token is validate.
+# Checks if the user email also exists before resetting the password.
 # If all checks are passed. User password is reset with success prompt.
 
 
@@ -546,17 +540,8 @@ def protected_area():
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
 
 
-# ************** End of User Login, Creat Account: Reset, 2FA, Google Login, Logout *******************
+# ************** End of User Login, Creat Account: Reset, Logout *******************
 
-
-# #Manager Homepage
-# @app.route('/mgr_homepage')
-# @login_required
-# @require_role(role="Manager")
-# def MgrHomepage():
-#     #redirects user to landing page
-#     return render_template('yt.html',
-#                            title='Home',User = current_user)
 
 # ********************************* Route to Redirect User After they Login ************************
 
@@ -578,7 +563,7 @@ def logout():
     logout_user()
     return redirect('/')
 
-# ************** End of User Login, Creat Account: Reset, 2FA, Google Login, Logout *******************
+# ************** End of User Login, Creat Account: Reset, Logout *******************
 
 
 # khalti payment gateway
@@ -776,6 +761,8 @@ def payment_success():
     msg.attach('receipt.pdf', 'application/pdf', buffer.read())
     mail.send(msg)
 
+    # return jsonify(success=True)
+
     return redirect(url_for('my_bookings'))
 
     # else:
@@ -858,11 +845,15 @@ def subscription_success():
                 timedelta(days=180)
 
         db.session.commit()
+
+        user_profile_picture = current_user.profile_picture
+        print(user_profile_picture)
+
         msg = Message('Membership Subscription Confirmation',
                       sender='skrgtm2059@gmail.com',
                       recipients=[current_user.Email])
         msg.html = render_template(
-            'membership_email.html', membership_type=membership_type)
+            'membership_email.html', membership_type=membership_type, user_profile_picture=user_profile_picture)
         mail.send(msg)
         return redirect(url_for('user'))
 
@@ -898,8 +889,12 @@ def order_subscription(username):
                 "website_url": "http://localhost:5000",
                 "amount": amount_paisa,
                 "purchase_order_id": "Order01",
-                "purchase_order_name": selected_plan['name']
-                # Add other fields as needed
+                "purchase_order_name": selected_plan['name'],
+                "customer_info": {
+                    "name": "Test",
+                    "email": "test@khalti.com",
+                    "phone": "9800000005"
+                }
             })
 
             headers = {
@@ -1568,6 +1563,7 @@ def create_userMembership():
     form = UserMember()
     form_submitted = False
     member = None
+
     if request.method == 'POST' and form.validate_on_submit():
         form_submitted = True
         user_email = form.userEmail.data
@@ -2176,26 +2172,70 @@ def get_sessions_for_activity(facility_id, activity_id):
 # Displays the existing information
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower(
+           ) in app.config['ALLOWED_EXTENSIONS']
+
+
 @app.route('/update_user', methods=['GET', 'POST'])
 @login_required
-@require_role(role="User")
 def update_user():
     form = UpdateUserForm()
+
     if form.validate_on_submit():
         current_user.User = form.User.data
         current_user.set_password(form.password.data)
-        # current_user.Email = form.email.data
+        current_user.Email = form.email.data
         current_user.Mobile = form.mobile.data
+
+        # Check if a new profile picture is provided
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file.filename != '':
+                filename = secure_filename(file.filename)
+
+                # Save the file in the 'static/profile' directory
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+
+                # Save the relative path in the database
+                current_user.profile_picture = os.path.join(
+                    'profile', filename)
 
         db.session.commit()
         flash('Your personal information has been updated', 'success')
         return redirect(url_for('update_user'))
+
     elif request.method == 'GET':
         form.User.data = current_user.User
         form.email.data = current_user.Email
         form.mobile.data = current_user.Mobile
 
     return render_template('update_user.html', title='Update Personal Information', form=form)
+
+# @app.route('/update_user', methods=['GET', 'POST'])
+# @login_required
+# @require_role(role="User")
+# def update_user():
+#     form = UpdateUserForm()
+#     if form.validate_on_submit():
+#         current_user.User = form.User.data
+#         current_user.set_password(form.password.data)
+#         current_user.Email = form.email.data
+#         current_user.Mobile = form.mobile.data
+
+
+#         db.session.commit()
+#         flash('Your personal information has been updated', 'success')
+#         return redirect(url_for('update_user'))
+#     elif request.method == 'GET':
+#         form.User.data = current_user.User
+#         form.email.data = current_user.Email
+#         form.mobile.data = current_user.Mobile
+
+#     return render_template('update_user.html', title='Update Personal Information', form=form)
+
 
 # Route to display user information
 
