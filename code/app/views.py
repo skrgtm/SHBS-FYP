@@ -662,7 +662,55 @@ def payment_success():
 
     db.session.commit()
     flash('Payment successful! "Booked" Please check e-mail for booking receipt')
+# ***********************************************************************
+    # Central Billing Monitoring System API
+    # Making a call to the CBMS API after a successful payment
+    cbms_api_url = "https://cbapi.ird.gov.np/api/bill"
+    cbms_headers = {'Content-Type': 'application/json'}
 
+    # Dynamic invoice number
+    invoice_number = f"TI{datetime.now().strftime('%Y%m%d%H%M%S')}/BOU/93"
+
+    cbms_data = {
+        "username": "Test_CBMS",
+        "password": "test@321",
+        "seller_pan": "999999999",
+        "buyer_pan": "SAKAR GAUTAM1",
+        "buyer_name": "123456789",
+        "fiscal_year": "2080.81",
+        "invoice_number": invoice_number,
+        "invoice_date": "2080.09.05",
+        "total_sales": 1289.9967,
+        "taxable_sales_vat": 1141.59,
+        "vat": 148.4067,
+        "excisable_amount": 0,
+        "excise": 0,
+        "taxable_sales_hst": 0,
+        "hst": 0,
+        "amount_for_esf": 0,
+        "esf": 0,
+        "export_sales": 0,
+        "tax_exempted_sales": 0,
+        "isrealtime": True,
+        "datetimeclient": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+    }
+
+    try:
+        cbms_response = requests.post(
+            cbms_api_url, json=cbms_data, headers=cbms_headers)
+        cbms_response.raise_for_status()  # Raise an HTTPError for bad responses
+
+        cbms_response_data = cbms_response.json()
+        if cbms_response_data == 200:
+            print(
+                f"CBMS API: Bill posted successfully! Invoice Number: {invoice_number}")
+        else:
+            print(f"CBMS API: Error code {cbms_response_data}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"CBMS API: Error posting bill - {e}")
+
+# ***********************************************************************
     static_folder = os.path.join(app.root_path, 'static')
     image_path = os.path.join(static_folder, 'images', 'nb.png')
 
@@ -697,6 +745,10 @@ def payment_success():
     p.setFont("Helvetica-Bold", 20)
     p.drawCentredString(
         300, 650, "----------------Booking Receipt----------------")
+
+    # Display the invoice number below the title
+    p.setFont("Helvetica", 12)
+    p.drawString(200, 630, f"Invoice Number: {invoice_number}")
 
     # Other receipt details
     p.setFont("Helvetica", 12)
@@ -750,6 +802,8 @@ def payment_success():
                  f"Time: {datetime.now().time()}")
     p.drawString(450, 200 - 3 * line_height,
                  f"Total Amount: {total_amount}")
+    # p.drawString(450, 200 - 4 * line_height,
+    #              f"Invoice Number: {invoice_number}")
 
     # Save the PDF buffer
     p.save()
