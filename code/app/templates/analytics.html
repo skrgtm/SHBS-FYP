@@ -28,7 +28,7 @@
         <body>
 
   <nav class="navbar navbar-expand-md navbar-dark">
-    <div class="container"> 
+    <div class="container" style="padding-top: 10px;"> 
       <!-- Brand --> 
       <a class="navbar-brand mr-auto" href="/"><img src="../static/images/nb.png" alt="Sportsmitra" class = "logo"/></a> 
       
@@ -107,22 +107,20 @@
   <br>
   <br>
 
-  <div class="container">
-    <div class="bg-black text-white p-8">
-      <h1 class="text-4xl font-bold mb-4">Sportsmitra Analytics</h1>
-      <div class="row">
-        <div class="col-md-6 analytics-section">
-          <p class="text-lg mb-4">User Statistics</p>
-          <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="member">View</button>
-          <br><br>
-          <div id="memberChart"></div>
-        </div>
-        <div class="col-md-6 analytics-section">
-          <p class="text-lg mb-4">Booking Summary</p>
-          <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="bookings">View</button>
-          
-          <table id="bookingtable" style="display:none;">
-            
+  <div class="bg-black text-white p-8">
+    <h1 class="text-4xl font-bold mb-4">Sportsmitra Analytics</h1>
+    <div class="row">
+      <div class="col">
+        <p class="text-lg mb-4">User Statistics</p>
+        <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="member">View</button>
+        <br>
+        <br>
+        <div id="memberChart"></div>
+      </div>
+      <div class="col">
+        <p class="text-lg mb-4">Booking Summary</p>
+        <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="bookings">View</button>
+        <table id="bookingtable" style="display:none;">
           <thead>
             <tr>
               <th class="text-white">Total Number Bookings</th>
@@ -139,10 +137,84 @@
           </tbody>
         </table>
       </div>
+      <div class="col">
+        <p class="text-lg mb-4">Facility Rankings</p>
+        <label for="my-select" class="block text-lg mb-2">Filter By:</label>
+        <select id="my-select" name="my-select" class="form-select mb-4" style="color: black;">
+          <option value="Booking" style="color: black;">Booking</option>
+          <option value="Utilization" style="color: black;">Utilization</option>
+        </select>
+        <div class="table-container" style="padding-bottom: 20px;">
+          <button class="bg-white text-black font-bold py-2 px-4 rounded-lg mr-4" id="facility" style="padding-bottom: 10px;">View</button>
+          <table id="facilitytable" style="display:none;">
+            <thead>
+              <tr>
+                <th class="text-white">Ranking</th>
+                <th class="text-white">Facility Name</th>
+                <th class="text-white">Number of Bookings</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+      <div class="col">
+        <div class="mb-4">
+          <h2 class="text-lg mb-4">Revenue Statistics</h2>
+          <div class="flex items-center mb-2">
+            <label for="year-select" class="mr-2 text-white">Year:</label>
+            <select id="year-select" name="year-select" class="bg-white text-black py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+            </select>
+      <button id="revenue" class="bg-white text-black font-bold py-2 px-4 rounded-lg ml-4">View</button>
+    </div>
+    <div id="revenueChart"></div>
+  </div>
+      </div></div>
   <br><br>
-  <br><br><br>
-  <!-- <footer class="container-fluid">
+  <div class="bg-white text-black p-8">
+    <h2 class="text-lg font-bold mb-2">Facility Analytics</h2>
+    <div class="flex items-center mb-2">
+      <label for="facilityfilter" class="mr-2">Filter By:</label>
+      <select id="facilityfilter" name="facilityfilter" class="bg-white text-black py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+        <option value="Utilization">Usage</option>
+        <option value="Revenue">Sales</option>
+      </select>
+      <label for="weekSelector1" class="ml-4 mr-2">Week:</label>
+      <select id="weekSelector1" name="weekSelector1" class="bg-white text-black py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+        {% for week_number, start_date, end_date in week %}
+        <option value="{{week_number}}">({{ start_date.strftime("%b %d, %Y") }} - {{ end_date.strftime("%b %d, %Y") }})</option>
+        {% endfor %}
+      </select>
+      <button id="facilityanalytics" class="bg-white text-black font-bold py-2 px-4 rounded-lg ml-4">View</button>
+    </div>
+    <div id="facilityinfographic"></div>
+  
+    <br>
+  
+    <h2 class="text-lg font-bold mb-2">Activity Analytics</h2>
+    <div class="flex items-center mb-2">
+      <label for="activityfilter" class="mr-2">Filter By:</label>
+      <select id="activityfilter" name="activityfilter" class="bg-white text-black py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+        <option value="Bookings">Bookings</option>
+        <option value="Revenue">Sales</option>
+      </select>
+      <label for="weekSelector2" class="ml-4 mr-2">Week:</label>
+      <select id="weekSelector2" name="weekSelector2" class="bg-white text-black py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+        {% for week_number, start_date, end_date in week %}
+        <option value="{{week_number}}">({{ start_date.strftime("%b %d, %Y") }} - {{ end_date.strftime("%b %d, %Y") }})</option>
+        {% endfor %}
+      </select>
+      <button id="activityanalytics" class="bg-white text-black font-bold py-2 px-4 rounded-lg ml-4">View</button>
+    </div>
+    <div id="activityinfographic"></div>
+  </div><br><br><br>
+  <footer class="container-fluid">
     <div class="container">
       <div class="row">
         <div
@@ -205,7 +277,7 @@
         </div>
       </div>
     </div>
-  </footer> -->
+  </footer>
   
   
           <script>

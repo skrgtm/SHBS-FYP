@@ -224,11 +224,16 @@ def login():
         if not user.verified:
             flash('Please verify your email before logging in.')
             return redirect(url_for('login'))
-        remember = form.remember.data
 
+        # Set a cookie to indicate successful login
+        resp = make_response(redirect("/user"))
+        resp.set_cookie('show_popup', 'true')
+
+        remember = form.remember.data
         login_user(user, remember=remember, duration=timedelta(days=10))
+
         if user.has_role("User"):
-            return redirect("/user")
+            return resp
         else:
             return redirect('/')
     return render_template('login_page.html', title='Login', form=form)
@@ -550,7 +555,10 @@ def protected_area():
 @login_required
 @require_role(role="User")
 def user():
-    return render_template('user.html', title='User', User=current_user)
+    subscription_success = session.pop('subscription_success', False)
+    
+    
+    return render_template('user.html', title='User', User=current_user,subscription_success=subscription_success)
 
 # Flask defualt logout handler.
 
@@ -597,7 +605,7 @@ def order_products():
         # test key
         # 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
         # my key
-        'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
+        'Authorization': 'key 7bc5b52469534542a259bf2e23d17a20',
         'Content-Type': 'application/json',
     }
 
@@ -748,7 +756,7 @@ def payment_success():
 
     # Display the invoice number below the title
     p.setFont("Helvetica", 12)
-    p.drawString(200, 630, f"Invoice Number: {invoice_number}")
+    p.drawString(170, 630, f"Invoice Number: {invoice_number}")
 
     # Other receipt details
     p.setFont("Helvetica", 12)
@@ -883,7 +891,8 @@ def subscription_success():
             user_subscription.Member = True
             # Store membership name
             user_subscription.member_type = selected_plan['name']
-            user_subscription.start_date = datetime.now().date()
+            if user_subscription.start_date is None:
+                user_subscription.start_date = datetime.now().date()
 
         if membership_type.startswith('yearly'):
             user_subscription.end_date = user_subscription.start_date + \
@@ -909,6 +918,10 @@ def subscription_success():
         msg.html = render_template(
             'membership_email.html', membership_type=membership_type, user_profile_picture=user_profile_picture)
         mail.send(msg)
+        
+        # Set session variable for success message
+        session['subscription_success'] = True
+
         return redirect(url_for('user'))
 
     return 'Membership type not specified', 400
@@ -956,7 +969,7 @@ def order_subscription(username):
                 # test key
                 # 'Authorization': 'key b42caed1ffbd4202b41b700a32e3a237',
                 # my key
-                'Authorization': 'key a0021f9f714144c5bc2b0dffb56f2c5b',
+                'Authorization': 'key 7bc5b52469534542a259bf2e23d17a20',
                 'Content-Type': 'application/json',
             }
 
@@ -971,7 +984,7 @@ def order_subscription(username):
                     f"Failed to initiate payment: {response.text}")
                 return jsonify({'error': 'Payment initiation failed', 'message': response.text}), response.status_code
 
-    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user, memberships=memberships)
+    return render_template('all_subscriptions.html', username=username, plans=plans, current_user=user, memberships=memberships, User=current_user)
 
 # ************************************************************************************
 # @app.route('/manorder_subscription/<string:username>', methods=['GET', 'POST'])
@@ -1203,7 +1216,7 @@ def newemp():
         flash('New Employee created successfully!', 'success')
         return redirect('/create_emp')
     # redirects user to landing page
-    return render_template('newemp.html', title='Home', form=form)
+    return render_template('newemp.html', title='Home', form=form, User=current_user)
 
 # Route to handle Facility Creation.
 # Facility with a default activity 'General Usr' is created
@@ -1243,7 +1256,7 @@ def new_facility():
         dynamic_sessions(facility.id, form.Start_time.data,
                          form.End_time.data, form.Capacity.data, activity.id)
         return redirect('/create_facility')
-    return render_template('createfacility.html', form=form)
+    return render_template('createfacility.html', form=form, User=current_user)
 
 
 # Route to handle Activity Creation.
@@ -1540,7 +1553,7 @@ def look_bookings():
                 user_id=user.id, Status="Booked").all()
         else:
             flash('User not found', 'danger')
-    return render_template('view_bookingsEmp.html', bookings=bookings, form=form, form_submitted=form_submitted)
+    return render_template('view_bookingsEmp.html', bookings=bookings, form=form, form_submitted=form_submitted, User=current_user)
 
 
 # Route which handle booking modification
@@ -1639,7 +1652,7 @@ def create_userMembership():
                     flash('Not a Member')
             else:
                 flash('Not a User')
-    return render_template('view_userMembership.html', form=form, form_submitted=form_submitted, member=member)
+    return render_template('view_userMembership.html', form=form, form_submitted=form_submitted, member=member, User=current_user)
 
 
 # route that cancels users membership
@@ -1691,7 +1704,7 @@ def create_bookings():
                 bookings = UserAccount.query.filter_by(Email=user_email).all()
                 flash('User')
 
-    return render_template('create_bookings.html', bookings=bookings, form=form, form_submitted=form_submitted)
+    return render_template('create_bookings.html', bookings=bookings, form=form, form_submitted=form_submitted, User=current_user)
 
 
 # Route to handle the booking information
@@ -1941,7 +1954,7 @@ def view_venue():
     else:
         print("Form errors:", form.errors)
 
-    return render_template('search_results.html', title='Search Venue', form=form, sessions=available_sessions, activities=activities_dict)
+    return render_template('search_results.html', title='Search Venue', form=form, sessions=available_sessions, activities=activities_dict, User=current_user)
 
 
 # page that displays all sessions that the user can book
@@ -2038,7 +2051,7 @@ def checkout_page():
         discount = int(total_amount * 0.5)  # 50% discount for members
         total_amount = total_amount - discount  # Apply the member discount
 
-    return render_template('checkout_page.html', data=aggregated_data, total_amount=total_amount, discount=discount)
+    return render_template('checkout_page.html', data=aggregated_data, total_amount=total_amount, discount=discount, User=current_user)
 
 
 # Removes all expired bookings
@@ -2168,7 +2181,7 @@ def my_bookings():
     bookings = Booking.query.filter_by(
         user_id=current_user.id, Status="Booked").all()
     current_time = datetime.now().date()
-    return render_template('my_bookings.html', bookings=bookings, current_time=current_time)
+    return render_template('my_bookings.html', bookings=bookings, current_time=current_time, User=current_user)
 
 
 # Route that cancels the user booking
@@ -2266,7 +2279,7 @@ def update_user():
         form.email.data = current_user.Email
         form.mobile.data = current_user.Mobile
 
-    return render_template('update_user.html', title='Update Personal Information', form=form)
+    return render_template('update_user.html', title='Update Personal Information', form=form, User=current_user)
 
 # @app.route('/update_user', methods=['GET', 'POST'])
 # @login_required
@@ -2334,11 +2347,10 @@ def analytics():
         week_data.append((week_number, start_date.date(), end_date.date()))
     return render_template('analytics.html', title="Analytics", data=activityset, data1=facilityset, week=week_data)
 
+
 # Getter that retrieves the count of members and non members
 # Sends this data in JSON form
 # This data is passed on to google charts and displayed in the analytics page as a pie chart
-
-
 @app.route('/analyzemember', methods=["GET", "POST"])
 @require_role(role="Manager")
 @login_required
@@ -2375,6 +2387,197 @@ def bookingstats():
         'avgsize': avg_booking_size
     }
     return jsonify(data)
+
+# Getter that ranks facilites according to utilization or Number of bookings depending on user choice
+# Converts the data to JSON which is then converted to Tabular data for the analytics page
+# Takes the ranking, Facility name and filter type and converts this data
+
+
+@app.route('/rankfacilities/<filter_type>', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def rankfacilities(filter_type):
+    if filter_type == "Booking":
+        popular_facilities = db.session.query(Facility.Name, db.func.count(Booking.id).label('bookings')).\
+            outerjoin(Sessions, Sessions.facility_id == Facility.id).\
+            outerjoin(Booking, Booking.session_id == Sessions.id).\
+            group_by(Facility.id).\
+            order_by(db.func.count(Booking.id).desc()).all()
+        facility_ranking = []
+        for i, (facility, booking_count) in enumerate(popular_facilities):
+            facility_ranking.append({
+                'ranking': i + 1,
+                'facility_name': facility,
+                'booking_count': booking_count
+            })
+        return jsonify(facility_ranking)
+
+    elif filter_type == "Utilization":
+        utilization_query = db.session.query(Facility.Name, func.avg(Booking.Size * 1.0 / Facility.Capacity) * 100).\
+            outerjoin(Sessions).\
+            outerjoin(Booking).\
+            group_by(Facility.id).\
+            all()
+        utilization = []
+        i = 1
+        for facility_name, avg_utilization in utilization_query:
+            if avg_utilization is None:
+                avg_utilization = 0
+            utilization.append({
+                'ranking': i,
+                "facility_name": facility_name,
+                "booking_count": int(avg_utilization)
+            })
+            i += 1
+        return jsonify(utilization)
+    else:
+        return jsonify(error="Invalid filter type"), 400
+
+# getter to get the monthly reveneue by facility for a given month and year selected by the user
+# Converts this data to JSON which is used by Google Charts to create a bar chart
+
+
+@app.route('/getrevenues/<monthsel>/<yearsel>', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def get_revenues(monthsel, yearsel):
+    monthly_revenue = db.session.query(
+        Facility.Name,
+        extract('year', Booking.Book_Time).label('year'),
+        extract('month', Booking.Book_Time).label('month'),
+        func.sum(Booking.Amount).label('total_revenue')
+    ).join(Sessions, Facility.id == Sessions.facility_id).join(
+        Booking, Sessions.id == Booking.session_id
+    ).group_by(
+        Facility.id, extract('year', Booking.Book_Time), extract(
+            'month', Booking.Book_Time)
+    ).order_by(
+        Facility.Name, extract('year', Booking.Book_Time), extract(
+            'month', Booking.Book_Time)
+    ).all()
+
+    monthly_revenue_dict = {}
+    for facility_name, year, month, total_revenue in monthly_revenue:
+        if year == int(yearsel) and month == int(monthsel):
+            if facility_name not in monthly_revenue_dict:
+                monthly_revenue_dict[facility_name] = []
+            monthly_revenue_dict[facility_name].append({
+                'year': year,
+                'month': month,
+                'total_revenue': total_revenue
+            })
+
+    return jsonify(monthly_revenue_dict)
+
+
+# getter that is used to retrieve weekly data of Facility
+# Weekly data can be percentage utilization or reveneues by all Facilityies
+# Returns the data depending on the user choice to the analytics page as JSON which is used by google charts to create a bar chart.
+@app.route('/facilitywiseinfo/<string:usagetype>/<int:week>', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def facilitywiseinfo(usagetype, week):
+    current_year = datetime.utcnow().year
+
+    facilities = Facility.query.all()
+
+    facility_data = []
+    week = week - 1
+
+    if usagetype == "Utilization":
+        for facility in facilities:
+            bookings = Booking.query.join(Sessions).filter(
+                Sessions.facility_id == facility.id,
+                extract('year', Sessions.Date) == current_year,
+                extract('week', Sessions.Date) == week
+            ).all()
+
+            capacity = facility.Capacity
+            total_booked = sum(booking.Size for booking in bookings)
+            utilization = total_booked / capacity * 100 if capacity > 0 else 0
+
+            facility_data.append(
+                {'facility_name': facility.Name, 'data': utilization})
+
+    elif usagetype == "Revenue":
+        weekly_revenue = db.session.query(
+            Facility.Name,
+            func.sum(Booking.Amount).label('revenue')
+        ).join(Sessions, Facility.id == Sessions.facility_id).join(
+            Booking, Sessions.id == Booking.session_id
+        ).filter(
+            extract('year', Sessions.Date) == current_year,
+            extract('week', Sessions.Date) == week
+        ).group_by(
+            Facility.Name
+        ).order_by(
+            Facility.Name
+        ).all()
+
+        print(f"Weekly revenue: {weekly_revenue}")
+
+        for facility_revenue in weekly_revenue:
+            facility_data.append(
+                {'facility_name': facility_revenue[0], 'data': facility_revenue[1]})
+
+    return jsonify(facility_data)
+
+# getter that is used to retrieve weekly data of activites
+# Weekly data can be number of bookings or reveneues by all activites
+# Returns the data depending on the user choice to the analytics page as JSON which is used by google charts to create a bar chart.
+
+
+@app.route('/activitywiseinfo/<string:usagetype>/<int:week>', methods=["GET", "POST"])
+@require_role(role="Manager")
+@login_required
+def activitywiseinfo(usagetype, week):
+    current_year = datetime.utcnow().year
+
+    activities = Activity.query.all()
+
+    activity_data = []
+    week = week - 1
+
+    if usagetype == "Bookings":
+        for activity in activities:
+            bookings_count = Booking.query.join(Sessions).filter(
+                Booking.activity_id == activity.id,
+                extract('year', Sessions.Date) == current_year,
+                extract('week', Sessions.Date) == week
+            ).count()
+
+            activity_data.append({'activity_name': activity.Activity_Name +
+                                 ' : ' + activity.facility.Name, 'data': bookings_count})
+
+    elif usagetype == "Revenue":
+        weekly_revenue = db.session.query(
+            Activity.Activity_Name,
+            Facility.Name,
+            func.sum(Booking.Amount).label('revenue')
+        ).select_from(Booking).join(
+            Sessions, Sessions.id == Booking.session_id
+        ).join(
+            Activity, Booking.activity_id == Activity.id
+        ).join(
+            Facility, Activity.facility_id == Facility.id
+        ).filter(
+            extract('year', Sessions.Date) == current_year,
+            extract('week', Sessions.Date) == week
+        ).group_by(
+            Activity.Activity_Name,
+            Facility.Name
+        ).order_by(
+            Activity.Activity_Name,
+            Facility.Name
+        ).all()
+
+        print(f"Weekly revenue: {weekly_revenue}")
+
+        for activity_revenue in weekly_revenue:
+            activity_data.append(
+                {'activity_name': activity_revenue[0] + ' : ' + activity_revenue[1], 'data': activity_revenue[2]})
+
+    return jsonify(activity_data)
 
 # **************************************************************************************************
 

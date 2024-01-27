@@ -70,13 +70,21 @@
             <li class="nav-item">
               <a class="nav-link" href="/checkout_page">Checkout</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/update_user">Account</a>
-            </li>
+            
 
             <li class="nav-item">
               <a class="nav-link" href="#" id="logout">Logout</a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/update_user" style="display: flex; align-items: center; margin-left: 130px; text-decoration: none; color: #333;">
+                  <img src="../static/images/acc.jpg" alt="User Account" style="width: 36px; height: 36px; border-radius: 50%; margin-right: 12px; border: 2px solid #007bff;" />
+                  <div>
+                      <span style="font-weight: bold; font-size: 16px; display: block;">{{User.User}}</span>
+                      <span style="font-size: 14px; display: block; color: #777;">Account</span>
+                  </div>
+              </a>
+          </li>
           </ul>
         </div>
       </div>
@@ -89,6 +97,10 @@
     <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg">
+          {% with messages = get_flashed_messages() %} {% if messages %} {%
+            for message in messages %}
+            <p style="color: black">{{ message }}</p>
+            {% endfor %} {% endif %} {% endwith %}
           <b
             ><h1 class="h3 mb-3" style="text-align: center; font-weight: bold">
               UPDATE PERSONAL INFORMATION
@@ -188,10 +200,7 @@
             <!-- {{ form.submit(class="btn btn-primary") }} -->
             <button class="btn btn-custom" type="submit">UPDATE</button>
             <br />
-            {% with messages = get_flashed_messages() %} {% if messages %} {%
-            for message in messages %}
-            <p style="color: black">{{ message }}</p>
-            {% endfor %} {% endif %} {% endwith %}
+            
           </form>
         </div>
       </div>
