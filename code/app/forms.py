@@ -258,3 +258,11 @@ class empcheckout(FlaskForm):
 
 
 # ************************************** End of Form***********************************************
+
+#Form to handle refunds
+class RefundForm(FlaskForm):
+  name = StringField("Name",  validators=[DataRequired()])
+  email = StringField("Email",validators = [DataRequired()])
+  details = TextAreaField("Booking Details",validators = [DataRequired()])
+  reason = TextAreaField("Reason",validators = [DataRequired()])
+  submit = SubmitField("Send")

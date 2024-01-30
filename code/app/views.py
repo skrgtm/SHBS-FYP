@@ -22,13 +22,14 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle
 from reportlab.lib.units import inch
 import os
+from add_dynamic import dynamic_sessions, append_to_session
 from werkzeug.utils import secure_filename
 from io import BytesIO
 from PIL import Image as PILImage
 from reportlab.lib.utils import ImageReader
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from .forms import LoginForm, SignupForm, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm, empcheckout
+from .forms import LoginForm, SignupForm, EmpLoginForm, EmpSignupForm, ForgetPassword, ContactUsForm, ResetPassword, CreateFacilityForm, CreateActivityForm, UpdateFacilityForm, UpdateActivityForm, ViewBookings, EditBookingForm, UserMember, CreateBookings, FacilityActivityForm, UpdateUserForm, BookingDetailsForm, AddMembershipForm, empcheckout, RefundForm
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from .models import UserAccount, Role, Booking, Facility, Receipt, Sessions, Activity, session_activity_association
@@ -556,9 +557,8 @@ def protected_area():
 @require_role(role="User")
 def user():
     subscription_success = session.pop('subscription_success', False)
-    
-    
-    return render_template('user.html', title='User', User=current_user,subscription_success=subscription_success)
+
+    return render_template('user.html', title='User', User=current_user, subscription_success=subscription_success)
 
 # Flask defualt logout handler.
 
@@ -596,7 +596,9 @@ def order_products():
             "name": "Test",
             "email": "test@khalti.com",
             "phone": "9800000005"
-        }
+
+        },
+        "paymentPreference": ['KHALTI']
 
 
     })
@@ -918,7 +920,7 @@ def subscription_success():
         msg.html = render_template(
             'membership_email.html', membership_type=membership_type, user_profile_picture=user_profile_picture)
         mail.send(msg)
-        
+
         # Set session variable for success message
         session['subscription_success'] = True
 
@@ -1077,7 +1079,7 @@ def cancel_usermembership(user_id):
         user.end_date = None
         db.session.commit()
         # flash('Membership canceled successfully')
-        return redirect(url_for('user'))
+        return redirect(url_for('order_subscription', username=user.User))
     else:
         flash('User not found')
         return redirect(url_for('user'))
@@ -1126,6 +1128,35 @@ def success():
                 db.session.commit()
 
     return redirect(url_for('user'))
+
+#Route that handles the refund requests
+#Sends the acknowledgement to the user via email if the data entered is valid.
+@app.route('/refund_form', methods=["GET", "POST"])
+def refund():
+    form = RefundForm()
+    if request.method == 'POST':
+        if form.validate() == False:
+            flash('All fields are required.')
+        else:
+            subject = 'Refund request processed'
+            # Compose the email body with the form fields for the user
+            user_body = f"Your refund request has been processed.\n\nUsername: {form.name.data}\nUser Email: {form.email.data}\nBooking Details: {form.details.data}\nReason: {form.reason.data}"
+            # Create message for the user
+            user_message = Message(subject, recipients=[form.email.data], body=user_body, sender='skrgtm2059@gmail.com')
+            # Send message to user
+            mail.send(user_message)
+            
+            # Compose the email body with the form fields for the admin
+            admin_body = f"Dispute Request Details\n\nUsername: {form.name.data}\nUser Email: {form.email.data}\nBooking Details: {form.details.data}\nReason: {form.reason.data}"
+            # Create message for the admin
+            admin_message = Message(subject, recipients=['skrgtm2059@gmail.com'], body=admin_body, sender='skrgtm2059@gmail.com')
+            # Send message to admin
+            mail.send(admin_message)
+            
+            flash('Refund request submitted successfully!')
+            return redirect('/refund_form')  # Redirect to the same page to display the flash message
+    
+    return render_template('refund.html', title='refund', form=form, User=current_user)
 
 
 # **************************************** Manager Role **********************************************
@@ -1219,23 +1250,18 @@ def newemp():
     return render_template('newemp.html', title='Home', form=form, User=current_user)
 
 # Route to handle Facility Creation.
-# Facility with a default activity 'General Usr' is created
+# Facility with a default activity 'General Use' is created
 # Route accessible by managers only as per spec
 # Checks if the Facility exists, preventing Facility creation if so
 # If checks are passed, 2 Weeks worth of sessions is generated using the dynamic sessions script.
 
-
+from add_dynamic import dynamic_sessions
 @app.route('/create_facility', methods=['GET', 'POST'])
 @require_role(role="Manager")
 @login_required
 def new_facility():
     form = CreateFacilityForm()
     if form.validate_on_submit():
-
-        # if form.Start_time.data > form.End_time.data:
-        #     flash('Start time cannot be after end time', 'Start_time')
-        #     return redirect('/create_facility')
-
         checkfacility = Facility.query.filter_by(Name=form.Name.data).first()
         if checkfacility is not None:
             flash('Facility already exists')
@@ -1244,17 +1270,21 @@ def new_facility():
         if form.Capacity.data <= 0:
             flash('Capacity should be a positive number', 'Capacity')
             return redirect('/create_facility')
+
+        # Create the new facility
         facility = Facility(Name=form.Name.data, Capacity=form.Capacity.data,
                             Start_Facility=form.Start_time.data, End_Facility=form.End_time.data)
-        activity = Activity(Activity_Name="General use",
-                            Amount=form.Amount.data)
+        activity = Activity(Activity_Name="General use", Amount=form.Amount.data)
         db.session.add(activity)
         facility.activities.append(activity)
         db.session.add(facility)
         db.session.commit()
-        flash('New Facility created successfully', 'success')
+
+        # Call function to create dynamic sessions for the new facility
         dynamic_sessions(facility.id, form.Start_time.data,
                          form.End_time.data, form.Capacity.data, activity.id)
+
+        flash('New Facility created successfully', 'success')
         return redirect('/create_facility')
     return render_template('createfacility.html', form=form, User=current_user)
 
