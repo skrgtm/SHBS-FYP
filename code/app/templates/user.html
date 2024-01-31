@@ -43,7 +43,7 @@
       data-image-src="../static/images/user.jpeg"
     >
       <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container" style="padding-top: 15px;">
+        <div class="container" style="padding-top: 15px">
           <!-- Brand -->
           <a class="navbar-brand mr-auto" href="/"
             ><img src="../static/images/nb.png" alt="Sportsmitra" class="logo"
@@ -82,22 +82,48 @@
               <li class="nav-item">
                 <a class="nav-link" href="/checkout_page">Checkout</a>
               </li>
-              
-            
+              <li class="nav-item">
+                <a class="nav-link" href="/refund_form">Dispute Request</a>
+              </li>
 
               <li class="nav-item">
                 <a class="nav-link" href="#" id="logout">Logout</a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="/update_user" style="display: flex; align-items: center; margin-left: 130px; text-decoration: none; color: #333;">
-                    <img src="../static/images/acc.jpg" alt="User Account" style="width: 36px; height: 36px; border-radius: 50%; margin-right: 12px; border: 2px solid #007bff;" />
-                    <div>
-                        <span style="font-weight: bold; font-size: 16px; display: block;">{{User.User}}</span>
-                        <span style="font-size: 14px; display: block; color: #777;">Account</span>
-                    </div>
+                <a
+                  class="nav-link"
+                  href="/update_user"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    margin-left: 20px;
+                    text-decoration: none;
+                    color: #333;
+                  "
+                >
+                  <img
+                    src="../static/images/acc.jpg"
+                    alt="User Account"
+                    style="
+                      width: 36px;
+                      height: 36px;
+                      border-radius: 50%;
+                      margin-right: 5px;
+                      border: 2px solid #007bff;
+                    "
+                  />
+                  <div>
+                    <span
+                      style="font-weight: bold; font-size: 16px; display: block"
+                      >{{User.User}}</span
+                    >
+                    <span style="font-size: 14px; display: block; color: #777"
+                      >Account</span
+                    >
+                  </div>
                 </a>
-            </li>
+              </li>
             </ul>
           </div>
           <!-- Adding the following lines to display the username -->
@@ -255,27 +281,24 @@
     </footer>
     {% if subscription_success %}
     <style>
-        /* Adjust the height of the success message */
-        .swal2-popup {
-            height: auto; /* Change this value to adjust the height */
-            max-height: 200px; /* Optional: Set a maximum height if needed */
-        }
+      /* Adjust the height of the success message */
+      .swal2-popup {
+        height: auto; /* Change this value to adjust the height */
+        max-height: 300px; /* Optional: Set a maximum height if needed */
+      }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Membership card sent to E-mail",
-                showConfirmButton: false,
-                timer: 4000
-            });
+      document.addEventListener("DOMContentLoaded", function () {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Membership card sent to E-mail",
+          showConfirmButton: false,
+          timer: 4000,
         });
+      });
     </script>
-{% endif %}
-    
-
-    
+    {% endif %}
 
     <script>
       document.getElementById("logout").addEventListener("click", function (e) {
