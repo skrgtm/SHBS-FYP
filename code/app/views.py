@@ -1140,7 +1140,7 @@ def refund():
         else:
             subject = 'Refund request processed'
             # Compose the email body with the form fields for the user
-            user_body = f"Your refund request has been processed.\n\nUsername: {form.name.data}\nUser Email: {form.email.data}\nBooking Details: {form.details.data}\nReason: {form.reason.data}"
+            user_body = f"Your refund request has been processed."
             # Create message for the user
             user_message = Message(subject, recipients=[form.email.data], body=user_body, sender='skrgtm2059@gmail.com')
             # Send message to user
@@ -1153,7 +1153,7 @@ def refund():
             # Send message to admin
             mail.send(admin_message)
             
-            flash('Refund request submitted successfully!')
+            flash('Dispute request submitted successfully!','success')
             return redirect('/refund_form')  # Redirect to the same page to display the flash message
     
     return render_template('refund.html', title='refund', form=form, User=current_user)

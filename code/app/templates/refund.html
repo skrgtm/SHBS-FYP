@@ -50,13 +50,7 @@
     <br>
     <br>
     <br>
-        {% with messages = get_flashed_messages() %}
-    {% if messages %}
-          {% for message in messages %}
-               
-          {% endfor %}
-    {% endif %}
- {% endwith %} 
+        
   <div class="w-full flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <div class="bg-white p-8 rounded-lg shadow-lg" style="border: 4px solid #df6700;">
@@ -80,6 +74,14 @@
                   </label>
                 {{ form.reason (class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")}}
                 <button class="btn btn-custom" type="submit">Submit</button>
+                <br>
+                {% with messages = get_flashed_messages() %}
+     {% if messages %}
+           {% for message in messages %}
+                <p style="color: black;">{{ message }}</p>
+           {% endfor %}
+     {% endif %}
+  {% endwith %}
             </form>
             </div>
             </div>
