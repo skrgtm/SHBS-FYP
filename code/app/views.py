@@ -1,4 +1,5 @@
 # Relevant modules for the project.
+from add_dynamic import dynamic_sessions
 from .models import Membership  # Import the Membership model
 # Import your AddMembershipForm from forms.py
 from .forms import AddMembershipForm
@@ -645,6 +646,10 @@ def order_products():
 @login_required
 @require_role(role="User")
 def payment_success():
+
+    # Dynamic invoice number
+    invoice_number = f"TI{datetime.now().strftime('%Y%m%d%H%M%S')}/BOU/93"
+
     # if validate_session():
 
     user_bookings = Booking.query.filter_by(
@@ -659,7 +664,8 @@ def payment_success():
 
     new_receipt = Receipt(
         user_id=current_user.id,
-        Amount=total_amount
+        Amount=total_amount,
+        invoice_number=invoice_number
     )
 
     db.session.add(new_receipt)
@@ -677,9 +683,6 @@ def payment_success():
     # Making a call to the CBMS API after a successful payment
     cbms_api_url = "https://cbapi.ird.gov.np/api/bill"
     cbms_headers = {'Content-Type': 'application/json'}
-
-    # Dynamic invoice number
-    invoice_number = f"TI{datetime.now().strftime('%Y%m%d%H%M%S')}/BOU/93"
 
     cbms_data = {
         "username": "Test_CBMS",
@@ -1129,8 +1132,10 @@ def success():
 
     return redirect(url_for('user'))
 
-#Route that handles the refund requests
-#Sends the acknowledgement to the user via email if the data entered is valid.
+# Route that handles the refund requests
+# Sends the acknowledgement to the user via email if the data entered is valid.
+
+
 @app.route('/refund_form', methods=["GET", "POST"])
 def refund():
     form = RefundForm()
@@ -1142,20 +1147,23 @@ def refund():
             # Compose the email body with the form fields for the user
             user_body = f"Your refund request has been processed."
             # Create message for the user
-            user_message = Message(subject, recipients=[form.email.data], body=user_body, sender='skrgtm2059@gmail.com')
+            user_message = Message(subject, recipients=[
+                                   form.email.data], body=user_body, sender='skrgtm2059@gmail.com')
             # Send message to user
             mail.send(user_message)
-            
+
             # Compose the email body with the form fields for the admin
             admin_body = f"Dispute Request Details\n\nUsername: {form.name.data}\nUser Email: {form.email.data}\nBooking Details: {form.details.data}\nReason: {form.reason.data}"
             # Create message for the admin
-            admin_message = Message(subject, recipients=['skrgtm2059@gmail.com'], body=admin_body, sender='skrgtm2059@gmail.com')
+            admin_message = Message(subject, recipients=[
+                                    'skrgtm2059@gmail.com'], body=admin_body, sender='skrgtm2059@gmail.com')
             # Send message to admin
             mail.send(admin_message)
-            
-            flash('Dispute request submitted successfully!','success')
-            return redirect('/refund_form')  # Redirect to the same page to display the flash message
-    
+
+            flash('Dispute request submitted successfully!', 'success')
+            # Redirect to the same page to display the flash message
+            return redirect('/refund_form')
+
     return render_template('refund.html', title='refund', form=form, User=current_user)
 
 
@@ -1255,7 +1263,7 @@ def newemp():
 # Checks if the Facility exists, preventing Facility creation if so
 # If checks are passed, 2 Weeks worth of sessions is generated using the dynamic sessions script.
 
-from add_dynamic import dynamic_sessions
+
 @app.route('/create_facility', methods=['GET', 'POST'])
 @require_role(role="Manager")
 @login_required
@@ -1274,7 +1282,8 @@ def new_facility():
         # Create the new facility
         facility = Facility(Name=form.Name.data, Capacity=form.Capacity.data,
                             Start_Facility=form.Start_time.data, End_Facility=form.End_time.data)
-        activity = Activity(Activity_Name="General use", Amount=form.Amount.data)
+        activity = Activity(Activity_Name="General use",
+                            Amount=form.Amount.data)
         db.session.add(activity)
         facility.activities.append(activity)
         db.session.add(facility)

@@ -221,13 +221,15 @@ class Receipt(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('UserAccount.id'))
     Amount = db.Column(db.String(500), index=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    invoice_number = db.Column(db.String(255))
 
     user = db.relationship(
         "UserAccount", backref=db.backref("receipts", lazy="dynamic"))
 
-    def __init__(self, user_id, Amount):
+    def __init__(self, user_id, Amount, invoice_number):
         self.user_id = user_id
         self.Amount = Amount
+        self.invoice_number = invoice_number
 
 
 class Membership(db.Model):

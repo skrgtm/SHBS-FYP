@@ -53,7 +53,7 @@
             <li class="nav-item"><a class="nav-link" href="/my_bookings">Your Bookings</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('order_subscription', username=current_user.User) }}">Membership</a></li>
             <li class="nav-item"><a class="nav-link" href="/checkout_page">Checkout</a></li>
-            <li class="nav-item"><a class="nav-link" href="/refund_form">Dispute Request</a></li>
+            <!-- <li class="nav-item"><a class="nav-link" href="/refund_form">Dispute Request</a></li> -->
             <li class="nav-item"><a class="nav-link" href="#" id="logout">Logout</a></li>
             <li class="nav-item">
               <a class="nav-link" href="/update_user" style="display: flex; align-items: center; margin-left: 130px; text-decoration: none; color: #333;">
@@ -297,6 +297,7 @@
             <h5>QUICK LINKS</h5>
             <a href="/lookup_venue">Sessions</a><br />
             <a href="/my_bookings">My Bookings</a><br />
+            <a href="/refund_form">Claim dispute here</a>
           </div>
           <div
             class="col-md-3 footer2 wow bounceInUp"
