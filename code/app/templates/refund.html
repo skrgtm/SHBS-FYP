@@ -31,7 +31,7 @@
                 <li class="nav-item"><a class="nav-link" href="/my_bookings">Your Bookings</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('order_subscription', username=current_user.User) }}">Membership</a></li>
                 <li class="nav-item"><a class="nav-link" href="/checkout_page">Checkout</a></li>
-                <li class="nav-item"><a class="nav-link" href="/refund_form">Dispute Request</a></li>
+                <!-- <li class="nav-item"><a class="nav-link" href="/refund_form">Dispute Request</a></li> -->
                 <li class="nav-item"><a class="nav-link" href="#" id="logout">Logout</a></li>
                 <li class="nav-item">
                   <a class="nav-link" href="/update_user" style="display: flex; align-items: center; margin-left: 130px; text-decoration: none; color: #333;">
@@ -66,7 +66,7 @@
                   </label>
                 {{ form.email (class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
                 <label class="block text-gray-700 font-bold mb-2" for="username">
-                    Booking Details
+                    Receipt Invoice Number
                   </label>
                 {{ form.details (class_= "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
                 <label class="block text-gray-700 font-bold mb-2" for="username">
@@ -108,6 +108,7 @@
           <h5>QUICK LINKS</h5>
           <a href="/lookup_venue">Sessions</a><br>
           <a href="/my_bookings">My Bookings</a><br>
+          <a href="/refund_form">Claim dispute here</a>
         </div>
         <div class="col-md-3 footer2 wow bounceInUp" data-wow-delay=".25s" id="contact">
           <br>

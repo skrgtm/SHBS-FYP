@@ -17,6 +17,10 @@
       type="text/css"
     />
     <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <link
       href="https://fonts.googleapis.com/css?family=Lato:300,400,700"
       rel="stylesheet"
     />
@@ -29,7 +33,7 @@
       data-image-src="../static/images/banner2.jpg"
     >
       <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container" style="padding-top: 15px;">
+        <div class="container" style="padding-top: 15px">
           <!-- Brand -->
           <a class="navbar-brand mr-auto" href="/"
             ><img src="../static/images/nb.png" class="logo"
@@ -379,10 +383,28 @@
             <p>9818255262</p>
             <h5>EMAIL</h5>
             <p>sportsmitra@gmail.com</p>
+            
           </div>
         </div>
       </div>
     </footer>
+    <script>
+      // Check if the flag indicating successful logout exists in localStorage
+      var logoutStatus = localStorage.getItem("logoutStatus");
+      if (logoutStatus === "success") {
+        // Show success alert
+        Swal.fire({
+          title: "Successfully Logged Out",
+          icon: "success",
+          timer: 4000, // 4 seconds
+          showConfirmButton: false,
+        });
+
+        // Remove the flag from localStorage to prevent displaying the message again
+        localStorage.removeItem("logoutStatus");
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Bootstrap JS, ... -->

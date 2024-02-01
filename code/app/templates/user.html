@@ -82,9 +82,9 @@
               <li class="nav-item">
                 <a class="nav-link" href="/checkout_page">Checkout</a>
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a class="nav-link" href="/refund_form">Dispute Request</a>
-              </li>
+              </li> -->
 
               <li class="nav-item">
                 <a class="nav-link" href="#" id="logout">Logout</a>
@@ -249,6 +249,7 @@
             <h5>QUICK LINKS</h5>
             <a href="/lookup_venue">Sessions</a><br />
             <a href="/my_bookings">My Bookings</a><br />
+            <a href="/refund_form">Claim dispute here</a>
           </div>
           <div
             class="col-md-3 footer2 wow bounceInUp"
@@ -275,6 +276,8 @@
             <p>9818255262</p>
             <h5>EMAIL</h5>
             <p>sportsmitra@gmail.com</p>
+            
+            
           </div>
         </div>
       </div>
@@ -303,7 +306,7 @@
     <script>
       document.getElementById("logout").addEventListener("click", function (e) {
         e.preventDefault(); // Prevents the default link behavior
-
+    
         Swal.fire({
           title: "Are you sure?",
           text: "Do you want to logout?",
@@ -314,6 +317,9 @@
           confirmButtonText: "Yes, logout!",
         }).then((result) => {
           if (result.isConfirmed) {
+            // Set flag in localStorage indicating successful logout
+            localStorage.setItem("logoutStatus", "success");
+    
             // Redirect to logout URL
             window.location.href = "/logout";
           }
