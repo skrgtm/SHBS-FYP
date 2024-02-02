@@ -2016,7 +2016,7 @@ def view_sessions():
                 sessions_with_data.append(
                     {'session': s, 'activity_name': activity.Activity_Name, 'activity_id': activity.id})
 
-    return render_template('sessions.html', sessions=sessions_with_data, group_size=group_size, activity_price=activity_price)
+    return render_template('sessions.html', sessions=sessions_with_data, group_size=group_size, activity_price=activity_price, User=current_user)
 
 
 @app.route('/book_session', methods=['POST'])
