@@ -8,7 +8,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 # SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-SQLALCHEMY_DATABASE_URI = 'mysql://root:@localhost/app'
+SQLALCHEMY_DATABASE_URI = 'mysql://root:@localhost/sportsapp'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
